@@ -14,6 +14,9 @@ from retry_requests import retry
 airports_df = pd.read_csv("airports.dat", header=None)
 airports_df.columns = ["AirportID", "Airport", "City", "Country", "IATA", "ICAO", "Latitude", "Longitude", "Altitude", "Timezone", "DST", "TZ", "Type", "Source"]
 
+# Removeing duplicate cities in same country (Only want user to select country and city not specific airport)
+airports_unique_cities_df = airports_df.drop_duplicates(subset=["Country", "City"])
+
 # Turn routes.dat into dataframe routes_df
 routes_df = pd.read_csv("routes.dat", header=None)
 routes_df.columns = ["Airline", "AirlineID", "Departure_Airport", "Departure_AirportID", "Arrival_Airport", "Arrival_AirportID", "Codeshare", "Stops", "Equipment"]
@@ -113,14 +116,14 @@ def plane_destinations ():
 
         Arrival_Airport = row["Arrival_Airport"]
 
-        lat1 = airports_df.loc[airports_df["IATA"] == Departure_Airport, "Latitude"].iloc[0]
-        lon1 = airports_df.loc[airports_df["IATA"] == Departure_Airport, "Longitude"].iloc[0]
+        lat1 = airports_unique_cities_df.loc[airports_unique_cities_df["IATA"] == Departure_Airport, "Latitude"].iloc[0]
+        lon1 = airports_unique_cities_df.loc[airports_unique_cities_df["IATA"] == Departure_Airport, "Longitude"].iloc[0]
 
-        lat2 = airports_df.loc[airports_df["IATA"] == Arrival_Airport, "Latitude"].iloc[0]
-        lon2 = airports_df.loc[airports_df["IATA"] == Arrival_Airport, "Longitude"].iloc[0]
+        lat2 = airports_unique_cities_df.loc[airports_unique_cities_df["IATA"] == Arrival_Airport, "Latitude"].iloc[0]
+        lon2 = airports_unique_cities_df.loc[airports_unique_cities_df["IATA"] == Arrival_Airport, "Longitude"].iloc[0]
         
-        city = airports_df.loc[airports_df["IATA"] == Arrival_Airport, "City"].iloc[0]
-        country = airports_df.loc[airports_df["IATA"] == Arrival_Airport, "Country"].iloc[0]
+        city = airports_unique_cities_df.loc[airports_unique_cities_df["IATA"] == Arrival_Airport, "City"].iloc[0]
+        country = airports_unique_cities_df.loc[airports_unique_cities_df["IATA"] == Arrival_Airport, "Country"].iloc[0]
         
         distance = haversine(lat1, lon1, lat2, lon2)
 
