@@ -4,7 +4,6 @@ import calendar
 import datetime
 from math import radians, sin, cos, sqrt, atan2
 
-
 import openmeteo_requests
 
 import requests_cache
