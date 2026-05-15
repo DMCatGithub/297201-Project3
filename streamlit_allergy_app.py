@@ -2,6 +2,14 @@ import pandas as pd
 import streamlit as st
 import calendar
 import datetime
+from math import radians, sin, cos, sqrt, atan2
+
+
+import openmeteo_requests
+
+import requests_cache
+from retry_requests import retry
+
 
 # Turn airports.dat in dataframe airports_df
 airports_df = pd.read_csv("airports.dat", header=None)
@@ -12,6 +20,7 @@ routes_df = pd.read_csv("routes.dat", header=None)
 routes_df.columns = ["Airline", "AirlineID", "Departure_Airport", "Departure_AirportID", "Arrival_Airport", "Arrival_AirportID", "Codeshare", "Stops", "Equipment"]
 
 # Selections from user - thru streamlit
+# 
 # -----------------------------------------
 travel_mode = st.radio("How will you travel?",["Car", "Plane"])
 
@@ -30,7 +39,14 @@ selected_month = st.selectbox("What month do you plan to travel?", months)
 
 travel_month = months.index(selected_month) + 1
 
-travel_distance = travel_time * 800
+AVG_CAR_SPEED = 80  # km/h
+AVG_PLANE_SPEED = 800  # km/h
+
+if travel_mode == "Car":
+    travel_distance = travel_time * AVG_CAR_SPEED
+else:
+    travel_distance = travel_time * AVG_PLANE_SPEED
+
 
 Temp_hi = 25
 Temp_lo = 18
@@ -44,18 +60,6 @@ Allergy_3 = None
 # -----------------------------------------
 
 
-## Test destinations ##
-# -----------------------------------------
-# Departure_Airport = "AKL"
-# Departure_Airport = "SYD"
-# Departure_Airport = "LAX" #Los Angles
-# Departure_Airport = "HKG" #Hong Kong
-# Departure_Airport = "LHR"   #London
-# Departure_Airport = "SIN" #Singapore
-# Departure_Airport = "DXB" #Dubai
-# Departure_Airport = "CDG" #Paris
-# -----------------------------------------
-
 unique_countries = sorted(airports_df["Country"].dropna().unique())
 
 selected_country = st.selectbox("Select your country",options=unique_countries)
@@ -66,11 +70,15 @@ selected_town = st.selectbox("Select nearest town or city",options=towns_in_sele
 
 airports_in_town = airports_df[(airports_df["Country"] == selected_country) & (airports_df["City"] == selected_town)]
 
+
+# If only one airport exists → auto‑select it
 if len(airports_in_town) == 1:
-    selected_airport = airports_in_town.iloc[0]
+    selected_airport_row = airports_in_town.iloc[0]
+
 else:
+    # Build readable labels for dropdown
     airport_options = airports_in_town.apply(
-        lambda row: f"{row['Airport']} ({row['IATA']})",
+        lambda row: f"{row['Airport']} ({row['IATA']})" if pd.notna(row['IATA']) else row['Airport'],
         axis=1
     )
 
@@ -79,12 +87,12 @@ else:
         options=airport_options
     )
 
+    # Map selection back to the dataframe row
     selected_airport_row = airports_in_town.iloc[
         airport_options.tolist().index(selected_option)
     ]
 
-departure_airport = selected_airport_row["IATA"]
-
+Departure_Airport = selected_airport_row["IATA"]
 
 # Function for working out distance
 def haversine(lat1, lon1, lat2, lon2):
@@ -96,57 +104,59 @@ def haversine(lat1, lon1, lat2, lon2):
     c = 2 * atan2(sqrt(a), sqrt(1-a))
     return R * c
 
+
+def plane_destinations ():
 # Make dataframe of all "routes_from_df" "Departure_Airport"
-routes_from_df = routes_df[routes_df["Departure_Airport"] == Departure_Airport][["Departure_Airport","Arrival_Airport"]].copy()
+    routes_from_df = routes_df[routes_df["Departure_Airport"] == Departure_Airport][["Departure_Airport","Arrival_Airport"]].copy()
 
 
-for idx, row in routes_from_df.iterrows():
+    for idx, row in routes_from_df.iterrows():
 
-    Arrival_Airport = row["Arrival_Airport"]
+        Arrival_Airport = row["Arrival_Airport"]
 
-    lat1 = airports_df.loc[airports_df["IATA"] == Departure_Airport, "Latitude"].iloc[0]
-    lon1 = airports_df.loc[airports_df["IATA"] == Departure_Airport, "Longitude"].iloc[0]
+        lat1 = airports_df.loc[airports_df["IATA"] == Departure_Airport, "Latitude"].iloc[0]
+        lon1 = airports_df.loc[airports_df["IATA"] == Departure_Airport, "Longitude"].iloc[0]
 
-    lat2 = airports_df.loc[airports_df["IATA"] == Arrival_Airport, "Latitude"].iloc[0]
-    lon2 = airports_df.loc[airports_df["IATA"] == Arrival_Airport, "Longitude"].iloc[0]
-    
-    city = airports_df.loc[airports_df["IATA"] == Arrival_Airport, "City"].iloc[0]
-    country = airports_df.loc[airports_df["IATA"] == Arrival_Airport, "Country"].iloc[0]
-    
-    distance = haversine(lat1, lon1, lat2, lon2)
+        lat2 = airports_df.loc[airports_df["IATA"] == Arrival_Airport, "Latitude"].iloc[0]
+        lon2 = airports_df.loc[airports_df["IATA"] == Arrival_Airport, "Longitude"].iloc[0]
+        
+        city = airports_df.loc[airports_df["IATA"] == Arrival_Airport, "City"].iloc[0]
+        country = airports_df.loc[airports_df["IATA"] == Arrival_Airport, "Country"].iloc[0]
+        
+        distance = haversine(lat1, lon1, lat2, lon2)
 
-    # Add new columns 
-    routes_from_df.at[idx,"Latitude"] = lat2
-    routes_from_df.at[idx,"Longitude"] = lon2
-    routes_from_df.at[idx,"Distance"] = distance
+        # Add new columns 
+        routes_from_df.at[idx,"Latitude"] = lat2
+        routes_from_df.at[idx,"Longitude"] = lon2
+        routes_from_df.at[idx,"Distance"] = distance
 
-    routes_from_df.at[idx,"City"] = city
-    routes_from_df.at[idx,"Country"] = country
+        routes_from_df.at[idx,"City"] = city
+        routes_from_df.at[idx,"Country"] = country
 
-    routes_from_df.at[idx,"Travel_Month"] = Travel_month
-    routes_from_df.at[idx,"Current_year"] = Current_year
+        routes_from_df.at[idx,"Travel_Month"] = travel_month
+        routes_from_df.at[idx,"Current_year"] = current_year
 
-    routes_from_df.at[idx,"Temp_hi"] = Temp_hi
-    routes_from_df.at[idx,"Temp_lo"] = Temp_lo
+        routes_from_df.at[idx,"Temp_hi"] = Temp_hi
+        routes_from_df.at[idx,"Temp_lo"] = Temp_lo
 
-    routes_from_df.at[idx,"Humidity_hi"] = Humidity_hi
-    routes_from_df.at[idx,"Humidity_lo"] = Humidity_lo
+        routes_from_df.at[idx,"Humidity_hi"] = Humidity_hi
+        routes_from_df.at[idx,"Humidity_lo"] = Humidity_lo
 
-    routes_from_df.at[idx,"Allergy_1"] = Allergy_1
-    routes_from_df.at[idx,"Allergy_2"] = Allergy_2
-    routes_from_df.at[idx,"Allergy_3"] = Allergy_3
+        routes_from_df.at[idx,"Allergy_1"] = Allergy_1
+        routes_from_df.at[idx,"Allergy_2"] = Allergy_2
+        routes_from_df.at[idx,"Allergy_3"] = Allergy_3
 
-routes_from_df = routes_from_df.sort_values("Distance")
-# routes_from_df
+    routes_from_df = routes_from_df.sort_values("Distance")
+    routes_from_df
 
-# Only routes within user target
-routes_for_user_df = (routes_from_df[routes_from_df["Distance"] < Travel_distance].sort_values("Distance").reset_index(drop=True))
-# routes_for_user_df
+    # Only routes within user target
+    routes_for_user_df = routes_from_df[routes_from_df["Distance"] < travel_distance].sort_values("Distance").reset_index(drop=True)
 
-# Sample 10 destinations from the list
-# sampled_routes_df = routes_for_user_df.sample(n=10, random_state=42)
-sampled_routes_df = routes_for_user_df.sample(n=10)
-sampled_routes_df
+
+    # Sample 10 destinations from the list
+    # sampled_routes_df = routes_for_user_df.sample(n=10, random_state=42)
+    sampled_routes_df = routes_for_user_df.sample(n=10)
+    return sampled_routes_df
 
 # *************************
 
@@ -154,12 +164,6 @@ sampled_routes_df
 # Update to get weather data from the 1-28 of the travel_month selected by user - from previous year (add another for loop for additional years)
 # Not linked to streamlit so example variables are coded in.
 
-import openmeteo_requests
-
-import pandas as pd
-import requests_cache
-from retry_requests import retry
-import datetime
 
 #Setup the Open-Meteo API client with cache and retry on error
 cache_session = requests_cache.CachedSession('.cache', expire_after = -1)
@@ -169,24 +173,21 @@ openmeteo = openmeteo_requests.Client(session = retry_session)
 weather_data = []
 
 # Potentially create start date and end date in streamlite
-Travel_month = 8
-Current_year = 2026
+# Travel_month = 8
+# Current_year = 2026
 
 First_day = 1
 Last_day = 28
 
 for idx, row in sampled_routes_df.iterrows():
 
-    if idx % 1000 == 0:   #It was taking a long time so added this counter to see progress
-        print(f"At {idx}")
-
     latitude = row["Latitude"]
     longitude = row["Longitude"]
     city = row["City"]
     country = row["Country"]
 
-    start_date = datetime.date(int(Current_year - 1), int(Travel_month), int(First_day))
-    end_date = datetime.date(int(Current_year - 1), int(Travel_month), int(Last_day))
+    start_date = datetime.date(int(current_year - 1), int(travel_month), int(First_day))
+    end_date = datetime.date(int(current_year - 1), int(travel_month), int(Last_day))
 
     #Make sure all required weather variables are listed here
     #The order of variables in hourly or daily is important to assign them correctly below
