@@ -62,15 +62,15 @@ Allergy_3 = None
 # -----------------------------------------
 
 
-unique_countries = sorted(airports_df["Country"].dropna().unique())
+unique_countries = sorted(airports_unique_cities_df["Country"].dropna().unique())
 
 selected_country = st.selectbox("Select your country",options=unique_countries)
 
-towns_in_selected_country = sorted(airports_df.loc[airports_df["Country"] == selected_country, "City"].dropna().unique())
+towns_in_selected_country = sorted(airports_unique_cities_df.loc[airports_unique_cities_df["Country"] == selected_country, "City"].dropna().unique())
 
 selected_town = st.selectbox("Select nearest town or city",options=towns_in_selected_country)
 
-airports_in_town = airports_df[(airports_df["Country"] == selected_country) & (airports_df["City"] == selected_town)]
+airports_in_town = airports_unique_cities_df[(airports_unique_cities_df["Country"] == selected_country) & (airports_unique_cities_df["City"] == selected_town)]
 
 
 # If only one airport exists → auto‑select it
