@@ -10,14 +10,16 @@ import requests_cache
 from retry_requests import retry
 
 
-# Turn airports.dat in dataframe airports_df
+st.title("Allergy‑Aware Holiday Planner")
+
+# LOAD AIRPORTS: Turn airports.dat in dataframe airports_df
 airports_df = pd.read_csv("airports.dat", header=None)
 airports_df.columns = ["AirportID", "Airport", "City", "Country", "IATA", "ICAO", "Latitude", "Longitude", "Altitude", "Timezone", "DST", "TZ", "Type", "Source"]
 
-# Removeing duplicate cities in same country (Only want user to select country and city not specific airport)
+# Removeing duplicate cities in same country (Only want city to show once in selection)
 airports_unique_cities_df = airports_df.drop_duplicates(subset=["Country", "City"])
 
-# Turn routes.dat into dataframe routes_df
+# LOAD ROUTES: Turn routes.dat into dataframe routes_df
 routes_df = pd.read_csv("routes.dat", header=None)
 routes_df.columns = ["Airline", "AirlineID", "Departure_Airport", "Departure_AirportID", "Arrival_Airport", "Arrival_AirportID", "Codeshare", "Stops", "Equipment"]
 
@@ -63,38 +65,37 @@ Allergy_3 = None
 
 
 unique_countries = sorted(airports_unique_cities_df["Country"].dropna().unique())
-
 selected_country = st.selectbox("Select your country",options=unique_countries)
 
-towns_in_selected_country = sorted(airports_unique_cities_df.loc[airports_unique_cities_df["Country"] == selected_country, "City"].dropna().unique())
+if not selected_country:
+    st.stop()
 
+
+towns_in_selected_country = sorted(airports_unique_cities_df.loc[airports_unique_cities_df["Country"] == selected_country, "City"].dropna().unique())
 selected_town = st.selectbox("Select nearest town or city",options=towns_in_selected_country)
+
+if not selected_town:
+    st.stop()
 
 airports_in_town = airports_unique_cities_df[(airports_unique_cities_df["Country"] == selected_country) & (airports_unique_cities_df["City"] == selected_town)]
 
-
-# If only one airport exists → auto‑select it
 if len(airports_in_town) == 1:
     selected_airport_row = airports_in_town.iloc[0]
-
 else:
-    # Build readable labels for dropdown
     airport_options = airports_in_town.apply(
-        lambda row: f"{row['Airport']} ({row['IATA']})" if pd.notna(row['IATA']) else row['Airport'],
-        axis=1
+        lambda row: f"{row['Airport']} ({row['IATA']})", axis=1
     )
-
-    selected_option = st.selectbox(
-        "Select your preferred airport",
-        options=airport_options
-    )
-
-    # Map selection back to the dataframe row
-    selected_airport_row = airports_in_town.iloc[
-        airport_options.tolist().index(selected_option)
-    ]
+    selected_option = st.selectbox("Select your preferred airport", options=airport_options)
+    selected_airport_row = airports_in_town.iloc[airport_options.tolist().index(selected_option)]
 
 Departure_Airport = selected_airport_row["IATA"]
+
+# --- STOP HERE UNTIL USER CLICKS BUTTON ---
+ready = st.button("Find destinations")
+
+if not ready:
+    st.stop()
+
 
 # Function for working out distance
 def haversine(lat1, lon1, lat2, lon2):
