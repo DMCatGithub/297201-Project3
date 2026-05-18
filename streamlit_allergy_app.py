@@ -81,7 +81,7 @@ Departure_City = st.selectbox("Select nearest town or city",options=towns_in_sel
 if not Departure_City:
     st.stop()
 
-airports_in_town = airports_unique_cities_df[(airports_unique_cities_df["Country"] == Departure_Country) & (airports_unique_cities_df["City"] == Departure_City)]
+airports_in_town = airports_df[(airports_df["Country"] == Departure_Country) & (airports_df["City"] == Departure_City)]
 
 if len(airports_in_town) == 1:
     selected_airport_row = airports_in_town.iloc[0]
