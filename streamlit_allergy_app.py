@@ -38,8 +38,7 @@ allergy_options = [
 selected_allergies = st.multiselect(
     "Select all allergy types that apply:",
     options=allergy_options,
-    default=["Allergy type1", "Allergy type2"]   # optional defaults
-)
+    default=["Allergy type1","Allergy type2","Allergy type3","Allergy type4","Allergy type5"])
 
 
 Temp_lo, Temp_hi = st.slider(
@@ -240,14 +239,14 @@ sampled_routes_df = plane_destinations()
 allergy_slots = selected_allergies + [None] * (5 - len(selected_allergies))
 Allergy_1, Allergy_2, Allergy_3, Allergy_4, Allergy_5 = allergy_slots[:5]
 
-sampled_routes_df.at["Allergy_1"] = Allergy_1
-sampled_routes_df.at["Allergy_2"] = Allergy_2
-sampled_routes_df.at["Allergy_3"] = Allergy_3
-sampled_routes_df.at["Allergy_4"] = Allergy_4
-sampled_routes_df.at["Allergy_5"] = Allergy_5
+sampled_routes_df["Allergy_1"] = Allergy_1
+sampled_routes_df["Allergy_2"] = Allergy_2
+sampled_routes_df["Allergy_3"] = Allergy_3
+sampled_routes_df["Allergy_4"] = Allergy_4
+sampled_routes_df["Allergy_5"] = Allergy_5
 
-sampled_routes_df.at["Temp_hi"] = Temp_hi
-sampled_routes_df.at["Temp_lo"] = Temp_lo
+sampled_routes_df["Temp_hi"] = Temp_hi
+sampled_routes_df["Temp_lo"] = Temp_lo
 
 # st.table(routes_from_df)
 sampled_routes_df = sampled_routes_df[["Temp_hi", "Temp_lo", "Humidity_hi", "Humidity_lo", "Allergy_1", "Allergy_2", "Allergy_3", "Allergy_4", "Allergy_5"]]
