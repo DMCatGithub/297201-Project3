@@ -185,11 +185,12 @@ def plane_destinations ():
         routes_from_df.at[idx,"Allergy_2"] = Allergy_2
         routes_from_df.at[idx,"Allergy_3"] = Allergy_3
 
-    return routes_from_df
+    routes_from_df
     # # Only routes within user target
-    # routes_for_user_df = routes_from_df[routes_from_df["Distance"] < travel_distance].sort_values("Distance").reset_index(drop=True)
-    # routes_for_user_df = routes_for_user_df.drop_duplicates(subset=["Arrival_Airport"])
-
+    routes_for_user_df = routes_from_df.drop_duplicates(subset=["Arrival_Airport"])
+    routes_for_user_df = routes_for_user_df[routes_from_df["Distance"] < travel_distance].sort_values("Distance").reset_index(drop=True)
+  
+    return routes_for_user_df
 
     # # Sample 10 destinations from the list
     # # sampled_routes_df = routes_for_user_df.sample(n=10, random_state=42)
@@ -202,9 +203,9 @@ def plane_destinations ():
     # return sampled_routes_df
 
 
-routes_from_df = plane_destinations()
+routes_for_user_df = plane_destinations()
 # st.table(routes_from_df)
-st.table(routes_from_df[["City", "Country", "Distance"]])
+st.table(routes_for_user_df[["City", "Country", "Distance"]])
 
 # *************************
 
