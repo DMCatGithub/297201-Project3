@@ -100,7 +100,6 @@ ready = st.button("Find destinations")
 if not ready:
     st.stop()
 
-sampled_routes_df = plane_destinations()
   
 
 
@@ -175,6 +174,9 @@ def plane_destinations ():
     else:   
         sampled_routes_df = routes_for_user_df.sample(n=10)
     return sampled_routes_df
+
+
+sampled_routes_df = plane_destinations()
 
 # *************************
 
