@@ -96,7 +96,7 @@ if travel_mode == "Car":
         st.stop()
 
     selected_airport_row = airports_in_town.iloc[0]
-    st.info(f"Car travel selected — automatically using nearest airport: {selected_airport_row['Airport']} ({selected_airport_row['IATA']})")
+    # st.info(f"Car travel selected — automatically using nearest airport: {selected_airport_row['Airport']} ({selected_airport_row['IATA']})")
 
 else:
     # PLANE MODE — show dropdown if multiple airports exist
@@ -108,7 +108,7 @@ else:
 
     if len(airports_in_town) == 1:
         selected_airport_row = airports_in_town.iloc[0]
-        st.info(f"Only one airport available: {selected_airport_row['Airport']} ({selected_airport_row['IATA']})")
+        # st.info(f"Only one airport available: {selected_airport_row['Airport']} ({selected_airport_row['IATA']})")
     else:
         airport_options = airports_in_town.apply(
             lambda row: f"{row['Airport']} ({row['IATA']})",
