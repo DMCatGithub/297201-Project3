@@ -26,6 +26,14 @@ routes_df.columns = ["Airline", "AirlineID", "Departure_Airport", "Departure_Air
 # Selections from user - thru streamlit
 # 
 # -----------------------------------------
+
+Temp_lo, Temp_hi = st.slider(
+    "Select preferred temperature range (°C)",
+    min_value=-10,
+    max_value=50,
+    value=(18, 25)   # default min/max
+)
+
 travel_mode = st.radio("How will you travel?",["Car", "Plane"])
 
 travel_time = st.number_input(
