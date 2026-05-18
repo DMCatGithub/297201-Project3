@@ -195,7 +195,7 @@ def plane_destinations ():
 
 
     # # Sample 10 destinations from the list
-    sampled_routes_df = routes_for_user_df.sample(n=10, random_state=42)
+    # sampled_routes_df = routes_for_user_df.sample(n=10, random_state=42)
 
 
     if len(routes_for_user_df) <= 10:
