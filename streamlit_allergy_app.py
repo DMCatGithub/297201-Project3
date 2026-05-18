@@ -28,23 +28,17 @@ routes_df.columns = ["Airline", "AirlineID", "Departure_Airport", "Departure_Air
 # -----------------------------------------
 
 allergy_options = [
-    "Grass",
-    "Tree",
-    "Weed",
-    "Mould",
-    "Dust",
-    "AirPollution",
-    "PM2.5",
-    "PM10",
-    "Ozone",
-    "NO2",
-    "SO2"
+    "Allergy type1",
+    "Allergy type2",
+    "Allergy type3",
+    "Allergy type4",
+    "Allergy type5"
 ]
 
 selected_allergies = st.multiselect(
     "Select all allergy types that apply:",
     options=allergy_options,
-    # default=["Grass", "AirPollution"]   # optional defaults
+    default=["Allergy type1", "Allergy type2"]   # optional defaults
 )
 
 
@@ -87,9 +81,13 @@ else:
 Humidity_hi = 75    # Based on the catagory selected by user
 Humidity_lo = 40
 
-Allergy_1 = "Grass"
-Allergy_2 = "AirPollution"
-Allergy_3 = None
+# Convert selected allergies into fixed slots
+Allergy_1 = selected_allergies[0] if len(selected_allergies) > 0 else None
+Allergy_2 = selected_allergies[1] if len(selected_allergies) > 1 else None
+Allergy_3 = selected_allergies[2] if len(selected_allergies) > 2 else None
+Allergy_4 = selected_allergies[3] if len(selected_allergies) > 3 else None
+Allergy_5 = selected_allergies[4] if len(selected_allergies) > 4 else None
+
 # -----------------------------------------
 
 # Departure_Country = "United Kingdom"
@@ -213,6 +211,8 @@ def plane_destinations ():
         routes_from_df.at[idx,"Allergy_1"] = Allergy_1
         routes_from_df.at[idx,"Allergy_2"] = Allergy_2
         routes_from_df.at[idx,"Allergy_3"] = Allergy_3
+        routes_from_df.at[idx,"Allergy_4"] = Allergy_4
+        routes_from_df.at[idx,"Allergy_5"] = Allergy_5
 
     # routes_from_df
 
@@ -236,9 +236,22 @@ def plane_destinations ():
 
 
 sampled_routes_df = plane_destinations()
+
+allergy_slots = selected_allergies + [None] * (5 - len(selected_allergies))
+Allergy_1, Allergy_2, Allergy_3, Allergy_4, Allergy_5 = allergy_slots[:5]
+
+sampled_routes_df.at["Allergy_1"] = Allergy_1
+sampled_routes_df.at["Allergy_2"] = Allergy_2
+sampled_routes_df.at["Allergy_3"] = Allergy_3
+sampled_routes_df.at["Allergy_4"] = Allergy_4
+sampled_routes_df.at["Allergy_5"] = Allergy_5
+
+sampled_routes_df.at["Temp_hi"] = Temp_hi
+sampled_routes_df.at["Temp_lo"] = Temp_lo
+
 # st.table(routes_from_df)
-sampled_routes_df = sampled_routes_df[["Temp_hi", "Temp_lo", "Humidity_hi", "Humidity_lo", "Allergy_1", "Allergy_2", "Allergy_3"]]
-st.dataframe(sampled_routes_df[["City", "Country", "Distance"]], hide_index=True)
+sampled_routes_df = sampled_routes_df[["Temp_hi", "Temp_lo", "Humidity_hi", "Humidity_lo", "Allergy_1", "Allergy_2", "Allergy_3", "Allergy_4", "Allergy_5"]]
+st.dataframe(sampled_routes_df[["City", "Country", "Distance", "Temp_hi", "Temp_lo", "Allergy_1", "Allergy_2", "Allergy_3", "Allergy_4", "Allergy_5"]], hide_index=True)
 
 # *************************
 
