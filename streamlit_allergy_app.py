@@ -75,6 +75,11 @@ if not Departure_Country:
     st.stop()
 
 
+towns_in_selected_country = sorted(airports_unique_cities_df.loc[airports_unique_cities_df["Country"] == Departure_Country, "City"].dropna().unique())
+Departure_City = st.selectbox("Select nearest town or city",options=towns_in_selected_country)
+
+if not Departure_City:
+    st.stop()
 
 # --- AIRPORT SELECTION LOGIC ---
 
