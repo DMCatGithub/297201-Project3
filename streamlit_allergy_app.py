@@ -197,11 +197,12 @@ def plane_destinations ():
         sampled_routes_df = routes_for_user_df
     else:   
         sampled_routes_df = routes_for_user_df.sample(n=10)
-        
+
     return sampled_routes_df
 
 
 sampled_routes_df = plane_destinations()
+st.table(sampled_routes_df[["City", "Country", "Distance"]])
 
 # *************************
 
