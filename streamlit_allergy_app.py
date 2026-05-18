@@ -248,9 +248,13 @@ sampled_routes_df["Allergy_5"] = Allergy_5
 sampled_routes_df["Temp_hi"] = Temp_hi
 sampled_routes_df["Temp_lo"] = Temp_lo
 
+sampled_routes_df["Travel Month"] = travel_month
+sampled_routes_df["Current year"] = current_year
+sampled_routes_df["Risk Score"] = Humidity_hi
+
 # st.table(routes_from_df)
 # sampled_routes_df = sampled_routes_df[[["City", "Country", "Distance", "Temp_hi", "Temp_lo", "Allergy_1", "Allergy_2", "Allergy_3", "Allergy_4", "Allergy_5"]]
-st.dataframe(sampled_routes_df[["City", "Country", "Distance", "Temp_hi", "Temp_lo", "Allergy_1", "Allergy_2", "Allergy_3", "Allergy_4", "Allergy_5"]], hide_index=True)
+st.dataframe(sampled_routes_df[["Risk Score", "City", "Country", "Distance", "Travel Month", "Current year", "Temp_hi", "Temp_lo", "Allergy_1", "Allergy_2", "Allergy_3", "Allergy_4", "Allergy_5"]], hide_index=True)
 
 # *************************
 
