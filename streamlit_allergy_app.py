@@ -63,21 +63,25 @@ Allergy_2 = "AirPollution"
 Allergy_3 = None
 # -----------------------------------------
 
+# Departure_Country = "United Kingdom"
+# Departure_City = "London"
+# Departure_Airports_df = airports_df.loc[(airports_df["City"] == Departure_City) & (airports_df["Country"] == Departure_Country), "IATA"]
+
 
 unique_countries = sorted(airports_unique_cities_df["Country"].dropna().unique())
-selected_country = st.selectbox("Select your country",options=unique_countries)
+Departure_Country = st.selectbox("Select your country",options=unique_countries)
 
-if not selected_country:
+if not Departure_Country:
     st.stop()
 
 
-towns_in_selected_country = sorted(airports_unique_cities_df.loc[airports_unique_cities_df["Country"] == selected_country, "City"].dropna().unique())
-selected_town = st.selectbox("Select nearest town or city",options=towns_in_selected_country)
+towns_in_selected_country = sorted(airports_unique_cities_df.loc[airports_unique_cities_df["Country"] == Departure_Country, "City"].dropna().unique())
+Departure_City = st.selectbox("Select nearest town or city",options=towns_in_selected_country)
 
-if not selected_town:
+if not Departure_City:
     st.stop()
 
-airports_in_town = airports_unique_cities_df[(airports_unique_cities_df["Country"] == selected_country) & (airports_unique_cities_df["City"] == selected_town)]
+airports_in_town = airports_unique_cities_df[(airports_unique_cities_df["Country"] == Departure_Country) & (airports_unique_cities_df["City"] == Departure_City)]
 
 if len(airports_in_town) == 1:
     selected_airport_row = airports_in_town.iloc[0]
@@ -108,6 +112,10 @@ def haversine(lat1, lon1, lat2, lon2):
     return R * c
 
 
+
+
+
+
 def plane_destinations ():
 # Make dataframe of all "routes_from_df" "Departure_Airport"
     routes_from_df = routes_df[routes_df["Departure_Airport"] == Departure_Airport][["Departure_Airport","Arrival_Airport"]].copy()
@@ -120,12 +128,12 @@ def plane_destinations ():
         lat1 = airports_unique_cities_df.loc[airports_unique_cities_df["IATA"] == Departure_Airport, "Latitude"].iloc[0]
         lon1 = airports_unique_cities_df.loc[airports_unique_cities_df["IATA"] == Departure_Airport, "Longitude"].iloc[0]
 
-        lat2 = airports_unique_cities_df.loc[airports_unique_cities_df["IATA"] == Arrival_Airport, "Latitude"].iloc[0]
-        lon2 = airports_unique_cities_df.loc[airports_unique_cities_df["IATA"] == Arrival_Airport, "Longitude"].iloc[0]
+        lat2 = airports_df.loc[airports_df["IATA"] == Arrival_Airport, "Latitude"].iloc[0]
+        lon2 = airports_df.loc[airports_df["IATA"] == Arrival_Airport, "Longitude"].iloc[0]
         
-        city = airports_unique_cities_df.loc[airports_unique_cities_df["IATA"] == Arrival_Airport, "City"].iloc[0]
-        country = airports_unique_cities_df.loc[airports_unique_cities_df["IATA"] == Arrival_Airport, "Country"].iloc[0]
-        
+        city = airports_df.loc[airports_df["IATA"] == Arrival_Airport, "City"].iloc[0]
+        country = airports_df.loc[airports_df["IATA"] == Arrival_Airport, "Country"].iloc[0]
+            
         distance = haversine(lat1, lon1, lat2, lon2)
 
         # Add new columns 
