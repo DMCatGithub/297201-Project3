@@ -27,6 +27,27 @@ routes_df.columns = ["Airline", "AirlineID", "Departure_Airport", "Departure_Air
 # 
 # -----------------------------------------
 
+allergy_options = [
+    "Grass",
+    "Tree",
+    "Weed",
+    "Mould",
+    "Dust",
+    "AirPollution",
+    "PM2.5",
+    "PM10",
+    "Ozone",
+    "NO2",
+    "SO2"
+]
+
+selected_allergies = st.multiselect(
+    "Select all allergy types that apply:",
+    options=allergy_options,
+    # default=["Grass", "AirPollution"]   # optional defaults
+)
+
+
 Temp_lo, Temp_hi = st.slider(
     "Select preferred temperature range (°C)",
     min_value=-10,
@@ -60,8 +81,8 @@ else:
     travel_distance = travel_time * AVG_PLANE_SPEED
 
 
-Temp_hi = 25
-Temp_lo = 18
+# Temp_hi = 25
+# Temp_lo = 18
 
 Humidity_hi = 75    # Based on the catagory selected by user
 Humidity_lo = 40
@@ -216,6 +237,7 @@ def plane_destinations ():
 
 sampled_routes_df = plane_destinations()
 # st.table(routes_from_df)
+sampled_routes_df = sampled_routes_df[["Temp_hi", "Temp_lo", "Humidity_hi", "Humidity_lo", "Allergy_1", "Allergy_2", "Allergy_3"]]
 st.dataframe(sampled_routes_df[["City", "Country", "Distance"]], hide_index=True)
 
 # *************************
