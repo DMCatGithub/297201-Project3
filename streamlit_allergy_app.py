@@ -208,7 +208,7 @@ def plane_destinations ():
 
 sampled_routes_df = plane_destinations()
 # st.table(routes_from_df)
-st.table(sampled_routes_df[["City", "Country", "Distance"]])
+st.dataframe(sampled_routes_df[["City", "Country", "Distance"]], hide_index=True)
 
 # *************************
 
