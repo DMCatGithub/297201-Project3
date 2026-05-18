@@ -75,24 +75,45 @@ if not Departure_Country:
     st.stop()
 
 
-towns_in_selected_country = sorted(airports_unique_cities_df.loc[airports_unique_cities_df["Country"] == Departure_Country, "City"].dropna().unique())
-Departure_City = st.selectbox("Select nearest town or city",options=towns_in_selected_country)
 
-if not Departure_City:
-    st.stop()
+# --- AIRPORT SELECTION LOGIC ---
 
-airports_in_town = airports_df[(airports_df["Country"] == Departure_Country) & (airports_df["City"] == Departure_City)]
+if travel_mode == "Car":
+    # For car travel, automatically pick the first airport in the city
+    airports_in_town = airports_df[
+        (airports_df["Country"] == Departure_Country) &
+        (airports_df["City"] == Departure_City) &
+        (airports_df["IATA"].notna())
+    ]
 
-if len(airports_in_town) == 1:
+    if airports_in_town.empty:
+        st.error("No airports found for this city.")
+        st.stop()
+
     selected_airport_row = airports_in_town.iloc[0]
+    st.info(f"Car travel selected — automatically using nearest airport: {selected_airport_row['Airport']} ({selected_airport_row['IATA']})")
+
 else:
-    airport_options = airports_in_town.apply(
-        lambda row: f"{row['Airport']} ({row['IATA']})", axis=1
-    )
-    selected_option = st.selectbox("Select your preferred airport", options=airport_options)
-    selected_airport_row = airports_in_town.iloc[airport_options.tolist().index(selected_option)]
+    # PLANE MODE — show dropdown if multiple airports exist
+    airports_in_town = airports_df[
+        (airports_df["Country"] == Departure_Country) &
+        (airports_df["City"] == Departure_City) &
+        (airports_df["IATA"].notna())
+    ]
+
+    if len(airports_in_town) == 1:
+        selected_airport_row = airports_in_town.iloc[0]
+        st.info(f"Only one airport available: {selected_airport_row['Airport']} ({selected_airport_row['IATA']})")
+    else:
+        airport_options = airports_in_town.apply(
+            lambda row: f"{row['Airport']} ({row['IATA']})",
+            axis=1
+        )
+        selected_option = st.selectbox("Select your preferred airport", options=airport_options)
+        selected_airport_row = airports_in_town.iloc[airport_options.tolist().index(selected_option)]
 
 Departure_Airport = selected_airport_row["IATA"]
+
 
 # --- STOP HERE UNTIL USER CLICKS BUTTON ---
 ready = st.button("Find destinations")
