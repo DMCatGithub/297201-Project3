@@ -249,7 +249,7 @@ sampled_routes_df["Temp_hi"] = Temp_hi
 sampled_routes_df["Temp_lo"] = Temp_lo
 
 # st.table(routes_from_df)
-sampled_routes_df = sampled_routes_df[["Temp_hi", "Temp_lo", "Humidity_hi", "Humidity_lo", "Allergy_1", "Allergy_2", "Allergy_3", "Allergy_4", "Allergy_5"]]
+# sampled_routes_df = sampled_routes_df[[["City", "Country", "Distance", "Temp_hi", "Temp_lo", "Allergy_1", "Allergy_2", "Allergy_3", "Allergy_4", "Allergy_5"]]
 st.dataframe(sampled_routes_df[["City", "Country", "Distance", "Temp_hi", "Temp_lo", "Allergy_1", "Allergy_2", "Allergy_3", "Allergy_4", "Allergy_5"]], hide_index=True)
 
 # *************************
