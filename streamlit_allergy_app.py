@@ -250,7 +250,7 @@ sampled_routes_df["Temp_lo"] = Temp_lo
 
 sampled_routes_df["Travel Month"] = travel_month
 sampled_routes_df["Current year"] = current_year
-sampled_routes_df["Risk Score"] = Humidity_hi
+sampled_routes_df["Risk Score"] = 57
 
 # st.table(routes_from_df)
 # sampled_routes_df = sampled_routes_df[[["City", "Country", "Distance", "Temp_hi", "Temp_lo", "Allergy_1", "Allergy_2", "Allergy_3", "Allergy_4", "Allergy_5"]]
