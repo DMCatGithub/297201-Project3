@@ -100,6 +100,9 @@ ready = st.button("Find destinations")
 if not ready:
     st.stop()
 
+sampled_routes_df = plane_destinations()
+  
+
 
 # Function for working out distance
 def haversine(lat1, lon1, lat2, lon2):
