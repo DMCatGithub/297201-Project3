@@ -185,21 +185,21 @@ def plane_destinations ():
         routes_from_df.at[idx,"Allergy_2"] = Allergy_2
         routes_from_df.at[idx,"Allergy_3"] = Allergy_3
 
-    routes_from_df
-    # Only routes within user target
-    routes_for_user_df = routes_from_df[routes_from_df["Distance"] < travel_distance].sort_values("Distance").reset_index(drop=True)
-    routes_for_user_df = routes_for_user_df.drop_duplicates(subset=["Arrival_Airport"])
+    return routes_from_df
+    # # Only routes within user target
+    # routes_for_user_df = routes_from_df[routes_from_df["Distance"] < travel_distance].sort_values("Distance").reset_index(drop=True)
+    # routes_for_user_df = routes_for_user_df.drop_duplicates(subset=["Arrival_Airport"])
 
 
-    # Sample 10 destinations from the list
-    # sampled_routes_df = routes_for_user_df.sample(n=10, random_state=42)
+    # # Sample 10 destinations from the list
+    # # sampled_routes_df = routes_for_user_df.sample(n=10, random_state=42)
 
-    if len(routes_for_user_df) <= 10:
-        sampled_routes_df = routes_for_user_df
-    else:   
-        sampled_routes_df = routes_for_user_df.sample(n=10)
+    # if len(routes_for_user_df) <= 10:
+    #     sampled_routes_df = routes_for_user_df
+    # else:   
+    #     sampled_routes_df = routes_for_user_df.sample(n=10)
 
-    return sampled_routes_df
+    # return sampled_routes_df
 
 
 sampled_routes_df = plane_destinations()
