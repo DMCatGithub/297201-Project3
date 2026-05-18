@@ -185,6 +185,7 @@ def plane_destinations ():
         routes_from_df.at[idx,"Allergy_2"] = Allergy_2
         routes_from_df.at[idx,"Allergy_3"] = Allergy_3
 
+    routes_from_df
     # Only routes within user target
     routes_for_user_df = routes_from_df[routes_from_df["Distance"] < travel_distance].sort_values("Distance").reset_index(drop=True)
     routes_for_user_df = routes_for_user_df.drop_duplicates(subset=["Arrival_Airport"])
