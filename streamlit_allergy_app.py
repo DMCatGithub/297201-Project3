@@ -307,7 +307,9 @@ import time
 import requests
 
 sampled_routes_df["Temperature"] = float("nan")
-temp_value = float("nan")
+
+# temp_value = float("nan")
+temp_value = 99
 
 url = "https://climate-api.open-meteo.com/v1/climate"
 
