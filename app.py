@@ -20,12 +20,12 @@ end_date = st.sidebar.date_input("End Date", datetime(2025, 12, 31))
 def load_weather_data(latitude, longitude, start, end):
     # Create Meteostat Point object (lat, lon, elevation)
     # location = ms.Point(latitude, longitude)
-    location = Point(latitude, longitude)
+    location = meteostat.Point(latitude, longitude)
 
     
     # Fetch data
     # data = ms.Daily(location, start, end)
-    data = Daily(location, start, end).fetch()
+    data = meteostat.Daily(location, start, end).fetch()
     df = data.fetch()
     return df
 
