@@ -302,41 +302,56 @@ html += "</table>"
 st.markdown(html, unsafe_allow_html=True)
 
 # Get temperature data
-from math import radians, sin, cos, sqrt, atan2
-import pandas as pd
-
 import time
 import requests
 
 url = "https://archive-api.open-meteo.com/v1/archive"
 
+# Create empty column
 sampled_routes_df["Temperature"] = float("nan")
-temp_value = float("nan")
 
-for idx, location in sampled_routes_df.iterrows():
-    latitude = location.Latitude
-    longitude = location.Longitude
+with st.spinner("Fetching temperature data..."):
+    progress = st.progress(0)
+    status = st.empty()
 
-    params = {
-        "latitude": latitude,
-        "longitude": longitude,
-        "daily": ["temperature_2m_mean"],
-        "start_date": "2025-07-15",
-        "end_date": "2025-07-15",
-        "timezone": "auto"
-    }
+    total = len(sampled_routes_df)
 
-    # Retry loop
-    for attempt in range(3):
-        try:
-            response = requests.get(url, params=params, timeout=1)
-            data = response.json()
+    for i, (idx, location) in enumerate(sampled_routes_df.iterrows()):
 
-            temp_value = data["daily"]["temperature_2m_mean"][0]
-            break
+        # Update status text
+        status.write(f"Processing {location['City']} ({i+1}/{total})")
 
-        except Exception:
-            time.sleep(1)
-    sampled_routes_df.at[idx, "Temperature"] = temp_value
+        latitude = location.Latitude
+        longitude = location.Longitude
 
-st.dataframe(sampled_routes_df[["City", "Country", "Temperature"]])
+        params = {
+            "latitude": latitude,
+            "longitude": longitude,
+            "daily": ["temperature_2m_mean"],
+            "start_date": "2025-07-15",
+            "end_date": "2025-07-15",
+            "timezone": "auto"
+        }
+
+        temp_value = float("nan")
+
+        # Retry loop
+        for attempt in range(3):
+            try:
+                response = requests.get(url, params=params, timeout=4)
+                data = response.json()
+                temp_value = data["daily"]["temperature_2m_mean"][0]
+                break
+            except:
+                time.sleep(1)
+
+        # Store result for this row only
+        sampled_routes_df.at[idx, "Temperature"] = temp_value
+
+        # Update progress bar
+        progress.progress((i+1) / total)
+
+        # Small delay so UI visibly updates
+        time.sleep(0.1)
+
+status.success("Temperature data loaded")
