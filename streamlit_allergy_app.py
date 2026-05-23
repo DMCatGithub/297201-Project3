@@ -261,16 +261,24 @@ sampled_routes_df["Comfort Score"] = 57
 
 # st.table(styled)
 # -----------------
-
 cols_to_show = ["Comfort Score", "City", "Country", "Distance"]
+df_show = sampled_routes_df[cols_to_show].copy()
 
-styled = (
-    sampled_routes_df[cols_to_show]
-    .style.set_properties(**{"text-align": "center"})
-    .set_table_styles([dict(selector="th", props=[("text-align", "center")])])
-)
+# Center everything via HTML + CSS
+st.markdown("""
+<style>
+table {
+    margin-left: auto;
+    margin-right: auto;
+}
+th, td {
+    text-align: center !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
-st.table(styled)
+st.markdown(df_show.to_html(index=False), unsafe_allow_html=True)
+
 
 
 
