@@ -381,8 +381,8 @@ with st.spinner("Fetching temperature data..."):
         lon = location.Longitude
         POINT = ms.Point(lat, lon)
 
-        START = date(2025, 7, 15)
-        END = date(2025, 7, 15)
+        START = date(2018, 7, 15)
+        END = date(2018, 7, 15)
 
         stations = ms.stations.nearby(POINT, limit=4)
         ts = ms.daily(stations, START, END)
