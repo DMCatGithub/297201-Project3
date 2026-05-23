@@ -358,7 +358,56 @@ st.markdown(html, unsafe_allow_html=True)
 #     sampled_routes_df[["City", "Country", "Temperature"]]
 # )
 
-# TEST CODE
+# TEST CODE - old code
+# from meteostat import Point, Daily
+# from datetime import datetime
+# import streamlit as st
+# import time
+# import pandas as pd
+
+# # Add Temperature column
+# sampled_routes_df["Temperature"] = float("nan")
+
+# with st.spinner("Fetching temperature data..."):
+#     progress = st.progress(0)
+#     status = st.empty()
+
+#     total = len(sampled_routes_df)
+
+#     # Fixed date for your sampling
+#     start = datetime(2025, 7, 15)
+#     end = datetime(2025, 7, 15)
+
+#     for i, (idx, location) in enumerate(sampled_routes_df.iterrows()):
+#         lat = location.Latitude
+#         lon = location.Longitude
+
+#         status.write(f"Processing {location.City} ({i+1}/{total})")
+
+#         # Meteostat Point
+#         p = Point(lat, lon)
+
+#         # Fetch daily data
+#         df = Daily(p, start, end).fetch()
+
+#         # Extract tavg (mean temperature)
+#         if not df.empty and "tavg" in df.columns:
+#             temp_value = df["tavg"].iloc[0]
+#         else:
+#             temp_value = float("nan")
+
+#         sampled_routes_df.at[idx, "Temperature"] = temp_value
+
+#         progress.progress((i + 1) / total)
+#         time.sleep(0.05)
+
+# status.success("Temperature data loaded!")
+
+# st.dataframe(
+#     sampled_routes_df[["City", "Country", "Temperature"]]
+# )
+# *************************************************************************
+
 from meteostat import Point, Daily
 from datetime import datetime
 import streamlit as st
