@@ -65,12 +65,6 @@ UV_hi = st.slider(
     step = 1
 )
 
-
-
-
-
-
-
 # 2. Set Temperature slider
 Temp_lo, Temp_hi = st.slider(
     "Select preferred temperature range (°C):",
@@ -109,7 +103,7 @@ else:
 # 5. Select your country
 # Make a sorted list of all unique countries
 unique_countries = sorted(airports_unique_cities_df["Country"].dropna().unique())
-Departure_Country = st.selectbox("Select your country",options=unique_countries)
+Departure_Country = st.selectbox("Select your country",options=unique_countries, index=None, placeholder="Type to search...")
 
 if not Departure_Country:
     st.stop()
@@ -117,7 +111,7 @@ if not Departure_Country:
 # 6. Select from avaialble town/city in your country.
 # Make sorted list of all towns in all countries
 towns_in_selected_country = sorted(airports_unique_cities_df.loc[airports_unique_cities_df["Country"] == Departure_Country, "City"].dropna().unique())
-Departure_City = st.selectbox("Select nearest town or city",options=towns_in_selected_country)
+Departure_City = st.selectbox("Select nearest town or city",options=towns_in_selected_country, index=None, placeholder="Type to search...")
 
 if not Departure_City:
     st.stop()
