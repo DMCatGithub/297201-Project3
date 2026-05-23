@@ -10,7 +10,7 @@ import requests_cache
 from retry_requests import retry
 
 
-st.title("Allergy‑Aware Holiday Planner")
+st.title("Comfort Compass")
 
 # LOAD AIRPORTS: Turn airports.dat in dataframe airports_df
 airports_df = pd.read_csv("airports.dat", header=None)
@@ -24,30 +24,26 @@ routes_df = pd.read_csv("routes.dat", header=None)
 routes_df.columns = ["Airline", "AirlineID", "Departure_Airport", "Departure_AirportID", "Arrival_Airport", "Arrival_AirportID", "Codeshare", "Stops", "Equipment"]
 
 # Selections from user - thru streamlit
-# 
-# -----------------------------------------
 
-allergy_options = [
-    "Allergy type1",
-    "Allergy type2",
-    "Allergy type3",
-    "Allergy type4",
-    "Allergy type5"
-]
+# 1. Set UV Slider
+UV_lo = 1   # fixed
+UV_hi = st.slider(
+    "Select preferred maximum UV index:",
+    min_value = 1,
+    max_value = 11,
+    value = 5, # default value
+    step = 1
+)
 
-selected_allergies = st.multiselect(
-    "Select all allergy types that apply:",
-    options=allergy_options,
-    default=["Allergy type1","Allergy type2","Allergy type3","Allergy type4","Allergy type5"])
-
-
+# 2. Set Temperature slider
 Temp_lo, Temp_hi = st.slider(
-    "Select preferred temperature range (°C)",
-    min_value=-10,
-    max_value=50,
+    "Select preferred temperature range (°C):",
+    min_value = -10,
+    max_value = 50,
     value=(18, 25)   # default min/max
 )
 
+# 3. Select travel mode
 travel_mode = st.radio("How will you travel?",["Car", "Plane"])
 
 travel_time = st.number_input(
@@ -58,10 +54,11 @@ travel_time = st.number_input(
     step=1
 )
 
-current_year = datetime.datetime.now().year
-
+# 4. Select travel month
+# Set travel related variables
 months = list(calendar.month_name)[1:]
 selected_month = st.selectbox("What month do you plan to travel?", months)
+current_year = datetime.datetime.now().year
 
 travel_month = months.index(selected_month) + 1
 
@@ -73,41 +70,27 @@ if travel_mode == "Car":
 else:
     travel_distance = travel_time * AVG_PLANE_SPEED
 
-
-# Temp_hi = 25
-# Temp_lo = 18
-
-Humidity_hi = 75    # Based on the catagory selected by user
-Humidity_lo = 40
-
-# Convert selected allergies into fixed slots
-Allergy_1 = selected_allergies[0] if len(selected_allergies) > 0 else None
-Allergy_2 = selected_allergies[1] if len(selected_allergies) > 1 else None
-Allergy_3 = selected_allergies[2] if len(selected_allergies) > 2 else None
-Allergy_4 = selected_allergies[3] if len(selected_allergies) > 3 else None
-Allergy_5 = selected_allergies[4] if len(selected_allergies) > 4 else None
-
-# -----------------------------------------
-
-# Departure_Country = "United Kingdom"
-# Departure_City = "London"
-# Departure_Airports_df = airports_df.loc[(airports_df["City"] == Departure_City) & (airports_df["Country"] == Departure_Country), "IATA"]
-
-
+# 5. Select your country
+# Make a sorted list of all unique countries
 unique_countries = sorted(airports_unique_cities_df["Country"].dropna().unique())
 Departure_Country = st.selectbox("Select your country",options=unique_countries)
 
 if not Departure_Country:
     st.stop()
 
-
+# 6. Select from avaialble town/city in your country.
+# Make sorted list of all towns in all countries
 towns_in_selected_country = sorted(airports_unique_cities_df.loc[airports_unique_cities_df["Country"] == Departure_Country, "City"].dropna().unique())
 Departure_City = st.selectbox("Select nearest town or city",options=towns_in_selected_country)
 
 if not Departure_City:
     st.stop()
 
-# --- AIRPORT SELECTION LOGIC ---
+
+# 7. Select preferred airport
+# Only relevant if (1) Plane mode and (2) Multiple airports available in town selected
+# Hide menu if car mode selected and automatically 
+
 
 if travel_mode == "Car":
     # For car travel, automatically pick the first airport in the city
@@ -155,7 +138,7 @@ if not ready:
   
 
 
-# Function for working out distance
+# Function for working out distance to each location
 def haversine(lat1, lon1, lat2, lon2):
     R = 6371.0 # Radius in km
     
@@ -165,15 +148,11 @@ def haversine(lat1, lon1, lat2, lon2):
     c = 2 * atan2(sqrt(a), sqrt(1-a))
     return R * c
 
-
-
-
-
+#
 
 def plane_destinations ():
-# Make dataframe of all "routes_from_df" "Departure_Airport"
+# Make dataframe of all routes_from_df[Departure_Airport]
     routes_from_df = routes_df[routes_df["Departure_Airport"] == Departure_Airport][["Departure_Airport","Arrival_Airport"]].copy()
-
 
     for idx, row in routes_from_df.iterrows():
 
@@ -204,14 +183,8 @@ def plane_destinations ():
         routes_from_df.at[idx,"Temp_hi"] = Temp_hi
         routes_from_df.at[idx,"Temp_lo"] = Temp_lo
 
-        routes_from_df.at[idx,"Humidity_hi"] = Humidity_hi
-        routes_from_df.at[idx,"Humidity_lo"] = Humidity_lo
-
-        routes_from_df.at[idx,"Allergy_1"] = Allergy_1
-        routes_from_df.at[idx,"Allergy_2"] = Allergy_2
-        routes_from_df.at[idx,"Allergy_3"] = Allergy_3
-        routes_from_df.at[idx,"Allergy_4"] = Allergy_4
-        routes_from_df.at[idx,"Allergy_5"] = Allergy_5
+        routes_from_df.at[idx,"UV_hi"] = UV_hi
+        routes_from_df.at[idx,"UV_lo"] = UV_lo
 
     # routes_from_df
 
@@ -220,11 +193,8 @@ def plane_destinations ():
     routes_for_user_df = routes_for_user_df[routes_from_df["Distance"] < travel_distance].sort_values("Distance").reset_index(drop=True)
   
 
-
-
     # # Sample 10 destinations from the list
     # sampled_routes_df = routes_for_user_df.sample(n=10, random_state=42)
-
 
     if len(routes_for_user_df) <= 10:
         sampled_routes_df = routes_for_user_df
@@ -234,24 +204,19 @@ def plane_destinations ():
     return sampled_routes_df
 
 
+# Run function plane_destinations
 sampled_routes_df = plane_destinations()
 
-allergy_slots = selected_allergies + [None] * (5 - len(selected_allergies))
-Allergy_1, Allergy_2, Allergy_3, Allergy_4, Allergy_5 = allergy_slots[:5]
 
-sampled_routes_df["Allergy_1"] = Allergy_1
-sampled_routes_df["Allergy_2"] = Allergy_2
-sampled_routes_df["Allergy_3"] = Allergy_3
-sampled_routes_df["Allergy_4"] = Allergy_4
-sampled_routes_df["Allergy_5"] = Allergy_5
+# sampled_routes_df["Temp_hi"] = Temp_hi
+# sampled_routes_df["Temp_lo"] = Temp_lo
 
-sampled_routes_df["Temp_hi"] = Temp_hi
-sampled_routes_df["Temp_lo"] = Temp_lo
+# sampled_routes_df["Travel Month"] = travel_month
+# sampled_routes_df["Current year"] = current_year
+# sampled_routes_df["Risk Score"] = 57
 
-sampled_routes_df["Travel Month"] = travel_month
-sampled_routes_df["Current year"] = current_year
-sampled_routes_df["Risk Score"] = 57
 
+# Output dataframe of results
 # st.table(routes_from_df)
 # sampled_routes_df = sampled_routes_df[[["City", "Country", "Distance", "Temp_hi", "Temp_lo", "Allergy_1", "Allergy_2", "Allergy_3", "Allergy_4", "Allergy_5"]]
 st.dataframe(sampled_routes_df[["Risk Score", "City", "Country", "Distance", "Travel Month", "Current year", "Temp_hi", "Temp_lo", "Allergy_1", "Allergy_2", "Allergy_3", "Allergy_4", "Allergy_5"]], hide_index=True)
