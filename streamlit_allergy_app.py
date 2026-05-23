@@ -358,55 +358,55 @@ st.markdown(html, unsafe_allow_html=True)
 #     sampled_routes_df[["City", "Country", "Temperature"]]
 # )
 
-# TEST CODE - old code
-# import streamlit as st
-# from datetime import date
-# import meteostat as ms
+# TEST CODE - new meteostat code
+import streamlit as st
+from datetime import date
+import meteostat as ms
 
-# # Add Temperature column
-# sampled_routes_df["Temperature"] = float("nan")
+# Add Temperature column
+sampled_routes_df["Temperature"] = float("nan")
 
-# with st.spinner("Fetching temperature data..."):
-#     progress = st.progress(0)
-#     status = st.empty()
+with st.spinner("Fetching temperature data..."):
+    progress = st.progress(0)
+    status = st.empty()
 
-#     total = len(sampled_routes_df)
+    total = len(sampled_routes_df)
 
-#     # Fixed date for your sampling
-#     # start = datetime(2025, 7, 15)
-#     # end = datetime(2025, 7, 15)
+    # Fixed date for your sampling
+    # start = datetime(2025, 7, 15)
+    # end = datetime(2025, 7, 15)
 
-#     for i, (idx, location) in enumerate(sampled_routes_df.iterrows()):
-#         lat = location.Latitude
-#         lon = location.Longitude
-#         POINT = ms.Point(lat, lon)
+    for i, (idx, location) in enumerate(sampled_routes_df.iterrows()):
+        lat = location.Latitude
+        lon = location.Longitude
+        POINT = ms.Point(lat, lon)
 
-#         START = date(2025, 7, 15)
-#         END = date(2025, 7, 15)
+        START = date(2025, 7, 15)
+        END = date(2025, 7, 15)
 
-#         stations = ms.stations.nearby(POINT, limit=4)
-#         ts = ms.daily(stations, START, END)
-#         df = ms.interpolate(ts, POINT).fetch()
+        stations = ms.stations.nearby(POINT, limit=4)
+        ts = ms.daily(stations, START, END)
+        df = ms.interpolate(ts, POINT).fetch()
 
 
-#         status.write(f"Processing {location.City} ({i+1}/{total})")
+        status.write(f"Processing {location.City} ({i+1}/{total})")
 
-#         # Extract tavg (mean temperature)
-#         if not df.empty and "tavg" in df.columns:
-#             temp_value = df["tavg"].iloc[0]
-#         else:
-#             temp_value = float("nan")
+        # Extract tavg (mean temperature)
+        if not df.empty and "temp" in df.columns:
+            temp_value = df["temp"].iloc[0]
+        else:
+            temp_value = float("nan")
 
-#         sampled_routes_df.at[idx, "Temperature"] = temp_value
+        sampled_routes_df.at[idx, "Temperature"] = temp_value
 
-#         progress.progress((i + 1) / total)
-#         time.sleep(0.05)
+        progress.progress((i + 1) / total)
+        time.sleep(0.05)
 
-# status.success("Temperature data loaded!")
+status.success("Temperature data loaded!")
 
-# st.dataframe(
-#     sampled_routes_df[["City", "Country", "Temperature"]]
-# )
+st.dataframe(
+    sampled_routes_df[["City", "Country", "Temperature"]]
+)
 # *************************************************************************
 
 import streamlit as st
