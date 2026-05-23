@@ -235,7 +235,9 @@ def plane_destinations ():
 
 
 # Run function plane_destinations
-sampled_routes_df = plane_destinations()
+existing_cols = [c for c in cols_to_show if c in sampled_routes_df.columns]
+df_show = sampled_routes_df[existing_cols].copy()
+
 
 
 
