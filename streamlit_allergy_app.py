@@ -250,15 +250,28 @@ sampled_routes_df["Current year"] = current_year
 sampled_routes_df["Comfort Score"] = 57
 
 # Display table
+# Works
+# cols_to_show = ["Comfort Score", "City", "Country", "Distance"]
+
+# styled = sampled_routes_df[cols_to_show].style.set_properties(**{
+#     'text-align': 'center'
+# }).set_table_styles([
+#     dict(selector='th', props=[('text-align', 'center')])
+# ])
+
+# st.table(styled)
+# -----------------
+
 cols_to_show = ["Comfort Score", "City", "Country", "Distance"]
 
-styled = sampled_routes_df[cols_to_show].style.set_properties(**{
-    'text-align': 'center'
-}).set_table_styles([
-    dict(selector='th', props=[('text-align', 'center')])
-])
+styled = (
+    sampled_routes_df[cols_to_show]
+    .style.set_properties(**{"text-align": "center"})
+    .set_table_styles([dict(selector="th", props=[("text-align", "center")])])
+)
 
 st.table(styled)
+
 
 
 
