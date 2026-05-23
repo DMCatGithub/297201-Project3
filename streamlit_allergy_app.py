@@ -236,11 +236,6 @@ def plane_destinations ():
 
 # Run function plane_destinations
 sampled_routes_df = plane_destinations();
-existing_cols = [c for c in cols_to_show if c in sampled_routes_df.columns]
-df_show = sampled_routes_df[existing_cols].copy()
-
-
-
 
 sampled_routes_df["Distance"] = sampled_routes_df["Distance"].round(0).astype(int).astype(str) + " km"
 
@@ -257,31 +252,9 @@ sampled_routes_df["Current year"] = current_year
 sampled_routes_df["Comfort Score"] = 57
 sampled_routes_df["Air Pollution"] = "Unhealthy"
 
-# Colours for Air Pollution summary word
-# pollution_colors = {
-#     "Good": "#3CB371",                     # green
-#     "Moderate": "#FFD700",                 # yellow
-#     "Unhealthy for Sensitive Groups": "#FFA500",  # orange
-#     "Unhealthy": "#FF4500",                # red
-#     "Hazardous": "#800080"                 # purple
-# }
-
-# Display table
-# Works
-# cols_to_show = ["Comfort Score", "City", "Country", "Distance"]
-
-# styled = sampled_routes_df[cols_to_show].style.set_properties(**{
-#     'text-align': 'center'
-# }).set_table_styles([
-#     dict(selector='th', props=[('text-align', 'center')])
-# ])
-
-# st.table(styled)
-# -----------------
 cols_to_show = ["Comfort Score", "City", "Country", "Distance", "Air Pollution"]
 existing_cols = [c for c in cols_to_show if c in sampled_routes_df.columns]
 df_show = sampled_routes_df[existing_cols].copy()
-
 
 pollution_colors = {
     "Good": "#3CB371",
