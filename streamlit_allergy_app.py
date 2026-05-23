@@ -415,7 +415,7 @@ import meteostat as ms
 
 st.title("Old Meteostat API – Values Only")
 
-Your original code — unchanged
+# Your original code — unchanged
 POINT = ms.Point(50.1155, 8.6842, 113)
 START = date(2018, 1, 1)
 END = date(2018, 1, 15)
@@ -424,10 +424,10 @@ stations = ms.stations.nearby(POINT, limit=4)
 ts = ms.daily(stations, START, END)
 df = ms.interpolate(ts, POINT).fetch()
 
-Output the values instead of plotting
+# Output the values instead of plotting
 st.subheader("Daily Weather Values")
 st.dataframe(df)
 
-Optional: show summary stats
+# Optional: show summary stats
 st.subheader("Summary Statistics")
 st.write(df.describe())
