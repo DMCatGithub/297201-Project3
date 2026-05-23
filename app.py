@@ -58,10 +58,9 @@
 # PLOT
 import streamlit as st
 from datetime import date
-# import matplotlib.pyplot as plt
 import meteostat as ms
 
-st.title("Old Meteostat API Demo")
+st.title("Old Meteostat API – Values Only")
 
 # Your original code — unchanged
 POINT = ms.Point(50.1155, 8.6842, 113)
@@ -72,18 +71,10 @@ stations = ms.stations.nearby(POINT, limit=4)
 ts = ms.daily(stations, START, END)
 df = ms.interpolate(ts, POINT).fetch()
 
-# Plot using Matplotlib
-fig, ax = plt.subplots()
-df.plot(
-    y=[ms.Parameter.TEMP, ms.Parameter.TMIN, ms.Parameter.TMAX],
-    ax=ax
-)
-ax.set_title("Daily Temperature (Avg, Min, Max)")
-ax.set_xlabel("Date")
-ax.set_ylabel("Temperature (°C)")
-
-# Display in Streamlit
-st.pyplot(fig)
-
-# Optional: show raw data
+# Output the values instead of plotting
+st.subheader("Daily Weather Values")
 st.dataframe(df)
+
+# Optional: show summary stats
+st.subheader("Summary Statistics")
+st.write(df.describe())
