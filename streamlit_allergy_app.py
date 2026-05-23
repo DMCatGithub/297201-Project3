@@ -46,6 +46,7 @@ for level, rng, burn, prot, color in uv_levels:
         </div>
         """,
         unsafe_allow_html=True
+    )
     
 
 
