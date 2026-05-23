@@ -320,7 +320,7 @@ for idx, location in sampled_routes_df.iterrows():
         "timezone": "auto"
     }
 
-        # Retry loop
+    # Retry loop
     for attempt in range(3):
         try:
             r = requests.get(url, params=params, timeout=10)
