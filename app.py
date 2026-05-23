@@ -58,7 +58,7 @@
 # PLOT
 import streamlit as st
 from datetime import date
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import meteostat as ms
 
 st.title("Old Meteostat API Demo")
