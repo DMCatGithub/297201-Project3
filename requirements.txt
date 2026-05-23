@@ -4,3 +4,4 @@ numpy
 openmeteo-requests
 requests-cache
 retry-requests
+meteostat

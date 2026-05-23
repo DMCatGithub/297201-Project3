@@ -359,34 +359,50 @@ st.markdown(html, unsafe_allow_html=True)
 # )
 
 # TEST CODE
-import requests
-import pandas as pd
+from meteostat import Point, Daily
+from datetime import datetime
 import streamlit as st
+import time
+import pandas as pd
 
-st.subheader("Climate API Test")
+# Add Temperature column
+sampled_routes_df["Temperature"] = float("nan")
 
-with st.spinner("Fetching climate data..."):
-    url = "https://climate-api.open-meteo.com/v1/climate"
-    params = {
-        "latitude": 34.875099182128906,
-        "longitude": 33.624900817871094,
-        "start_date": "2025-08-01",
-        "end_date": "2025-08-28",
-        "daily": "temperature_2m_mean",
-        "timezone": "auto",
-    }
+with st.spinner("Fetching temperature data..."):
+    progress = st.progress(0)
+    status = st.empty()
 
-    try:
-        r = requests.get(url, params=params, timeout=10)
-        data = r.json()
+    total = len(sampled_routes_df)
 
-        df = pd.DataFrame({
-            "date": data["daily"]["time"],
-            "temperature_2m_mean": data["daily"]["temperature_2m_mean"]
-        })
+    # Fixed date for your sampling
+    start = datetime(2025, 7, 15)
+    end = datetime(2025, 7, 15)
 
-        st.success("Data loaded")
-        st.dataframe(df)
+    for i, (idx, location) in enumerate(sampled_routes_df.iterrows()):
+        lat = location.Latitude
+        lon = location.Longitude
 
-    except Exception as e:
-        st.error(f"Request failed: {e}")
+        status.write(f"Processing {location.City} ({i+1}/{total})")
+
+        # Meteostat Point
+        p = Point(lat, lon)
+
+        # Fetch daily data
+        df = Daily(p, start, end).fetch()
+
+        # Extract tavg (mean temperature)
+        if not df.empty and "tavg" in df.columns:
+            temp_value = df["tavg"].iloc[0]
+        else:
+            temp_value = float("nan")
+
+        sampled_routes_df.at[idx, "Temperature"] = temp_value
+
+        progress.progress((i + 1) / total)
+        time.sleep(0.05)
+
+status.success("Temperature data loaded!")
+
+st.dataframe(
+    sampled_routes_df[["City", "Country", "Temperature"]]
+)
