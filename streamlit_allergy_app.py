@@ -35,6 +35,33 @@ UV_hi = st.slider(
     step = 1
 )
 
+# UV Colour chart with more info
+uv_data = {
+    "UV Level": ["Low", "Moderate", "High", "Very High", "Extreme"],
+    "Index Range": ["1–2", "3–5", "6–7", "8–10", "11+"],
+    "Burn Time": ["~60 min", "~40 min", "~30 min", "~20 min", "<15 min"],
+    "Protection": [
+        "Minimal protection needed",
+        "Protection recommended",
+        "Protection essential",
+        "Extra protection needed",
+        "Avoid sun exposure"
+    ],
+    "Color": ["#3CB371", "#FFD700", "#FF8C00", "#FF4500", "#9400D3"]
+}
+
+uv_df = pd.DataFrame(uv_data)
+
+# Remove color column from display
+st.markdown("### UV Index Guide")
+st.dataframe(
+    uv_df.drop(columns=["Color"]),
+    hide_index=True
+)
+
+
+
+
 # 2. Set Temperature slider
 Temp_lo, Temp_hi = st.slider(
     "Select preferred temperature range (°C):",
