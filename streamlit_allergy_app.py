@@ -25,26 +25,15 @@ routes_df.columns = ["Airline", "AirlineID", "Departure_Airport", "Departure_Air
 
 # Selections from user - thru streamlit
 
-# 1. Set UV Slider
-UV_lo = 1   # fixed
-UV_hi = st.slider(
-    "Select preferred maximum UV index (see UV index guide below):",
-    min_value = 1,
-    max_value = 11,
-    value = 5, # default value
-    step = 1
-)
-
 # UV Colour chart with more info
-
-st.markdown("### UV Index Guide")
+st.markdown("#### UV Index Guide")
 
 uv_levels = [
     ("Low (1–2)", "Burn ~60 min — Minimal protection", "#3CB371", "black"),
     ("Moderate (3–5)", "Burn ~40 min — Protection recommended", "#FFD700", "black"),
-    ("High (6–7)", "Burn ~30 min — Protection essential", "#FF8C00", "white"),
-    ("Very High (8–10)", "Burn ~20 min — Extra protection needed", "#FF4500", "white"),
-    ("Extreme (11+)", "Burn <15 min — Avoid sun exposure", "#9400D3", "white"),
+    ("High (6–7)", "Burn ~30 min — Protection essential", "#FF8C00", "black"),
+    ("Very High (8–10)", "Burn ~20 min — Extra protection needed", "#FF4500", "black"),
+    ("Extreme (11+)", "Burn <15 min — Avoid sun exposure", "#9400D3", "black"),
 ]
 
 for title, desc, color, text_color in uv_levels:
@@ -66,104 +55,19 @@ for title, desc, color, text_color in uv_levels:
 
 
 
+# 1. Set UV Slider
+UV_lo = 1   # fixed
+UV_hi = st.slider(
+    "Select preferred maximum UV index (see UV index guide below):",
+    min_value = 1,
+    max_value = 11,
+    value = 5, # default value
+    step = 1
+)
 
 
-# Good compact index
-# st.markdown("### UV Index Guide")
-
-# uv_levels = [
-#     ("Low", "1–2", "~60 min", "#3CB371"),
-#     ("Moderate", "3–5", "~40 min", "#FFD700"),
-#     ("High", "6–7", "~30 min", "#FF8C00"),
-#     ("Very High", "8–10", "~20 min", "#FF4500"),
-#     ("Extreme", "11+", "<15 min", "#9400D3"),
-# ]
-
-# for level, rng, burn, color in uv_levels:
-#     col1, col2, col3 = st.columns([1, 1, 1.5])
-
-#     with col1:
-#         st.markdown(
-#             f"""
-#             <div style="background-color:{color};
-#                         padding:6px;
-#                         border-radius:4px;
-#                         text-align:center;
-#                         color:black;
-#                         font-weight:bold;">
-#                 {level}
-#             </div>
-#             """,
-#             unsafe_allow_html=True
-#         )
-
-#     with col2:
-#         st.markdown(f"**{rng}**")
-
-#     with col3:
-#         st.markdown(f"Burn time: **{burn}**")
-# --------
 
 
-# Working code
-# uv_levels = [
-#     ("Low", "1–2", "~60 min", "Minimal protection", "#3CB371"),
-#     ("Moderate", "3–5", "~40 min", "Protection recommended", "#FFD700"),
-#     ("High", "6–7", "~30 min", "Protection essential", "#FF8C00"),
-#     ("Very High", "8–10", "~20 min", "Extra protection needed", "#FF4500"),
-#     ("Extreme", "11+", "<15 min", "Avoid sun exposure", "#9400D3"),
-# ]
-
-# st.markdown("### UV Index Guide")
-
-# for level, rng, burn, prot, color in uv_levels:
-#     st.markdown(
-#         f"""
-#         <div style="background-color:{color}; padding:10px; border-radius:6px; margin-bottom:6px;">
-#             <strong>{level}</strong> ({rng}) — Burn time: {burn}<br>
-#             {prot}
-#         </div>
-#         """,
-#         unsafe_allow_html=True
-#     )
-# ------------------
-
-    
-
-
-# uv_data = {
-#     "UV Level": ["Low", "Moderate", "High", "Very High", "Extreme"],
-#     "Index Range": ["1–2", "3–5", "6–7", "8–10", "11+"],
-#     "Burn Time": ["~60 min", "~40 min", "~30 min", "~20 min", "<15 min"],
-#     "Protection": [
-#         "Minimal protection needed",
-#         "Protection recommended",
-#         "Protection essential",
-#         "Extra protection needed",
-#         "Avoid sun exposure"
-#     ],
-#     "Color": ["#3CB371", "#FFD700", "#FF8C00", "#FF4500", "#9400D3"]
-# }
-
-# uv_df = pd.DataFrame(uv_data)
-
-# # Remove color column from display
-# st.markdown("### UV Index Guide")
-# st.dataframe(
-#     uv_df.drop(columns=["Color"]),
-#     hide_index=True
-# )
-
-# def highlight_uv(row):
-#     return [f"background-color: {row['Color']}; color: white"] * 4
-
-# st.dataframe(
-#     uv_df.drop(columns=["Color"]).style.apply(
-#         lambda df: [highlight_uv(uv_df.iloc[i]) for i in range(len(uv_df))],
-#         axis=None
-#     ),
-#     hide_index=True
-# )
 
 
 
