@@ -331,7 +331,6 @@ for idx, location in sampled_routes_df.iterrows():
 
         except Exception:
             time.sleep(1)
-
     sampled_routes_df.at[idx, "Temperature"] = temp_value
 
 st.dataframe(
