@@ -248,7 +248,7 @@ sampled_routes_df = plane_destinations()
 
 # Output dataframe of results
 # st.table(routes_from_df)
-st.dataframe(sampled_routes_df[["Risk Score", "City", "Country", "Distance", "Travel Month", "Current year", "Temp_hi", "Temp_lo", "UV_hi","UV-lo"]], hide_index=True)
+st.dataframe(sampled_routes_df[["Risk Score", "City", "Country", "Distance", "Travel Month", "Current year", "Temp_hi", "Temp_lo", "UV_hi","UV_lo"]], hide_index=True)
 
 # *************************
 
