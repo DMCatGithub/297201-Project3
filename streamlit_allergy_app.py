@@ -236,6 +236,9 @@ def plane_destinations ():
 
 # Run function plane_destinations
 sampled_routes_df = plane_destinations()
+
+
+
 sampled_routes_df["Distance"] = sampled_routes_df["Distance"].round(0).astype(int).astype(str) + " km"
 
 sampled_routes_df["Temp_hi"] = Temp_hi
@@ -247,7 +250,18 @@ sampled_routes_df["UV_lo"] = UV_lo
 sampled_routes_df["Travel Month"] = travel_month
 sampled_routes_df["Current year"] = current_year
 
+# Updte with API data
 sampled_routes_df["Comfort Score"] = 57
+sampled_routes_df["Air Pollution"] = "Unhealthy"
+
+# Colours for Air Pollution summary word
+pollution_colors = {
+    "Good": "#3CB371",                     # green
+    "Moderate": "#FFD700",                 # yellow
+    "Unhealthy for Sensitive Groups": "#FFA500",  # orange
+    "Unhealthy": "#FF4500",                # red
+    "Hazardous": "#800080"                 # purple
+}
 
 # Display table
 # Works
@@ -261,23 +275,47 @@ sampled_routes_df["Comfort Score"] = 57
 
 # st.table(styled)
 # -----------------
-cols_to_show = ["Comfort Score", "City", "Country", "Distance"]
+cols_to_show = ["Comfort Score", "City", "Country", "Distance", "Air_Pollution"]
 df_show = sampled_routes_df[cols_to_show].copy()
 
-# Center everything via HTML + CSS
-st.markdown("""
+# Build HTML table manually
+html = """
 <style>
 table {
     margin-left: auto;
     margin-right: auto;
+    border-collapse: collapse;
 }
 th, td {
-    text-align: center !important;
+    text-align: center;
+    padding: 6px 10px;
+    border-bottom: 1px solid #ddd;
 }
 </style>
-""", unsafe_allow_html=True)
+<table>
+<tr>
+"""
 
-st.markdown(df_show.to_html(index=False), unsafe_allow_html=True)
+# Add headers
+for col in cols_to_show:
+    html += f"<th>{col}</th>"
+html += "</tr>"
+
+# Add rows
+for _, row in df_show.iterrows():
+    html += "<tr>"
+    for col in cols_to_show:
+        if col == "Air_Pollution":
+            color = pollution_colors.get(row[col], "white")
+            html += f'<td style="background-color:{color}; color:black; font-weight:600;">{row[col]}</td>'
+        else:
+            html += f"<td>{row[col]}</td>"
+    html += "</tr>"
+
+html += "</table>"
+
+st.markdown(html, unsafe_allow_html=True)
+
 
 
 
