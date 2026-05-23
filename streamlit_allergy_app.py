@@ -2,6 +2,7 @@ import pandas as pd
 import streamlit as st
 import calendar
 import datetime
+import time
 from math import radians, sin, cos, sqrt, atan2
 
 import openmeteo_requests
