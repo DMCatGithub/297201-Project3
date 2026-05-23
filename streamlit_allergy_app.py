@@ -28,7 +28,7 @@ routes_df.columns = ["Airline", "AirlineID", "Departure_Airport", "Departure_Air
 # 1. Set UV Slider
 UV_lo = 1   # fixed
 UV_hi = st.slider(
-    "Select preferred maximum UV index:",
+    "Select preferred maximum UV index (see UV index guide below):",
     min_value = 1,
     max_value = 11,
     value = 5, # default value
@@ -59,6 +59,16 @@ st.dataframe(
     hide_index=True
 )
 
+def highlight_uv(row):
+    return [f"background-color: {row['Color']}; color: white"] * 4
+
+st.dataframe(
+    uv_df.drop(columns=["Color"]).style.apply(
+        lambda df: [highlight_uv(uv_df.iloc[i]) for i in range(len(uv_df))],
+        axis=None
+    ),
+    hide_index=True
+)
 
 
 
