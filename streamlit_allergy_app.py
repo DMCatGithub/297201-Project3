@@ -359,75 +359,75 @@ st.markdown(html, unsafe_allow_html=True)
 # )
 
 # TEST CODE - old code
-import streamlit as st
-from datetime import date
-import meteostat as ms
-
-# Add Temperature column
-sampled_routes_df["Temperature"] = float("nan")
-
-with st.spinner("Fetching temperature data..."):
-    progress = st.progress(0)
-    status = st.empty()
-
-    total = len(sampled_routes_df)
-
-    # Fixed date for your sampling
-    # start = datetime(2025, 7, 15)
-    # end = datetime(2025, 7, 15)
-
-    for i, (idx, location) in enumerate(sampled_routes_df.iterrows()):
-        lat = location.Latitude
-        lon = location.Longitude
-        POINT = ms.Point(lat, lon)
-
-        START = date(2025, 7, 15)
-        END = date(2025, 7, 15)
-
-        stations = ms.stations.nearby(POINT, limit=4)
-        ts = ms.daily(stations, START, END)
-        df = ms.interpolate(ts, POINT).fetch()
-
-
-        status.write(f"Processing {location.City} ({i+1}/{total})")
-
-        # Extract tavg (mean temperature)
-        if not df.empty and "tavg" in df.columns:
-            temp_value = df["tavg"].iloc[0]
-        else:
-            temp_value = float("nan")
-
-        sampled_routes_df.at[idx, "Temperature"] = temp_value
-
-        progress.progress((i + 1) / total)
-        time.sleep(0.05)
-
-status.success("Temperature data loaded!")
-
-st.dataframe(
-    sampled_routes_df[["City", "Country", "Temperature"]]
-)
-# *************************************************************************
-
 # import streamlit as st
 # from datetime import date
 # import meteostat as ms
 
-# st.title("Old Meteostat API – Values Only")
+# # Add Temperature column
+# sampled_routes_df["Temperature"] = float("nan")
 
-# Your original code — unchanged
-# POINT = ms.Point(50.1155, 8.6842, 113)
-# START = date(2018, 1, 1)
-# END = date(2018, 1, 15)
+# with st.spinner("Fetching temperature data..."):
+#     progress = st.progress(0)
+#     status = st.empty()
 
-# stations = ms.stations.nearby(POINT, limit=4)
-# ts = ms.daily(stations, START, END)
-# df = ms.interpolate(ts, POINT).fetch()
+#     total = len(sampled_routes_df)
 
-# Output the values instead of plotting
-# st.subheader("Daily Weather Values")
-# st.dataframe(df)
+#     # Fixed date for your sampling
+#     # start = datetime(2025, 7, 15)
+#     # end = datetime(2025, 7, 15)
 
-# Optional: show summary stats
-# st.subheader("Summary Statistics")
-# st.write(df.describe())
+#     for i, (idx, location) in enumerate(sampled_routes_df.iterrows()):
+#         lat = location.Latitude
+#         lon = location.Longitude
+#         POINT = ms.Point(lat, lon)
+
+#         START = date(2025, 7, 15)
+#         END = date(2025, 7, 15)
+
+#         stations = ms.stations.nearby(POINT, limit=4)
+#         ts = ms.daily(stations, START, END)
+#         df = ms.interpolate(ts, POINT).fetch()
+
+
+#         status.write(f"Processing {location.City} ({i+1}/{total})")
+
+#         # Extract tavg (mean temperature)
+#         if not df.empty and "tavg" in df.columns:
+#             temp_value = df["tavg"].iloc[0]
+#         else:
+#             temp_value = float("nan")
+
+#         sampled_routes_df.at[idx, "Temperature"] = temp_value
+
+#         progress.progress((i + 1) / total)
+#         time.sleep(0.05)
+
+# status.success("Temperature data loaded!")
+
+# st.dataframe(
+#     sampled_routes_df[["City", "Country", "Temperature"]]
+# )
+# *************************************************************************
+
+import streamlit as st
+from datetime import date
+import meteostat as ms
+
+st.title("Old Meteostat API – Values Only")
+
+Your original code — unchanged
+POINT = ms.Point(50.1155, 8.6842, 113)
+START = date(2018, 1, 1)
+END = date(2018, 1, 15)
+
+stations = ms.stations.nearby(POINT, limit=4)
+ts = ms.daily(stations, START, END)
+df = ms.interpolate(ts, POINT).fetch()
+
+Output the values instead of plotting
+st.subheader("Daily Weather Values")
+st.dataframe(df)
+
+Optional: show summary stats
+st.subheader("Summary Statistics")
+st.write(df.describe())
