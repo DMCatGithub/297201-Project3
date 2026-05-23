@@ -337,3 +337,4 @@ for idx, location in sampled_routes_df.iterrows():
 st.dataframe(
     sampled_routes_df[["City", "Country", "Temperature"]]
 )
+
