@@ -303,58 +303,90 @@ html += "</table>"
 st.markdown(html, unsafe_allow_html=True)
 
 # Get temperature data
-import time
+# import time
+# import requests
+
+# sampled_routes_df["Temperature"] = float("nan")
+
+# # temp_value = float("nan")
+# temp_value = 99
+
+# url = "https://climate-api.open-meteo.com/v1/climate"
+
+# with st.spinner("Fetching temperature data..."):
+#     progress = st.progress(0)
+#     status = st.empty()
+
+#     total = len(sampled_routes_df)
+
+#     for i, (idx, location) in enumerate(sampled_routes_df.iterrows()):
+#         latitude = location.Latitude
+#         longitude = location.Longitude
+
+#         status.write(f"Processing {location.City} ({i+1}/{total})")
+
+#         params = {
+#             "latitude": latitude,
+#             "longitude": longitude,
+#             "daily": ["temperature_2m_mean"],
+#             "start_date": "2025-07-15",
+#             "end_date": "2025-07-15",
+#             "timezone": "auto"
+#         }
+
+#         # Retry loop
+#         for attempt in range(3):
+#             try:
+#                 r = requests.get(url, params=params, timeout=10)
+#                 data = r.json()
+
+#                 temp_value = data["daily"]["temperature_2m_mean"][0]
+#                 break
+
+#             except Exception:
+#                 time.sleep(1)
+
+#         sampled_routes_df.at[idx, "Temperature"] = temp_value
+
+#         # Update progress bar
+#         progress.progress((i+1) / total)
+#         time.sleep(0.1)
+
+# status.success("Temperature data loaded!")
+
+# st.dataframe(
+#     sampled_routes_df[["City", "Country", "Temperature"]]
+# )
+
+# TEST CODE
 import requests
+import pandas as pd
+import streamlit as st
 
-sampled_routes_df["Temperature"] = float("nan")
+st.subheader("Climate API Test")
 
-# temp_value = float("nan")
-temp_value = 99
+with st.spinner("Fetching climate data..."):
+    url = "https://climate-api.open-meteo.com/v1/climate"
+    params = {
+        "latitude": 34.875099182128906,
+        "longitude": 33.624900817871094,
+        "start_date": "2025-08-01",
+        "end_date": "2025-08-28",
+        "daily": "temperature_2m_mean",
+        "timezone": "auto",
+    }
 
-url = "https://climate-api.open-meteo.com/v1/climate"
+    try:
+        r = requests.get(url, params=params, timeout=10)
+        data = r.json()
 
-with st.spinner("Fetching temperature data..."):
-    progress = st.progress(0)
-    status = st.empty()
+        df = pd.DataFrame({
+            "date": data["daily"]["time"],
+            "temperature_2m_mean": data["daily"]["temperature_2m_mean"]
+        })
 
-    total = len(sampled_routes_df)
+        st.success("Data loaded")
+        st.dataframe(df)
 
-    for i, (idx, location) in enumerate(sampled_routes_df.iterrows()):
-        latitude = location.Latitude
-        longitude = location.Longitude
-
-        status.write(f"Processing {location.City} ({i+1}/{total})")
-
-        params = {
-            "latitude": latitude,
-            "longitude": longitude,
-            "daily": ["temperature_2m_mean"],
-            "start_date": "2025-07-15",
-            "end_date": "2025-07-15",
-            "timezone": "auto"
-        }
-
-        # Retry loop
-        for attempt in range(3):
-            try:
-                r = requests.get(url, params=params, timeout=10)
-                data = r.json()
-
-                temp_value = data["daily"]["temperature_2m_mean"][0]
-                break
-
-            except Exception:
-                time.sleep(1)
-
-        sampled_routes_df.at[idx, "Temperature"] = temp_value
-
-        # Update progress bar
-        progress.progress((i+1) / total)
-        time.sleep(0.1)
-
-status.success("Temperature data loaded!")
-
-st.dataframe(
-    sampled_routes_df[["City", "Country", "Temperature"]]
-)
-
+    except Exception as e:
+        st.error(f"Request failed: {e}")
