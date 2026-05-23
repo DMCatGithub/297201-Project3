@@ -275,7 +275,7 @@ pollution_colors = {
 
 # st.table(styled)
 # -----------------
-cols_to_show = ["Comfort Score", "City", "Country", "Distance", "Air_Pollution"]
+cols_to_show = ["Comfort Score", "City", "Country", "Distance", "Air Pollution"]
 df_show = sampled_routes_df[cols_to_show].copy()
 
 # Build HTML table manually
