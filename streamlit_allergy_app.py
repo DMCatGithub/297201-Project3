@@ -408,7 +408,7 @@ st.markdown(html, unsafe_allow_html=True)
 # )
 # *************************************************************************
 
-from meteostat import Point, Daily
+# from meteostat import Point, Daily
 from datetime import datetime
 import streamlit as st
 import time
