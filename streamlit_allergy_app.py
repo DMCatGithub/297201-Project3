@@ -236,7 +236,7 @@ def plane_destinations ():
 
 # Run function plane_destinations
 sampled_routes_df = plane_destinations()
-
+sampled_routes_df["Distance"] = sampled_routes_df["Distance"].round(0).astype(int).astype(str) + " km"
 
 sampled_routes_df["Temp_hi"] = Temp_hi
 sampled_routes_df["Temp_lo"] = Temp_lo
@@ -249,7 +249,20 @@ sampled_routes_df["Current year"] = current_year
 
 sampled_routes_df["Comfort Score"] = 57
 
-st.dataframe(sampled_routes_df[["Comfort Score", "City", "Country", "Distance", "Travel Month"]], hide_index=True)
+# Display table
+cols_to_show = ["Comfort Score", "City", "Country", "Distance"]
+
+styled = sampled_routes_df[cols_to_show].style.set_properties(**{
+    'text-align': 'center'
+}).set_table_styles([
+    dict(selector='th', props=[('text-align', 'center')])
+])
+
+st.table(styled)
+
+
+
+# st.dataframe(sampled_routes_df[["Comfort Score", "City", "Country", "Distance"]], hide_index=True)
 
 # *************************
 
