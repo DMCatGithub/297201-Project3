@@ -36,39 +36,52 @@ UV_hi = st.slider(
 )
 
 # UV Colour chart with more info
-uv_data = {
-    "UV Level": ["Low", "Moderate", "High", "Very High", "Extreme"],
-    "Index Range": ["1–2", "3–5", "6–7", "8–10", "11+"],
-    "Burn Time": ["~60 min", "~40 min", "~30 min", "~20 min", "<15 min"],
-    "Protection": [
-        "Minimal protection needed",
-        "Protection recommended",
-        "Protection essential",
-        "Extra protection needed",
-        "Avoid sun exposure"
-    ],
-    "Color": ["#3CB371", "#FFD700", "#FF8C00", "#FF4500", "#9400D3"]
-}
 
-uv_df = pd.DataFrame(uv_data)
+for level, rng, burn, prot, color in uv_levels:
+    st.markdown(
+        f"""
+        <div style="background-color:{color}; padding:10px; border-radius:6px; margin-bottom:6px;">
+            <strong>{level}</strong> ({rng}) — Burn time: {burn}<br>
+            {prot}
+        </div>
+        """,
+        unsafe_allow_html=True
+    
 
-# Remove color column from display
-st.markdown("### UV Index Guide")
-st.dataframe(
-    uv_df.drop(columns=["Color"]),
-    hide_index=True
-)
 
-def highlight_uv(row):
-    return [f"background-color: {row['Color']}; color: white"] * 4
+# uv_data = {
+#     "UV Level": ["Low", "Moderate", "High", "Very High", "Extreme"],
+#     "Index Range": ["1–2", "3–5", "6–7", "8–10", "11+"],
+#     "Burn Time": ["~60 min", "~40 min", "~30 min", "~20 min", "<15 min"],
+#     "Protection": [
+#         "Minimal protection needed",
+#         "Protection recommended",
+#         "Protection essential",
+#         "Extra protection needed",
+#         "Avoid sun exposure"
+#     ],
+#     "Color": ["#3CB371", "#FFD700", "#FF8C00", "#FF4500", "#9400D3"]
+# }
 
-st.dataframe(
-    uv_df.drop(columns=["Color"]).style.apply(
-        lambda df: [highlight_uv(uv_df.iloc[i]) for i in range(len(uv_df))],
-        axis=None
-    ),
-    hide_index=True
-)
+# uv_df = pd.DataFrame(uv_data)
+
+# # Remove color column from display
+# st.markdown("### UV Index Guide")
+# st.dataframe(
+#     uv_df.drop(columns=["Color"]),
+#     hide_index=True
+# )
+
+# def highlight_uv(row):
+#     return [f"background-color: {row['Color']}; color: white"] * 4
+
+# st.dataframe(
+#     uv_df.drop(columns=["Color"]).style.apply(
+#         lambda df: [highlight_uv(uv_df.iloc[i]) for i in range(len(uv_df))],
+#         axis=None
+#     ),
+#     hide_index=True
+# )
 
 
 
