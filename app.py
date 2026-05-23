@@ -1,5 +1,5 @@
 import streamlit as st
-# import meteostat as ms
+import meteostat as ms
 from meteostat import Point, Daily
 
 import pandas as pd
@@ -19,13 +19,13 @@ end_date = st.sidebar.date_input("End Date", datetime(2025, 12, 31))
 @st.cache_data
 def load_weather_data(latitude, longitude, start, end):
     # Create Meteostat Point object (lat, lon, elevation)
-    # location = ms.Point(latitude, longitude)
-    location = meteostat.Point(latitude, longitude)
+    location = ms.Point(latitude, longitude)
+    # location = meteostat.Point(latitude, longitude)
 
     
     # Fetch data
-    # data = ms.Daily(location, start, end)
-    data = meteostat.Daily(location, start, end).fetch()
+    data = ms.Daily(location, start, end)
+    # data = meteostat.Daily(location, start, end).fetch()
     df = data.fetch()
     return df
 
