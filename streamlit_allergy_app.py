@@ -302,9 +302,10 @@ html += "</table>"
 st.markdown(html, unsafe_allow_html=True)
 
 # Get temperature data
-# --- TEMPERATURE FETCH WITH PROGRESS BAR ---
 sampled_routes_df["Temperature"] = float("nan")
 temp_value = float("nan")
+
+url = "https://climate-api.open-meteo.com/v1/climate"
 
 for idx, location in sampled_routes_df.iterrows():
     latitude = location.Latitude
@@ -319,11 +320,11 @@ for idx, location in sampled_routes_df.iterrows():
         "timezone": "auto"
     }
 
-    # Retry loop
+        # Retry loop
     for attempt in range(3):
         try:
-            response = requests.get(url, params=params, timeout=1)
-            data = response.json()
+            r = requests.get(url, params=params, timeout=10)
+            data = r.json()
 
             temp_value = data["daily"]["temperature_2m_mean"][0]
             break
@@ -333,3 +334,6 @@ for idx, location in sampled_routes_df.iterrows():
 
     sampled_routes_df.at[idx, "Temperature"] = temp_value
 
+st.dataframe(
+    sampled_routes_df[["City", "Country", "Temperature"]]
+)
