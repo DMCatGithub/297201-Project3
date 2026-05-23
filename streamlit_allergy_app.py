@@ -255,13 +255,13 @@ sampled_routes_df["Comfort Score"] = 57
 sampled_routes_df["Air Pollution"] = "Unhealthy"
 
 # Colours for Air Pollution summary word
-pollution_colors = {
-    "Good": "#3CB371",                     # green
-    "Moderate": "#FFD700",                 # yellow
-    "Unhealthy for Sensitive Groups": "#FFA500",  # orange
-    "Unhealthy": "#FF4500",                # red
-    "Hazardous": "#800080"                 # purple
-}
+# pollution_colors = {
+#     "Good": "#3CB371",                     # green
+#     "Moderate": "#FFD700",                 # yellow
+#     "Unhealthy for Sensitive Groups": "#FFA500",  # orange
+#     "Unhealthy": "#FF4500",                # red
+#     "Hazardous": "#800080"                 # purple
+# }
 
 # Display table
 # Works
@@ -275,10 +275,17 @@ pollution_colors = {
 
 # st.table(styled)
 # -----------------
-cols_to_show = ["Comfort Score", "City", "Country", "Distance", "Air Pollution"]
+cols_to_show = ["Comfort Score", "City", "Country", "Distance", "Air_Pollution"]
 df_show = sampled_routes_df[cols_to_show].copy()
 
-# Build HTML table manually
+pollution_colors = {
+    "Good": "#3CB371",
+    "Moderate": "#FFD700",
+    "Unhealthy for Sensitive Groups": "#FFA500",
+    "Unhealthy": "#FF4500",
+    "Hazardous": "#800080"
+}
+
 html = """
 <style>
 table {
@@ -296,18 +303,18 @@ th, td {
 <tr>
 """
 
-# Add headers
+# headers
 for col in cols_to_show:
     html += f"<th>{col}</th>"
 html += "</tr>"
 
-# Add rows
+# rows
 for _, row in df_show.iterrows():
     html += "<tr>"
     for col in cols_to_show:
         if col == "Air_Pollution":
             color = pollution_colors.get(row[col], "white")
-            html += f'<td style="background-color:{color}; color:black; font-weight:600;">{row[col]}</td>'
+            html += f'<td style="background-color:{color}; font-weight:600;">{row[col]}</td>'
         else:
             html += f"<td>{row[col]}</td>"
     html += "</tr>"
@@ -315,6 +322,7 @@ for _, row in df_show.iterrows():
 html += "</table>"
 
 st.markdown(html, unsafe_allow_html=True)
+
 
 
 
