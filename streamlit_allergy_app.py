@@ -36,6 +36,15 @@ UV_hi = st.slider(
 )
 
 # UV Colour chart with more info
+uv_levels = [
+    ("Low", "1–2", "~60 min", "Minimal protection", "#3CB371"),
+    ("Moderate", "3–5", "~40 min", "Protection recommended", "#FFD700"),
+    ("High", "6–7", "~30 min", "Protection essential", "#FF8C00"),
+    ("Very High", "8–10", "~20 min", "Extra protection needed", "#FF4500"),
+    ("Extreme", "11+", "<15 min", "Avoid sun exposure", "#9400D3"),
+]
+
+st.markdown("### UV Index Guide")
 
 for level, rng, burn, prot, color in uv_levels:
     st.markdown(
@@ -47,6 +56,7 @@ for level, rng, burn, prot, color in uv_levels:
         """,
         unsafe_allow_html=True
     )
+
     
 
 
