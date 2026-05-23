@@ -250,7 +250,7 @@ sampled_routes_df["Current year"] = current_year
 
 # Updte with API data
 sampled_routes_df["Comfort Score"] = 57
-sampled_routes_df["Air Pollution"] = "Unhealthy"
+sampled_routes_df["Air Pollution"] = "Good"
 
 cols_to_show = ["Comfort Score", "City", "Country", "Distance", "Air Pollution"]
 existing_cols = [c for c in cols_to_show if c in sampled_routes_df.columns]
@@ -301,108 +301,42 @@ html += "</table>"
 
 st.markdown(html, unsafe_allow_html=True)
 
+# Get temperature data
+from math import radians, sin, cos, sqrt, atan2
+import pandas as pd
 
+import time
+import requests
 
+url = "https://archive-api.open-meteo.com/v1/archive"
 
+sampled_routes_df["Temperature"] = float("nan")
+temp_value = float("nan")
 
+for idx, location in sampled_routes_df.iterrows():
+    latitude = location.Latitude
+    longitude = location.Longitude
 
-
-# st.dataframe(sampled_routes_df[["Comfort Score", "City", "Country", "Distance"]], hide_index=True)
-
-# *************************
-
-# Modified previous weather API to work with output from above
-# Update to get weather data from the 1-28 of the travel_month selected by user - from previous year (add another for loop for additional years)
-# Not linked to streamlit so example variables are coded in.
-
-
-#Setup the Open-Meteo API client with cache and retry on error
-cache_session = requests_cache.CachedSession('.cache', expire_after = -1)
-retry_session = retry(cache_session, retries = 5, backoff_factor = 0.2)
-openmeteo = openmeteo_requests.Client(session = retry_session)
-
-weather_data = []
-
-# Potentially create start date and end date in streamlite
-# Travel_month = 8
-# Current_year = 2026
-
-First_day = 1
-Last_day = 28
-
-for idx, row in sampled_routes_df.iterrows():
-
-    latitude = row["Latitude"]
-    longitude = row["Longitude"]
-    city = row["City"]
-    country = row["Country"]
-
-    start_date = datetime.date(int(current_year - 1), int(travel_month), int(First_day))
-    end_date = datetime.date(int(current_year - 1), int(travel_month), int(Last_day))
-
-    #Make sure all required weather variables are listed here
-    #The order of variables in hourly or daily is important to assign them correctly below
-    url = "https://archive-api.open-meteo.com/v1/archive"
     params = {
         "latitude": latitude,
         "longitude": longitude,
-        "start_date": start_date,
-        "end_date": end_date,
-        "daily": ["temperature_2m_mean", "apparent_temperature_mean", "cloud_cover_mean", "dew_point_2m_mean", "relative_humidity_2m_mean", "surface_pressure_mean", "wind_gusts_10m_mean", "wind_speed_10m_mean", "wet_bulb_temperature_2m_mean", "pressure_msl_mean"],
-        "timezone": "auto",
+        "daily": ["temperature_2m_mean"],
+        "start_date": "2025-07-15",
+        "end_date": "2025-07-15",
+        "timezone": "auto"
     }
-    responses = openmeteo.weather_api(url, params = params)
 
-    # Process first location. Add a for-loop for multiple locations or weather models
-    response = responses[0]
+    # Retry loop
+    for attempt in range(3):
+        try:
+            response = requests.get(url, params=params, timeout=1)
+            data = response.json()
 
-    # Process daily data. The order of variables needs to be the same as requested.
-    daily = response.Daily()
+            temp_value = data["daily"]["temperature_2m_mean"][0]
+            break
 
-    # One day only
-    # weather_data.append({
-    #     "Start_Date": start_date.strftime("%Y-%m-%d"),
-    #     "City" : city,
-    #     "Country" : country,
-    #     "Latitude": latitude,
-    #     "Longitude": longitude,
-    #     "Temperature": daily.Variables(0).ValuesAsNumpy()[0],
-    #     "Apparent_Temp": daily.Variables(1).ValuesAsNumpy()[0],
-    #     "Cloud_Cover": daily.Variables(2).ValuesAsNumpy()[0],
-    #     "Dew_Point": daily.Variables(3).ValuesAsNumpy()[0],
-    #     "Humidity": daily.Variables(4).ValuesAsNumpy()[0],
-    #     "Surface_Pressure": daily.Variables(5).ValuesAsNumpy()[0],
-    #     "Wind_Gusts": daily.Variables(6).ValuesAsNumpy()[0],
-    #     "Wind_Speed": daily.Variables(7).ValuesAsNumpy()[0],
-    #     "Wet_Bulb": daily.Variables(8).ValuesAsNumpy()[0],
-    #     "Pressure": daily.Variables(9).ValuesAsNumpy()[0],
-    # })
+        except Exception:
+            time.sleep(1)
+    sampled_routes_df.at[idx, "Temperature"] = temp_value
 
-    # 28 days works for all months and enough data for a month
-    for i in range(28):
-        date_i = start_date + datetime.timedelta(days=i)
-
-        weather_data.append({
-            "Date": date_i.strftime("%Y-%m-%d"),
-            "Year": date_i.strftime("%Y"),
-            "City" : city,
-            "Country" : country,
-            "Latitude": latitude,
-            "Longitude": longitude,
-            "Temperature": daily.Variables(0).ValuesAsNumpy()[i],
-            "Apparent_Temp": daily.Variables(1).ValuesAsNumpy()[i],
-            "Cloud_Cover": daily.Variables(2).ValuesAsNumpy()[i],
-            "Dew_Point": daily.Variables(3).ValuesAsNumpy()[i],
-            "Humidity": daily.Variables(4).ValuesAsNumpy()[i],
-            "Surface_Pressure": daily.Variables(5).ValuesAsNumpy()[i],
-            "Wind_Gusts": daily.Variables(6).ValuesAsNumpy()[i],
-            "Wind_Speed": daily.Variables(7).ValuesAsNumpy()[i],
-            "Wet_Bulb": daily.Variables(8).ValuesAsNumpy()[i],
-            "Pressure": daily.Variables(9).ValuesAsNumpy()[i],
-    })
-
-
-weather_data_df = pd.DataFrame(weather_data)
-weather_data_df.head(50)
-
-
+st.dataframe(sampled_routes_df[["City", "Country", "Temperature"]])
