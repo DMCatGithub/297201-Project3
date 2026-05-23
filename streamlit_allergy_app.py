@@ -302,12 +302,15 @@ html += "</table>"
 st.markdown(html, unsafe_allow_html=True)
 
 # Get temperature data
-import time
-import requests
+import openmeteo_requests
+import requests_cache
+from retry_requests import retry
 
-url = "https://archive-api.open-meteo.com/v1/archive"
+# Setup fast Open-Meteo client
+cache_session = requests_cache.CachedSession('.cache', expire_after=-1)
+retry_session = retry(cache_session, retries=5, backoff_factor=0.2)
+openmeteo = openmeteo_requests.Client(session=retry_session)
 
-# Create empty column
 sampled_routes_df["Temperature"] = float("nan")
 
 with st.spinner("Fetching temperature data..."):
@@ -316,42 +319,29 @@ with st.spinner("Fetching temperature data..."):
 
     total = len(sampled_routes_df)
 
-    for i, (idx, location) in enumerate(sampled_routes_df.iterrows()):
+    for i, (idx, row) in enumerate(sampled_routes_df.iterrows()):
 
-        # Update status text
-        status.write(f"Processing {location['City']} ({i+1}/{total})")
-
-        latitude = location.Latitude
-        longitude = location.Longitude
+        status.write(f"Processing {row['City']} ({i+1}/{total})")
 
         params = {
-            "latitude": latitude,
-            "longitude": longitude,
-            "daily": ["temperature_2m_mean"],
+            "latitude": row["Latitude"],
+            "longitude": row["Longitude"],
             "start_date": "2025-07-15",
             "end_date": "2025-07-15",
+            "daily": ["temperature_2m_mean"],
             "timezone": "auto"
         }
 
-        temp_value = float("nan")
+        responses = openmeteo.weather_api(
+            "https://archive-api.open-meteo.com/v1/archive",
+            params=params
+        )
 
-        # Retry loop
-        for attempt in range(3):
-            try:
-                response = requests.get(url, params=params, timeout=4)
-                data = response.json()
-                temp_value = data["daily"]["temperature_2m_mean"][0]
-                break
-            except:
-                time.sleep(1)
+        response = responses[0]
+        daily = response.Daily()
 
-        # Store result for this row only
+        temp_value = daily.Variables(0).ValuesAsNumpy()[0]
+
         sampled_routes_df.at[idx, "Temperature"] = temp_value
 
-        # Update progress bar
-        progress.progress((i+1) / total)
-
-        # Small delay so UI visibly updates
-        time.sleep(0.1)
-
-status.success("Temperature data loaded")
+        progress.progress((i+1)/total)
