@@ -174,10 +174,11 @@ temp_priority = st.selectbox("Temperature Priority", ["Low Priority", "Medium Pr
 temp_weight = priority_map[temp_priority]
 
 # Wind speed
-st.subheader("Temperature")
-temp_value = st.slider("Preferred Temperature (°C)", min_value=-10, max_value=40, value=20)
-temp_priority = st.selectbox("Temperature Priority", ["Low Priority", "Medium Priority", "High Priority"])
-temp_weight = priority_map[temp_priority]
+st.subheader("Wind Speed")
+wind_speed = st.slider("Preferred Wind Speed (km/h)", 0, 60, 10)
+wind_priority = st.selectbox("Wind Priority", ["Low Priority", "Medium Priority", "High Priority"])
+wind_weight = priority_map[wind_priority]
+
 
 
 # Wind2
