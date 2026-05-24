@@ -1134,8 +1134,8 @@ random_ten_weather = pd.concat(random_ten_weather, ignore_index=True)
 # TEMP RESULTS FOR DEBUGING
 st.dataframe(
     random_ten_weather[[
-        "City", 
-        "Country", 
+        # "City", 
+        # "Country", 
         "temperature_2m_mean",
         "cloud_cover_mean",
         "relative_humidity_2m_mean",
