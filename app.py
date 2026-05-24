@@ -284,25 +284,28 @@ def compute_overall_range(selected_tuple, range_map):
 
     return low_min, high_max
 
-# uv_value, uv_priority, uv_disabled = weather_block(
-#     "UV Index",
-#     input_widget=lambda: st.slider(
-#         "Select preferred maximum UV index (see UV index guide below):",
-#         min_value=1,
-#         max_value=11,
-#         value=3,
-#         key="uv_slider"
-#     ),
-#     priority_key="uv_priority"
-# )
+# --- GLOBAL SLIDER STYLE OVERRIDE ---
+st.markdown("""
+<style>
 
-# uv_ranges = {
-#     "Low (1-2)": (1, 2),
-#     "Moderate (3-5)": (3, 5),
-#     "High (6-7)": (6, 7),
-#     "Very High (8-10)": (8, 10),
-#     "Extreme (11+)": (11, 11)
-# }
+    /* Slider track */
+    .stSlider > div[data-baseweb="slider"] > div > div {
+        background: #E3F2FD !important;
+    }
+
+    /* Filled portion */
+    .stSlider > div[data-baseweb="slider"] > div > div > div {
+        background: #90CAF9 !important;
+    }
+
+    /* Slider thumb */
+    .stSlider > div[data-baseweb="slider"] span {
+        background: #42A5F5 !important;
+        border: 2px solid #1E88E5 !important;
+    }
+
+</style>
+""", unsafe_allow_html=True)
 
 temp_value, temp_priority, temp_disabled = weather_block(
     "Temperature",
