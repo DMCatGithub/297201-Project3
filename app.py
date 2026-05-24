@@ -268,7 +268,7 @@ uv_value, uv_priority, uv_disabled = weather_block(
 )
 
 if not uv_disabled:
-    uv_overall_min = "Low (1-2)"   # fixed
+    uv_overall_min = 1   # fixed
     uv_overall_max = uv_value      # user-selected
 
 
