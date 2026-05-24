@@ -71,7 +71,7 @@ Temp_lo, Temp_hi = st.slider(
     "Select preferred temperature range (°C):",
     min_value = -10,
     max_value = 50,
-    value=(18, 25)   # default min/max
+    value=(21, 25)   # default min/max
 )
 
 # 3. Select travel mode
@@ -527,17 +527,17 @@ sampled_routes_df["Comfort Score"] = sampled_routes_df.apply(
 #     ascending=False
 # ).reset_index(drop=True)
 
-# st.dataframe(
-#     sorted_df[
-#         [
-#             "Comfort Score",
-#             "City",
-#             "Country",
-#             "Temperature",
-#             "UV"
-#         ]
-#     ]
-# )
+st.dataframe(
+    sorted_df[
+        [
+            "Comfort Score",
+            "City",
+            "Country",
+            "Temperature",
+            "UV"
+        ]
+    ]
+)
 
 # Sort by Comfort Score (descending) and remove index
 sorted_df = sampled_routes_df.sort_values(
@@ -558,4 +558,14 @@ styled_df = (
 )
 
 # Display
-st.dataframe(styled_df)
+st.dataframe(
+    styled_df[
+        [
+            "Comfort Score",
+            "City",
+            "Country",
+            "Temperature",
+            "UV"
+        ]
+    ]
+)
