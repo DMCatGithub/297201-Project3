@@ -8,35 +8,40 @@ from math import radians, sin, cos, sqrt, atan2
 st.markdown("""
 <style>
 
-    /* Outer segmented control wrapper */
-    .stSegmentedControl {
-        border-radius: 9999px !important;
-        overflow: hidden !important;
-        padding: 2px !important;
-        background-color: #f0f0f0 !important;
+    /* Custom segmented control wrapper */
+    .segmented-wrapper {
+        display: inline-flex;
+        padding: 2px;
+        border-radius: 9999px;
+        background-color: #f0f0f0;
     }
 
-    /* Each segment button */
-    .stSegmentedControl > label {
-        border-radius: 9999px !important;
-        padding: 6px 16px !important;
-        margin: 0 2px !important;
-        background-color: #fafafa !important;
-        border: 1px solid #ddd !important;
+    /* Hide default radio bullets */
+    .segmented-wrapper input[type="radio"] {
+        display: none;
+    }
+
+    /* Each option label */
+    .segmented-option {
+        border-radius: 9999px;
+        padding: 6px 14px;
+        margin: 0 2px;
+        background-color: #fafafa;
+        border: 1px solid #ddd;
         cursor: pointer;
+        font-size: 0.9rem;
         transition: all 0.15s ease-in-out;
     }
 
-    /* Hover */
-    .stSegmentedControl > label:hover {
-        background-color: #eeeeee !important;
+    .segmented-option:hover {
+        background-color: #eeeeee;
     }
 
-    /* Selected segment */
-    .stSegmentedControl > label[data-selected="true"] {
-        background-color: #E0F2F1 !important;
-        border-color: #80CBC4 !important;
-        font-weight: 600 !important;
+    /* Selected state */
+    .segmented-option.selected {
+        background-color: #E0F2F1;
+        border-color: #80CBC4;
+        font-weight: 600;
     }
 
 </style>
