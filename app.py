@@ -181,24 +181,6 @@ wind_weight = priority_map[wind_priority]
 
 
 
-# Wind2
-st.subheader("Wind Speed")
-
-wind_categories = [
-    "Calm",
-    "Light Air",
-    "Light Breeze",
-    "Gentle Breeze",
-    "Moderate Breeze",
-    "Fresh Breeze",
-    "Strong Breeze"
-]
-
-wind_choice = st.radio("Preferred Wind Category", wind_categories)
-
-wind_priority = st.selectbox("Wind Priority2", ["Low Priority", "Medium Priority", "High Priority"])
-wind_weight = priority_map[wind_priority]
-
 # Rain
 st.subheader("Rain Preference")
 
