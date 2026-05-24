@@ -385,24 +385,6 @@ with st.expander("Show UV Index Guide"):
 
 
 
-    for title, desc, color, text_color in uv_levels:
-        st.markdown(
-            f"""
-            <div style="
-                background-color:{color};
-                padding:8px 12px;
-                border-radius:6px;
-                margin-bottom:6px;
-                color:{text_color};
-                font-weight:600;
-                font-size:14px;">
-                {title} — {desc}
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-
 humidity_value, humidity_priority, humidity_disabled = weather_block(
     "Humidity",
     input_widget=lambda: st.select_slider(
@@ -556,13 +538,14 @@ rain_overall_min, rain_overall_max = compute_overall_range(
 with st.expander("Show Rainfall Guide"):
 
     rain_levels = [
-        ("No Rain (0 mm/hr)", "Dry conditions — no precipitation", "#E0FFFF", "black"),
-        ("Light Rain (0.1–2 mm/hr)", "Drizzle — light jacket enough", "#ADD8E6", "black"),
-        ("Moderate Rain (2–7 mm/hr)", "Steady rain — umbrella recommended", "#87CEEB", "black"),
-        ("Heavy Rain (7–15 mm/hr)", "Soaking rain — reduced visibility", "#4682B4", "white"),
-        ("Very Heavy Rain (15–30 mm/hr)", "Intense rain — difficult travel", "#4169E1", "white"),
-        ("Extreme Rain (30+ mm/hr)", "Downpour — flooding possible", "#00008B", "white"),
+        ("No Rain (0 mm/hr)", "Dry conditions — no precipitation", "#E3F2FD", "black"), 
+        ("Light Rain (0.1–2 mm/hr)", "Drizzle — light jacket enough", "#BBDEFB", "black"),
+        ("Moderate Rain (2–7 mm/hr)", "Steady rain — umbrella recommended", "#90CAF9", "black"),
+        ("Heavy Rain (7–15 mm/hr)", "Soaking rain — reduced visibility", "#64B5F6", "black"), 
+        ("Very Heavy Rain (15–30 mm/hr)", "Intense rain — difficult travel", "#42A5F5", "white"), 
+        ("Extreme Rain (30+ mm/hr)", "Downpour — flooding possible", "#2196F3", "white"),
     ]
+
 
     for title, desc, color, text_color in rain_levels:
         st.markdown(
