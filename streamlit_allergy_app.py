@@ -250,57 +250,59 @@ sampled_routes_df["Travel Month"] = travel_month
 sampled_routes_df["Current year"] = current_year
 
 # Updte with API data
-sampled_routes_df["Comfort Score"] = 57
-sampled_routes_df["Air Pollution"] = "Good"
+# Test code for output with air polution
+# sampled_routes_df["Comfort Score"] = 57
+# sampled_routes_df["Air Pollution"] = "Good"
 
-cols_to_show = ["Comfort Score", "City", "Country", "Distance", "Air Pollution"]
-existing_cols = [c for c in cols_to_show if c in sampled_routes_df.columns]
-df_show = sampled_routes_df[existing_cols].copy()
+# cols_to_show = ["Comfort Score", "City", "Country", "Distance", "Air Pollution"]
+# existing_cols = [c for c in cols_to_show if c in sampled_routes_df.columns]
+# df_show = sampled_routes_df[existing_cols].copy()
 
-pollution_colors = {
-    "Good": "#3CB371",
-    "Moderate": "#FFD700",
-    "Unhealthy for Sensitive Groups": "#FFA500",
-    "Unhealthy": "#FF4500",
-    "Hazardous": "#800080"
-}
+# pollution_colors = {
+#     "Good": "#3CB371",
+#     "Moderate": "#FFD700",
+#     "Unhealthy for Sensitive Groups": "#FFA500",
+#     "Unhealthy": "#FF4500",
+#     "Hazardous": "#800080"
+# }
 
-html = """
-<style>
-table {
-    margin-left: auto;
-    margin-right: auto;
-    border-collapse: collapse;
-}
-th, td {
-    text-align: center;
-    padding: 6px 10px;
-    border-bottom: 1px solid #ddd;
-}
-</style>
-<table>
-<tr>
-"""
+# html = """
+# <style>
+# table {
+#     margin-left: auto;
+#     margin-right: auto;
+#     border-collapse: collapse;
+# }
+# th, td {
+#     text-align: center;
+#     padding: 6px 10px;
+#     border-bottom: 1px solid #ddd;
+# }
+# </style>
+# <table>
+# <tr>
+# """
 
-# headers
-for col in cols_to_show:
-    html += f"<th>{col}</th>"
-html += "</tr>"
+# # headers
+# for col in cols_to_show:
+#     html += f"<th>{col}</th>"
+# html += "</tr>"
 
-# rows
-for _, row in df_show.iterrows():
-    html += "<tr>"
-    for col in cols_to_show:
-        if col == "Air_Pollution":
-            color = pollution_colors.get(row[col], "white")
-            html += f'<td style="background-color:{color}; font-weight:600;">{row[col]}</td>'
-        else:
-            html += f"<td>{row[col]}</td>"
-    html += "</tr>"
+# # rows
+# for _, row in df_show.iterrows():
+#     html += "<tr>"
+#     for col in cols_to_show:
+#         if col == "Air_Pollution":
+#             color = pollution_colors.get(row[col], "white")
+#             html += f'<td style="background-color:{color}; font-weight:600;">{row[col]}</td>'
+#         else:
+#             html += f"<td>{row[col]}</td>"
+#     html += "</tr>"
 
-html += "</table>"
+# html += "</table>"
 
-st.markdown(html, unsafe_allow_html=True)
+# st.markdown(html, unsafe_allow_html=True)
+# ABOVE >> Test table
 
 # Get temperature data -OPEN METEO nolonger working
 # import time
@@ -389,7 +391,7 @@ with st.spinner("Fetching temperature data..."):
         df = ms.interpolate(ts, POINT).fetch()
 
 
-        status.write(f"Processing {location.City} ({i+1}/{total})")
+        status.write(f"Getting temperature data for {location.City} ({i+1}/{total})")
 
         # Extract tavg (mean temperature)
         if not df.empty and "temp" in df.columns:
@@ -404,9 +406,10 @@ with st.spinner("Fetching temperature data..."):
 
 status.success("Temperature data loaded!")
 
-st.dataframe(
-    sampled_routes_df[["City", "Country", "Temperature"]]
-)
+# HIDE TEMP RESULT TABLE
+# st.dataframe(
+#     sampled_routes_df[["City", "Country", "Temperature"]]
+# )
 
 # UV data
 import requests
@@ -462,7 +465,7 @@ with st.spinner("Fetching UV data..."):
         lat = location.Latitude
         lon = location.Longitude
 
-        status.write(f"Processing {location.City} ({i+1}/{total})")
+        status.write(f"Getting UV data for {location.City} ({i+1}/{total})")
 
         uv_value = get_uv(lat, lon)
 
@@ -473,9 +476,10 @@ with st.spinner("Fetching UV data..."):
 
 status.success("UV data loaded!")
 
-st.dataframe(
-    sampled_routes_df[["City", "Country", "Temperature", "UV"]]
-)
+# HIDE UV RESULT TABLE
+# st.dataframe(
+#     sampled_routes_df[["City", "Country", "Temperature", "UV"]]
+# )
 
 
 
@@ -568,8 +572,6 @@ sorted_df = sampled_routes_df.sort_values(
 sorted_df["Comfort Score"] = sorted_df["Comfort Score"].round(0).astype(int)
 sorted_df["Temperature"] = sorted_df["Temperature"].map(lambda x: f"{x:.1f}")
 sorted_df["UV"] = sorted_df["UV"].map(lambda x: f"{x:.1f}")
-sorted_df["Temp_Distance"] = sorted_df["Temp_Distance"].map(lambda x: f"{x:.1f}")
-sorted_df["UV_Distance"] = sorted_df["UV_Distance"].map(lambda x: f"{x:.1f}")
 
 # Select columns
 display_df = sorted_df[
@@ -578,9 +580,7 @@ display_df = sorted_df[
         "City",
         "Country",
         "Temperature",
-        "UV",
-        "Temp_Distance",
-        "UV_Distance"
+        "UV"
     ]
 ]
 
@@ -597,6 +597,9 @@ th, td {
     text-align: center;
     padding: 6px 12px;
     border-bottom: 1px solid #ddd;
+}
+td.left {
+    text-align: left;
 }
 th {
     font-weight: bold;
@@ -615,10 +618,14 @@ html += "</tr>"
 for _, row in display_df.iterrows():
     html += "<tr>"
     for col in display_df.columns:
-        html += f"<td>{row[col]}</td>"
+        # Left-align City and Country
+        if col in ["City", "Country"]:
+            html += f"<td class='left'>{row[col]}</td>"
+        else:
+            html += f"<td>{row[col]}</td>"
     html += "</tr>"
 
 html += "</table>"
 
-# Render
 st.markdown(html, unsafe_allow_html=True)
+
