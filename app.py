@@ -740,6 +740,9 @@ sampled_routes_df["cloud_overall_max"] = cloud_overall_max
 sampled_routes_df["Travel Month"] = travel_month
 sampled_routes_df["Current year"] = current_year
 
+st.dataframe(sampled_routes_df)
+
+
 #*****************************
 # AIR POLLUTION CODE
 #*****************************
