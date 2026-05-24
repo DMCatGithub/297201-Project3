@@ -1,13 +1,10 @@
-import streamlit as st
-import meteostat as ms
-# from ms import Point, Daily
+# Example code from meteostat site - NOT USED - 
+# import streamlit as st
+# import meteostat as ms
+# # from ms import Point, Daily
 
-import pandas as pd
-from datetime import datetime
-
-st.title("Comfort Compass")
-
-# NOT USED - Example code from meteostat site
+# import pandas as pd
+# from datetime import datetime
 
 # st.title("Historical Weather Dashboard")
 
@@ -60,75 +57,70 @@ st.title("Comfort Compass")
 
 
 # Meteo Stat code
-import streamlit as st
-from datetime import date
-import meteostat as ms
+# import streamlit as st
+# from datetime import date
+# import meteostat as ms
 
-st.title("Old Meteostat API – Values Only")
+# Test code for meteostat values
 
-# Your original code — unchanged
-POINT = ms.Point(50.1155, 8.6842, 113)
-START = date(2018, 1, 1)
-END = date(2018, 1, 15)
+# POINT = ms.Point(50.1155, 8.6842, 113)
+# START = date(2018, 1, 1)
+# END = date(2018, 1, 15)
 
-stations = ms.stations.nearby(POINT, limit=4)
-ts = ms.daily(stations, START, END)
-df = ms.interpolate(ts, POINT).fetch()
+# stations = ms.stations.nearby(POINT, limit=4)
+# ts = ms.daily(stations, START, END)
+# df = ms.interpolate(ts, POINT).fetch()
 
 # Output the values instead of plotting
-st.subheader("Daily Weather Values")
-st.dataframe(df)
-
-# Optional: show summary stats
-st.subheader("Summary Statistics")
-st.write(df.describe())
+# st.subheader("Daily Weather Values")
+# st.dataframe(df)
 
 # UV test code
-import streamlit as st
-import requests
-import pandas as pd
+# import streamlit as st
+# import requests
+# import pandas as pd
 
-# st.title("UV API Test - CurrentUVIndex.com")
+# # st.title("UV API Test - CurrentUVIndex.com")
 
-def get_uv(lat, lon):
-    url = f"https://currentuvindex.com/api/v1/uvi?latitude={lat}&longitude={lon}"
+# def get_uv(lat, lon):
+#     url = f"https://currentuvindex.com/api/v1/uvi?latitude={lat}&longitude={lon}"
 
-    try:
-        r = requests.get(url, timeout=10)
-        data = r.json()
+#     try:
+#         r = requests.get(url, timeout=10)
+#         data = r.json()
 
-        st.write("### Raw API Response")
-        st.json(data)
+#         st.write("### Raw API Response")
+#         st.json(data)
 
-        # 1. Try forecast for 1 PM
-        forecast = data.get("forecast", [])
-        df_f = pd.DataFrame(forecast)
+#         # 1. Try forecast for 1 PM
+#         forecast = data.get("forecast", [])
+#         df_f = pd.DataFrame(forecast)
 
-        if not df_f.empty:
-            df_f["time"] = pd.to_datetime(df_f["time"])
-            uv_1pm = df_f[df_f["time"].dt.hour == 13]
-            if not uv_1pm.empty:
-                return float(uv_1pm["uvi"].iloc[0])
+#         if not df_f.empty:
+#             df_f["time"] = pd.to_datetime(df_f["time"])
+#             uv_1pm = df_f[df_f["time"].dt.hour == 13]
+#             if not uv_1pm.empty:
+#                 return float(uv_1pm["uvi"].iloc[0])
 
-        # 2. Try history for 1 PM
-        history = data.get("history", [])
-        df_h = pd.DataFrame(history)
+#         # 2. Try history for 1 PM
+#         history = data.get("history", [])
+#         df_h = pd.DataFrame(history)
 
-        if not df_h.empty:
-            df_h["time"] = pd.to_datetime(df_h["time"])
-            uv_1pm = df_h[df_h["time"].dt.hour == 13]
-            if not uv_1pm.empty:
-                return float(uv_1pm["uvi"].iloc[0])
+#         if not df_h.empty:
+#             df_h["time"] = pd.to_datetime(df_h["time"])
+#             uv_1pm = df_h[df_h["time"].dt.hour == 13]
+#             if not uv_1pm.empty:
+#                 return float(uv_1pm["uvi"].iloc[0])
 
-        # 3. Fallback: current UV
-        if "now" in data and "uvi" in data["now"]:
-            return float(data["now"]["uvi"])
+#         # 3. Fallback: current UV
+#         if "now" in data and "uvi" in data["now"]:
+#             return float(data["now"]["uvi"])
 
-        return float("nan")
+#         return float("nan")
 
-    except Exception as e:
-        # st.error(f"Error: {e}")
-        return float("nan")
+#     except Exception as e:
+#         # st.error(f"Error: {e}")
+#         return float("nan")
 
 
 # -------------------------
@@ -140,14 +132,14 @@ def get_uv(lat, lon):
 #     ["Auckland", "New York", "London", "Mumbai"]
 # )
 
-coords = {
-    "Auckland": (-36.8485, 174.7633),
-    "New York": (40.7128, -74.0060),
-    "London": (51.5074, -0.1278),
-    "Mumbai": (19.0760, 72.8777),
-}
+# coords = {
+#     "Auckland": (-36.8485, 174.7633),
+#     "New York": (40.7128, -74.0060),
+#     "London": (51.5074, -0.1278),
+#     "Mumbai": (19.0760, 72.8777),
+# }
 
-lat, lon = coords[city]
+# lat, lon = coords[city]
 
 # if st.button("Test UV API"):
 #     st.write(f"### Testing UV for {city}")
@@ -247,7 +239,11 @@ lat, lon = coords[city]
 # }
 
 # NEW CODE
+import streamlit as st
+# from datetime import date
+# import meteostat as ms
 
+st.title("Comfort Compass")
 def weather_block(
     title,
     input_widget,
