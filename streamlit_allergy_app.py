@@ -421,34 +421,35 @@ def get_uv(lat, lon):
         r = requests.get(url, timeout=10)
         data = r.json()
 
-        # 1. Try forecast for 1 PM
-        forecast = data.get("forecast", [])
-        df_f = pd.DataFrame(forecast)
+        uv_values = []
 
-        if not df_f.empty:
-            df_f["time"] = pd.to_datetime(df_f["time"])
-            uv_1pm = df_f[df_f["time"].dt.hour == 13]
-            if not uv_1pm.empty:
-                return float(uv_1pm["uvi"].iloc[0])
-
-        # 2. Try history for 1 PM
+        # 1. Add all UV values from the past 24 hours (history)
         history = data.get("history", [])
         df_h = pd.DataFrame(history)
 
         if not df_h.empty:
-            df_h["time"] = pd.to_datetime(df_h["time"])
-            uv_1pm = df_h[df_h["time"].dt.hour == 13]
-            if not uv_1pm.empty:
-                return float(uv_1pm["uvi"].iloc[0])
+            uv_values.extend(df_h["uvi"].astype(float).tolist())
 
-        # 3. Fallback: current UV
+        # 2. Add all UV values from forecast (today + next 2 days)
+        forecast = data.get("forecast", [])
+        df_f = pd.DataFrame(forecast)
+
+        if not df_f.empty:
+            uv_values.extend(df_f["uvi"].astype(float).tolist())
+
+        # 3. Add current UV as fallback
         if "now" in data and "uvi" in data["now"]:
-            return float(data["now"]["uvi"])
+            uv_values.append(float(data["now"]["uvi"]))
+
+        # 4. Return the maximum UV value found
+        if uv_values:
+            return max(uv_values)
 
         return float("nan")
 
     except:
         return float("nan")
+
 
 
 with st.spinner("Fetching UV data..."):
