@@ -1098,7 +1098,7 @@ def get_airports_weather(sampled_routes_df):
 
 
 # **********************
-# FILES AND DATAFRAMES
+# FILES AND DATAFRAMES - IS THIS USED?
 # **********************
 import os
 def dump_complete_to_a_files(df_list):
@@ -1128,15 +1128,20 @@ def dump_complete_to_a_files(df_list):
 # 5.5s for 1 year 10 airports
 # random_ten = airports_df.sample(n=10)
 random_ten_weather = get_airports_weather(sampled_routes_df)
-# **********************
-# PICK 10 THEN RUN CALL WITH DATES
-# **********************
+random_ten_weather = pd.concat(random_ten_weather, ignore_index=True)
 
 
-
-# HIDE TEMP RESULT TABLE
+# TEMP RESULTS FOR DEBUGING
 st.dataframe(
-    random_ten_weather[["City", "Country", "Temperature", "Humidity","Rain","Wind Speed","Cloud Cover"]]
+    random_ten_weather[[
+        "City", 
+        "Country", 
+        "temperature_2m_mean",
+        "cloud_cover_mean",
+        "relative_humidity_2m_mean",
+        "wind_speed_10m_mean",
+        "rain_sum"
+        ]]
 )
 
 # ****************************************
