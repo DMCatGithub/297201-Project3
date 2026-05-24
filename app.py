@@ -574,22 +574,23 @@ travel_time = st.number_input(
 # months = list(calendar.month_name)[1:]
 # selected_month = st.selectbox("What month do you plan to travel?", months)
 # *****************
-import calendar
+# import calendar
+# import datetime
 
-months_full = list(calendar.month_name)[1:]  # January → December
+months_short = [calendar.month_abbr[i] for i in range(1, 13)]
 
 selected_month = st.pills(
     "Travel Month",
-    options=months_full,
-    default="January",
-    key="travel_month_full"
+    options=months_short,
+    default="Jan",
+    key="travel_month_short"
 )
-
-
 
 current_year = datetime.datetime.now().year
 
-travel_month = months.index(selected_month) + 1
+# Convert short month name → month number
+travel_month = months_short.index(selected_month) + 1
+
 
 AVG_CAR_SPEED = 80  # km/h
 AVG_PLANE_SPEED = 800  # km/h
