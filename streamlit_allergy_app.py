@@ -409,12 +409,6 @@ st.dataframe(
 )
 
 # UV data
-import streamlit as st
-import requests
-import time
-import pandas as pd
-
-# Add UV column
 sampled_routes_df["UV"] = float("nan")
 
 def get_uv(lat, lon):
@@ -424,19 +418,31 @@ def get_uv(lat, lon):
         r = requests.get(url, timeout=10)
         data = r.json()
 
-        # Prefer 1 PM UV if available
-        history = data.get("history", [])
-        df = pd.DataFrame(history)
+        # 1. Try forecast for 1 PM
+        forecast = data.get("forecast", [])
+        df_f = pd.DataFrame(forecast)
 
-        if not df.empty:
-            df["time"] = pd.to_datetime(df["time"])
-            uv_1pm = df[df["time"].dt.hour == 13]
-
+        if not df_f.empty:
+            df_f["time"] = pd.to_datetime(df_f["time"])
+            uv_1pm = df_f[df_f["time"].dt.hour == 13]
             if not uv_1pm.empty:
-                return float(uv_1pm["uv_index"].iloc[0])
+                return float(uv_1pm["uvi"].iloc[0])
 
-        # Fallback: current UV
-        return float(data.get("uv_index", float("nan")))
+        # 2. Try history for 1 PM
+        history = data.get("history", [])
+        df_h = pd.DataFrame(history)
+
+        if not df_h.empty:
+            df_h["time"] = pd.to_datetime(df_h["time"])
+            uv_1pm = df_h[df_h["time"].dt.hour == 13]
+            if not uv_1pm.empty:
+                return float(uv_1pm["uvi"].iloc[0])
+
+        # 3. Fallback: current UV
+        if "now" in data and "uvi" in data["now"]:
+            return float(data["now"]["uvi"])
+
+        return float("nan")
 
     except:
         return float("nan")
@@ -466,3 +472,4 @@ status.success("UV data loaded!")
 st.dataframe(
     sampled_routes_df[["City", "Country", "Temperature", "UV"]]
 )
+
