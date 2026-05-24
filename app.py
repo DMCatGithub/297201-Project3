@@ -294,17 +294,29 @@ def compute_overall_range(selected_tuple, range_map):
 st.markdown("""
 <style>
 
-    /* Segmented control buttons (the labels) */
-    div[role="radiogroup"] > label {
-        border-radius: 2rem !important;   /* your buttonRadius */
-        padding: 6px 12px !important;
+    /* Outer wrapper for each segmented button */
+    div[role="radiogroup"] > div {
+        display: inline-flex !important;
         margin-right: 6px !important;
+    }
+
+    /* The actual clickable button */
+    div[role="radiogroup"] > div > label {
+        border-radius: 2rem !important;
+        padding: 6px 14px !important;
         border: 1px solid #ddd !important;
+        background-color: #fafafa !important;
         cursor: pointer;
+        transition: all 0.15s ease-in-out;
+    }
+
+    /* Hover effect */
+    div[role="radiogroup"] > div > label:hover {
+        background-color: #f0f0f0 !important;
     }
 
     /* Selected segmented control button */
-    div[role="radiogroup"] > label[data-selected="true"] {
+    div[role="radiogroup"] > div > label[data-selected="true"] {
         border-radius: 2rem !important;
         background-color: #E0F2F1 !important;  /* pastel highlight */
         border-color: #80CBC4 !important;
@@ -318,6 +330,7 @@ st.markdown("""
 
 </style>
 """, unsafe_allow_html=True)
+
 
 
 
