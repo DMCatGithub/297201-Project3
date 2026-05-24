@@ -244,9 +244,9 @@ temp_value, temp_priority, temp_disabled = weather_block(
     default_priority="Medium Priority"
 )
 
-if not temp_disabled:
-    temp_overall_min = temp_value[0]
-    temp_overall_max = temp_value[1]
+# if not temp_disabled:
+temp_overall_min = temp_value[0]
+temp_overall_max = temp_value[1]
 
 uv_categories = [
     "Low (1-2)",
@@ -267,9 +267,9 @@ uv_value, uv_priority, uv_disabled = weather_block(
     priority_key="uv_priority"
 )
 
-if not uv_disabled:
-    uv_overall_min = 1   # fixed
-    uv_overall_max = uv_value      # user-selected
+# if not uv_disabled:
+uv_overall_min = 1   # fixed
+uv_overall_max = uv_value      # user-selected
 
 
 
