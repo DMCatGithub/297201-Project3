@@ -1156,43 +1156,43 @@ st.dataframe(
 # import requests
 # import pandas as pd
 
-# sampled_routes_df["UV"] = float("nan")
+sampled_routes_df["UV"] = float("nan")
 
-# def get_uv(lat, lon):
-#     url = f"https://currentuvindex.com/api/v1/uvi?latitude={lat}&longitude={lon}"
+def get_uv(lat, lon):
+    url = f"https://currentuvindex.com/api/v1/uvi?latitude={lat}&longitude={lon}"
 
-#     try:
-#         r = requests.get(url, timeout=10)
-#         data = r.json()
+    try:
+        r = requests.get(url, timeout=10)
+        data = r.json()
 
-#         uv_values = []
+        uv_values = []
 
-#         # 1. Add all UV values from the past 24 hours (history)
-#         history = data.get("history", [])
-#         df_h = pd.DataFrame(history)
+        # 1. Add all UV values from the past 24 hours (history)
+        history = data.get("history", [])
+        df_h = pd.DataFrame(history)
 
-#         if not df_h.empty:
-#             uv_values.extend(df_h["uvi"].astype(float).tolist())
+        if not df_h.empty:
+            uv_values.extend(df_h["uvi"].astype(float).tolist())
 
-#         # 2. Add all UV values from forecast (today + next 2 days)
-#         forecast = data.get("forecast", [])
-#         df_f = pd.DataFrame(forecast)
+        # 2. Add all UV values from forecast (today + next 2 days)
+        forecast = data.get("forecast", [])
+        df_f = pd.DataFrame(forecast)
 
-#         if not df_f.empty:
-#             uv_values.extend(df_f["uvi"].astype(float).tolist())
+        if not df_f.empty:
+            uv_values.extend(df_f["uvi"].astype(float).tolist())
 
-#         # 3. Add current UV as fallback
-#         if "now" in data and "uvi" in data["now"]:
-#             uv_values.append(float(data["now"]["uvi"]))
+        # 3. Add current UV as fallback
+        if "now" in data and "uvi" in data["now"]:
+            uv_values.append(float(data["now"]["uvi"]))
 
-#         # 4. Return the maximum UV value found
-#         if uv_values:
-#             return max(uv_values)
+        # 4. Return the maximum UV value found
+        if uv_values:
+            return max(uv_values)
 
-#         return float("nan")
+        return float("nan")
 
-#     except:
-#         return float("nan")
+    except:
+        return float("nan")
 
 
 
