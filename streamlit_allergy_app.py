@@ -29,9 +29,32 @@ routes_df.columns = ["Airline", "AirlineID", "Departure_Airport", "Departure_Air
 # UV Colour chart with more info
 # st.markdown("#### UV Index Guide")
 
-with st.expander("Show UV Index Guide"):
-    st.markdown(html, unsafe_allow_html=True)
+# uv_levels = [
+#     ("Low (1–2)", "Burn ~60 min — Minimal protection", "#3CB371", "white"),
+#     ("Moderate (3–5)", "Burn ~40 min — Protection recommended", "#FFD700", "black"),
+#     ("High (6–7)", "Burn ~30 min — Protection essential", "#FF8C00", "white"),
+#     ("Very High (8–10)", "Burn ~20 min — Extra protection needed", "#FF4500", "white"),
+#     ("Extreme (11+)", "Burn <15 min — Avoid sun exposure", "#9400D3", "white"),
+# ]
 
+# for title, desc, color, text_color in uv_levels:
+#     st.markdown(
+#         f"""
+#         <div style="
+#             background-color:{color};
+#             padding:8px 12px;
+#             border-radius:6px;
+#             margin-bottom:6px;
+#             color:{text_color};
+#             font-weight:600;
+#             font-size:14px;">
+#             {title} — {desc}
+#         </div>
+#         """,
+#         unsafe_allow_html=True
+#     )
+
+with st.expander("Show UV Index Guide"):
 
     uv_levels = [
         ("Low (1–2)", "Burn ~60 min — Minimal protection", "#3CB371", "white"),
@@ -58,7 +81,8 @@ with st.expander("Show UV Index Guide"):
             unsafe_allow_html=True
         )
 
-
+with st.expander("Show Comfort Score Table"):
+    st.markdown(html, unsafe_allow_html=True)
 
 # 1. Set UV Slider
 UV_lo = 1   # fixed
