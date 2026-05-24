@@ -304,32 +304,51 @@ def compute_overall_range(selected_tuple, range_map):
 #     "Extreme (11+)": (11, 11)
 # }
 
+temp_value, temp_priority, temp_disabled = weather_block(
+    "Temperature",
+    input_widget=lambda: st.slider(
+        "Select preferred temperature range (°C):",
+        min_value=-10,
+        max_value=50,
+        value=(20, 25),
+        key="temp_slider"
+    ),
+    priority_key="temp_priority"
+)
+
+
 
 uv_value, uv_priority, uv_disabled = weather_block(
     "UV Index",
     input_widget=lambda: st.slider(
         "Select preferred maximum UV index (see UV index guide below):",
-        min_value=1,
-        max_value=11,
-        value=3,
+        options=[
+            "Low (1-2)",
+            "Moderate (3-5)",
+            "High (6-7)",
+            "Very High (8-10)",
+            "Extreme (11+)"
+        ],
+        value="Moderate (3-5)",
         key="uv_slider"
     ),
     priority_key="uv_priority"
 )
 
+
 uv_ranges = {
-    "Low (1-2)": range(1, 3),
-    "Moderate (3-5)": range(3, 6),
-    "High (6-7)": range(6, 8),
-    "Very High (8-10)": range(8, 11),
-    "Extreme (11+)": range(11, 12)
+    "Low (1-2)": (1, 3),
+    "Moderate (3-5)": (3, 6),
+    "High (6-7)": (6, 8),
+    "Very High (8-10)": (8, 11),
+    "Extreme (11+)": (11, 12)
 }
+
 
 uv_overall_min, uv_overall_max = compute_overall_range(
     uv_value,
     uv_ranges
 )
-
 
 
 with st.expander("Show UV Index Guide"):
@@ -359,18 +378,38 @@ with st.expander("Show UV Index Guide"):
             unsafe_allow_html=True
         )
 
-temp_value, temp_priority, temp_disabled = weather_block(
-    "Temperature",
-    input_widget=lambda: st.slider(
-        "Select preferred temperature range (°C):",
-        min_value=-10,
-        max_value=50,
-        value=(20, 25),
-        key="temp_slider"
+
+humidity_value, humidity_priority, humidity_disabled = weather_block(
+    "Humidity",
+    input_widget=lambda: st.select_slider(
+        "Select preferred humidity range:",
+        options=[
+            "Very Dry",
+            "Dry",
+            "Comfortable",
+            "Humid",
+            "Very Humid",
+            "Extremely Humid"
+        ],
+        value=("Comfortable", "Humid"),
+        key="humidity_slider"
     ),
-    priority_key="temp_priority"
+    priority_key="humidity_priority"
 )
 
+humidity_ranges = {
+    "Very Dry": (0, 30),
+    "Dry": (30, 40),
+    "Comfortable": (40, 60),
+    "Humid": (60, 75),
+    "Very Humid": (75, 90),
+    "Extremely Humid": (90, 100)
+}
+
+humidity_overall_min, humidity_overall_max = compute_overall_range(
+    humidity_value,
+    humidity_ranges
+)
 
 
 wind_value, wind_priority, wind_disabled = weather_block(
@@ -463,38 +502,6 @@ rain_overall_min, rain_overall_max = compute_overall_range(
 
 
 
-
-humidity_value, humidity_priority, humidity_disabled = weather_block(
-    "Humidity",
-    input_widget=lambda: st.select_slider(
-        "Select preferred humidity range:",
-        options=[
-            "Very Dry",
-            "Dry",
-            "Comfortable",
-            "Humid",
-            "Very Humid",
-            "Extremely Humid"
-        ],
-        value=("Comfortable", "Humid"),
-        key="humidity_slider"
-    ),
-    priority_key="humidity_priority"
-)
-
-humidity_ranges = {
-    "Very Dry": (0, 30),
-    "Dry": (30, 40),
-    "Comfortable": (40, 60),
-    "Humid": (60, 75),
-    "Very Humid": (75, 90),
-    "Extremely Humid": (90, 100)
-}
-
-humidity_overall_min, humidity_overall_max = compute_overall_range(
-    humidity_value,
-    humidity_ranges
-)
 
 
 
