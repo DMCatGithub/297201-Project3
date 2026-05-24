@@ -409,6 +409,9 @@ st.dataframe(
 )
 
 # UV data
+import requests
+import pandas as pd
+
 sampled_routes_df["UV"] = float("nan")
 
 def get_uv(lat, lon):
