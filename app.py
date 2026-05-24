@@ -240,7 +240,7 @@ temp_value, temp_priority, temp_disabled = weather_block(
         value=(20, 25),
         key="temp_slider"
     ),
-    priority_key="temp_priority"
+    priority_key="temp_priority",
     default_priority="Medium Priority"
 )
 
