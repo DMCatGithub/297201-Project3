@@ -558,7 +558,14 @@ with st.expander("Show Cloud Cover Guide"):
 # CODE FROM ORIGINAL COMFORT COMPASS APP
 
 # 3. Select travel mode
-travel_mode = st.radio("How will you travel?",["Car", "Plane"])
+# travel_mode = st.radio("How will you travel?:",["Car", "Plane"])
+travel_mode = st.pills(
+    "How will you travel?",
+    options=["Car", "Plane"],
+    default="Car",
+    key="travel_mode"
+)
+
 
 travel_time = st.number_input(
     "Maximum travel time (hours)",
@@ -580,7 +587,7 @@ travel_time = st.number_input(
 months_short = [calendar.month_abbr[i] for i in range(1, 13)]
 
 selected_month = st.pills(
-    "Travel Month",
+    "What month do you plan to travel?:",
     options=months_short,
     default="Jan",
     key="travel_month_short"
