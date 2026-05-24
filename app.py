@@ -277,10 +277,15 @@ temp_value, temp_priority, temp_disabled = weather_block(
     "Temperaturezzz",
     disable_key="disable_temp",
     input_widget=lambda: st.slider(
-        "Preferred Temperature (°C)", -10, 40, 20, 25, key="temp_slider"
+        "Preferred Temperature (°C)",
+        min_value=-10,
+        max_value=40,
+        value=(20, 25),     # low + high defaults
+        key="temp_slider"
     ),
     priority_key="temp_priority"
 )
+
 
 wind_value, wind_priority, wind_disabled = weather_block(
     "Wind",
