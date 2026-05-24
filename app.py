@@ -255,6 +255,7 @@ def weather_block(
     priority = st.selectbox(
         f"{title} Priority",
         ["Disabled", "Low Priority", "Medium Priority", "High Priority"],
+        index=2,   # <-- Default to Medium Priority
         key=priority_key
     )
 
@@ -266,6 +267,7 @@ def weather_block(
     value = input_widget()
 
     return value, priority, False
+
 
 
 temp_value, temp_priority, temp_disabled = weather_block(
