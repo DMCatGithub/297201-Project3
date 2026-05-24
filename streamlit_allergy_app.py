@@ -62,7 +62,7 @@ UV_hi = st.slider(
     "Select preferred maximum UV index (see UV index guide below):",
     min_value = 1,
     max_value = 11,
-    value = 5, # default value
+    value = 3, # default value
     step = 1
 )
 
@@ -539,33 +539,36 @@ sampled_routes_df["Comfort Score"] = sampled_routes_df.apply(
 #     ]
 # )
 
-# Sort by Comfort Score (descending) and remove index
+# Sort by Comfort Score
 sorted_df = sampled_routes_df.sort_values(
-    by="Comfort Score",
+    by="Comfort_Score",
     ascending=False
 ).reset_index(drop=True)
 
-# Format columns
-sorted_df["Comfort Score"] = sorted_df["Comfort Score"].round(1)
+# Format
+sorted_df["Comfort_Score"] = sorted_df["Comfort_Score"].round(0).astype(int)
 sorted_df["Temperature"] = sorted_df["Temperature"].round(1)
 sorted_df["UV"] = sorted_df["UV"].round(1)
 
-# Centre all values using pandas Styler
+# Select columns BEFORE styling
+display_df = sorted_df[
+    [
+        "Comfort_Score",
+        "City",
+        "Country",
+        "Temperature",
+        "UV",
+        "Temp_Distance",
+        "UV_Distance"
+    ]
+]
+
+# Centre all values
 styled_df = (
-    sorted_df.style
+    display_df.style
     .set_properties(**{"text-align": "center"})
     .set_table_styles([dict(selector="th", props=[("text-align", "center")])])
 )
 
 # Display
-st.dataframe(
-    styled_df[
-        [
-            "Comfort Score",
-            "City",
-            "Country",
-            "Temperature",
-            "UV"
-        ]
-    ]
-)
+st.dataframe(styled_df)
