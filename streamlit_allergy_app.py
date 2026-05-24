@@ -527,17 +527,17 @@ sampled_routes_df["Comfort Score"] = sampled_routes_df.apply(
 #     ascending=False
 # ).reset_index(drop=True)
 
-st.dataframe(
-    sorted_df[
-        [
-            "Comfort Score",
-            "City",
-            "Country",
-            "Temperature",
-            "UV"
-        ]
-    ]
-)
+# st.dataframe(
+#     sorted_df[
+#         [
+#             "Comfort Score",
+#             "City",
+#             "Country",
+#             "Temperature",
+#             "UV"
+#         ]
+#     ]
+# )
 
 # Sort by Comfort Score (descending) and remove index
 sorted_df = sampled_routes_df.sort_values(
