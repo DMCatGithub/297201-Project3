@@ -1125,17 +1125,23 @@ def dump_complete_to_a_files(df_list):
 # **********************
 # PICK 10 THEN RUN CALL WITH DATES
 # **********************
-# 5.5s for 1 year 10 airports
-# random_ten = airports_df.sample(n=10)
+
+sampled_routes_df = sampled_routes_df.reset_index(drop=True)
 random_ten_weather = get_airports_weather(sampled_routes_df)
-random_ten_weather = pd.concat(random_ten_weather, ignore_index=True)
+# random_ten_weather = pd.concat(random_ten_weather, ignore_index=True)
+
+weather_results_df = sampled_routes_df.merge(
+    random_ten_weather,
+    on="Arrival_Airport",
+    how="left"
+)
 
 
 # TEMP RESULTS FOR DEBUGING
 st.dataframe(
-    random_ten_weather[[
-        # "City", 
-        # "Country", 
+    weather_results_df[[
+        "City", 
+        "Country", 
         "temperature_2m_mean",
         "cloud_cover_mean",
         "relative_humidity_2m_mean",
