@@ -475,13 +475,13 @@ wind_overall_min, wind_overall_max = compute_overall_range(
 with st.expander("Show Wind Speed Guide"):
 
     wind_levels = [
-        ("Calm (0–1 mph)", "Sea like a mirror — Smoke rises vertically", "#E0FFFF", "black"),
-        ("Light Air (1–3 mph)", "Ripples with no foam crests — Smoke drifts", "#AFEEEE", "black"),
-        ("Light Breeze (4–7 mph)", "Small wavelets — Leaves rustle", "#87CEFA", "black"),
-        ("Gentle Breeze (8–12 mph)", "Large wavelets — Leaves and twigs in motion", "#00BFFF", "black"),
-        ("Moderate Breeze (13–18 mph)", "Small waves — Dust and loose paper blow", "#1E90FF", "white"),
-        ("Fresh Breeze (19–24 mph)", "Moderate waves — Small trees sway", "#4169E1", "white"),
-        ("Strong Breeze (25–31 mph)", "Large waves — Large branches move", "#00008B", "white"),
+        ("Calm (0–2 km/h)", "Sea like a mirror — Smoke rises vertically", "#C8E6C9", "black"),
+        ("Light Air (2–5 km/h)", "Ripples with no foam crests — Smoke drifts", "#AED581", "black"),
+        ("Light Breeze (6–11 km/h)", "Small wavelets — Leaves rustle", "#FFEB3B", "black"),
+        ("Gentle Breeze (12–19 km/h)", "Large wavelets — Leaves and twigs in motion", "#FFC107", "black"),
+        ("Moderate Breeze (20–28 km/h)", "Small waves — Dust and loose paper blow", "#FF9800", "black"),
+        ("Fresh Breeze (29–38 km/h)", "Moderate waves — Small trees sway", "#F57C00", "white"),
+        ("Strong Breeze (39–50 km/h)", "Large waves — Large branches move", "#D32F2F", "white"),
     ]
 
     for title, desc, color, text_color in wind_levels:
@@ -500,7 +500,6 @@ with st.expander("Show Wind Speed Guide"):
             """,
             unsafe_allow_html=True
         )
-
 
 
 rain_value, rain_priority, rain_disabled = weather_block(
@@ -596,11 +595,11 @@ cloud_overall_min, cloud_overall_max = compute_overall_range(
 with st.expander("Show Cloud Cover Guide"):
 
     cloud_levels = [
-        ("Clear Sky (0–1 OKTA)", "Blue sky — no significant clouds", "#87CEEB", "black"),
-        ("Few Clouds (1–3 OKTA)", "Mostly sunny — small patches of cloud", "#ADD8E6", "black"),
-        ("Scattered Clouds (3–5 OKTA)", "Mix of sun and cloud", "#B0C4DE", "black"),
-        ("Broken Clouds (5–7 OKTA)", "Mostly cloudy — sun appears occasionally", "#778899", "white"),
-        ("Overcast (8 OKTA)", "Fully covered sky — no direct sunlight", "#708090", "white"),
+        ("Clear Sky (0–1 OKTA)", "Blue sky — no significant clouds", "#F5F5F5", "black"),
+        ("Few Clouds (1–3 OKTA)", "Mostly sunny — small patches of cloud", "#E0E0E0", "black"),
+        ("Scattered Clouds (3–5 OKTA)", "Mix of sun and cloud", "#BDBDBD", "black"),
+        ("Broken Clouds (5–7 OKTA)", "Mostly cloudy — sun appears occasionally", "#9E9E9E", "white"),
+        ("Overcast (8 OKTA)", "Fully covered sky — no direct sunlight", "#616161", "white"),
     ]
 
     for title, desc, color, text_color in cloud_levels:
@@ -619,6 +618,7 @@ with st.expander("Show Cloud Cover Guide"):
             """,
             unsafe_allow_html=True
         )
+
 
 
 # CODE FROM ORIGINAL COMFORT COMPASS APP
