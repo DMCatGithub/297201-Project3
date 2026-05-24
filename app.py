@@ -287,153 +287,7 @@ def compute_overall_range(selected_tuple, range_map):
 # --- GLOBAL SLIDER STYLE OVERRIDE ---
 
 
-st.markdown("""
-<style>
 
-#temp_slider .stSlider > div[data-baseweb="slider"] > div > div {
-    background: #FFE0B2 !important;   /* track */
-}
-
-#temp_slider .stSlider > div[data-baseweb="slider"] > div > div > div {
-    background: #FFB74D !important;   /* filled */
-}
-
-#temp_slider .stSlider > div[data-baseweb="slider"] span {
-    background: #FB8C00 !important;   /* thumb */
-    border: 2px solid #EF6C00 !important;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<style>
-
-#wind_slider .stSlider > div[data-baseweb="slider"] > div > div {
-    background: #E8F5E9 !important;   /* pastel mint track */
-}
-
-#wind_slider .stSlider > div[data-baseweb="slider"] > div > div > div {
-    background: #FFAB91 !important;   /* pastel coral filled */
-}
-
-#wind_slider .stSlider > div[data-baseweb="slider"] span {
-    background: #EF9A9A !important;   /* pastel red thumb */
-    border: 2px solid #D32F2F !important;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<style>
-
-#rain_slider .stSlider > div[data-baseweb="slider"] > div > div {
-    background: #E3F2FD !important;   /* light pastel blue */
-}
-
-#rain_slider .stSlider > div[data-baseweb="slider"] > div > div > div {
-    background: #90CAF9 !important;   /* medium pastel blue */
-}
-
-#rain_slider .stSlider > div[data-baseweb="slider"] span {
-    background: #42A5F5 !important;   /* deeper pastel blue */
-    border: 2px solid #1E88E5 !important;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-
-st.markdown("""
-<style>
-
-#humidity_slider .stSlider > div[data-baseweb="slider"] > div > div {
-    background: #FFF9C4 !important;   /* pastel yellow */
-}
-
-#humidity_slider .stSlider > div[data-baseweb="slider"] > div > div > div {
-    background: #90CAF9 !important;   /* pastel blue */
-}
-
-#humidity_slider .stSlider > div[data-baseweb="slider"] span {
-    background: #64B5F6 !important;   /* thumb */
-    border: 2px solid #42A5F5 !important;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-
-st.markdown("""
-<style>
-
-#cloud_slider .stSlider > div[data-baseweb="slider"] > div > div {
-    background: #E0E0E0 !important;   /* light grey */
-}
-
-#cloud_slider .stSlider > div[data-baseweb="slider"] > div > div > div {
-    background: #9E9E9E !important;   /* medium grey */
-}
-
-#cloud_slider .stSlider > div[data-baseweb="slider"] span {
-    background: #616161 !important;   /* dark grey thumb */
-    border: 2px solid #424242 !important;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<style>
-
-#uv_slider .stSlider > div[data-baseweb="slider"] > div > div {
-    background: #E8F5E9 !important;   /* pastel mint */
-}
-
-#uv_slider .stSlider > div[data-baseweb="slider"] > div > div > div {
-    background: #F8BBD0 !important;   /* pastel pink */
-}
-
-#uv_slider .stSlider > div[data-baseweb="slider"] span {
-    background: #F48FB1 !important;   /* thumb */
-    border: 2px solid #EC407A !important;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<style>
-
-    /* Remove white hover/focus halos on slider ends */
-    .stSlider > div[data-baseweb="slider"] > div:before,
-    .stSlider > div[data-baseweb="slider"] > div:after {
-        display: none !important;
-    }
-
-    /* Remove focus outline on thumb */
-    .stSlider > div[data-baseweb="slider"] span:focus {
-        outline: none !important;
-        box-shadow: none !important;
-    }
-
-</style>
-""", unsafe_allow_html=True)
-
-# temp_value, temp_priority, temp_disabled = weather_block(
-#     "Temperature",
-#     input_widget=lambda: st.slider(
-#         "Select preferred temperature range (°C):",
-#         min_value=-10,
-#         max_value=50,
-#         value=(20, 25),
-#         key="temp_slider"
-#     ),
-#     priority_key="temp_priority"
-# )
-
-st.markdown('<div id="temp_slider">', unsafe_allow_html=True)
 temp_value, temp_priority, temp_disabled = weather_block(
     "Temperature",
     input_widget=lambda: st.slider(
@@ -441,12 +295,10 @@ temp_value, temp_priority, temp_disabled = weather_block(
         min_value=-10,
         max_value=50,
         value=(20, 25),
-        key="temp_slider_widget"
+        key="temp_slider"
     ),
     priority_key="temp_priority"
 )
-st.markdown('</div>', unsafe_allow_html=True)
-
 
 uv_categories = [
     "Low (1-2)",
