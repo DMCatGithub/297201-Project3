@@ -6,6 +6,19 @@ import time
 from math import radians, sin, cos, sqrt, atan2
 
 
+# LOAD AIRPORTS: Turn airports.dat in dataframe airports_df
+airports_df = pd.read_csv("airports.dat", header=None)
+airports_df.columns = ["AirportID", "Airport", "City", "Country", "IATA", "ICAO", "Latitude", "Longitude", "Altitude", "Timezone", "DST", "TZ", "Type", "Source"]
+
+# Removeing duplicate cities in same country (Only want city to show once in selection)
+airports_unique_cities_df = airports_df.drop_duplicates(subset=["Country", "City"])
+
+# LOAD ROUTES: Turn routes.dat into dataframe routes_df
+routes_df = pd.read_csv("routes.dat", header=None)
+routes_df.columns = ["Airline", "AirlineID", "Departure_Airport", "Departure_AirportID", "Arrival_Airport", "Arrival_AirportID", "Codeshare", "Stops", "Equipment"]
+
+
+
 
 
 # Example code from meteostat site - NOT USED - 
@@ -223,13 +236,17 @@ temp_value, temp_priority, temp_disabled = weather_block(
     "Temperature",
     input_widget=lambda: st.slider(
         "Select preferred temperature range (°C):",
-        min_value=-10,
+        min_value=-20,
         max_value=50,
         value=(20, 25),
         key="temp_slider"
     ),
     priority_key="temp_priority"
 )
+
+if not temp_disabled:
+    temp_overall_min = temp_value[0]
+    temp_overall_max = temp_value[1]
 
 uv_categories = [
     "Low (1-2)",
@@ -239,34 +256,21 @@ uv_categories = [
     "Extreme (11+)"
 ]
 
-
 uv_value, uv_priority, uv_disabled = weather_block(
     "UV Index",
     input_widget=lambda: st.select_slider(
-        "Select preferred UV category range:",
+        "Select maximum UV category:",
         options=uv_categories,
-        value=("Low (1-2)", "Moderate (3-5)"),
+        value="Moderate (3-5)",
         key="uv_slider"
     ),
     priority_key="uv_priority"
 )
 
+if not uv_disabled:
+    uv_overall_min = "Low (1-2)"   # fixed
+    uv_overall_max = uv_value      # user-selected
 
-
-uv_ranges = {
-    "Low (1-2)": (1, 2),
-    "Moderate (3-5)": (3, 5),
-    "High (6-7)": (6, 7),
-    "Very High (8-10)": (8, 10),
-    "Extreme (11+)": (11, 11)
-}
-
-
-
-uv_overall_min, uv_overall_max = compute_overall_range(
-    uv_value,
-    uv_ranges
-)
 
 
 with st.expander("Show UV Index Guide"):
@@ -550,7 +554,7 @@ with st.expander("Show Cloud Cover Guide"):
         )
 
 
-
+#**************************************************************************************
 # CODE FROM ORIGINAL COMFORT COMPASS APP
 
 # 3. Select travel mode
@@ -687,14 +691,9 @@ def plane_destinations ():
         routes_from_df.at[idx,"City"] = city
         routes_from_df.at[idx,"Country"] = country
 
-        routes_from_df.at[idx,"Travel_Month"] = travel_month
-        routes_from_df.at[idx,"Current_year"] = current_year
 
-        routes_from_df.at[idx,"Temp_hi"] = Temp_hi
-        routes_from_df.at[idx,"Temp_lo"] = Temp_lo
 
-        routes_from_df.at[idx,"UV_hi"] = UV_hi
-        routes_from_df.at[idx,"UV_lo"] = UV_lo
+
 
     # routes_from_df
 
@@ -716,18 +715,34 @@ def plane_destinations ():
 
 # Run function plane_destinations
 sampled_routes_df = plane_destinations();
-
+        
+# Add new columns 
 sampled_routes_df["Distance"] = sampled_routes_df["Distance"].round(0).astype(int).astype(str) + " km"
 
-sampled_routes_df["Temp_hi"] = Temp_hi
-sampled_routes_df["Temp_lo"] = Temp_lo
+sampled_routes_df["temp_overall_min"] = temp_overall_min
+sampled_routes_df["temp_overall_max"] = temp_overall_max
 
-sampled_routes_df["UV_hi"] = UV_hi
-sampled_routes_df["UV_lo"] = UV_lo
+sampled_routes_df["uv_overall_min"] = uv_overall_min
+sampled_routes_df["uv_overall_max"] = uv_overall_max
+
+sampled_routes_df["humidity_overall_min"] = humidity_overall_min
+sampled_routes_df["humidity_overall_max"] = humidity_overall_max
+
+sampled_routes_df["wind_overall_min"] = wind_overall_min
+sampled_routes_df["wind_overall_max"] = wind_overall_max
+
+sampled_routes_df["rain_overall_min"] = rain_overall_min
+sampled_routes_df["rain_overall_max"] = rain_overall_max
+
+sampled_routes_df["cloud_overall_min"] = cloud_overall_min
+sampled_routes_df["cloud_overall_max"] = cloud_overall_max
 
 sampled_routes_df["Travel Month"] = travel_month
 sampled_routes_df["Current year"] = current_year
 
+#*****************************
+# AIR POLLUTION CODE
+#*****************************
 # Updte with API data
 # Test code for output with air polution
 # sampled_routes_df["Comfort Score"] = 57
@@ -885,115 +900,286 @@ sampled_routes_df["Current year"] = current_year
 
 # status.success("Temperature data loaded!")
 
+# ****************************************
+#METEO STAT CODE - used when other API stoped working
+# ****************************************
 # Extra Variables
-import streamlit as st
-from datetime import date
-import meteostat as ms
+# import streamlit as st
+# from datetime import date
+# import meteostat as ms
+# import time
+
+# # Add all new columns
+# sampled_routes_df["Temperature"] = float("nan")
+# sampled_routes_df["Wind_Speed"] = float("nan")
+# sampled_routes_df["Humidity"] = float("nan")
+# sampled_routes_df["Precipitation"] = float("nan")
+# sampled_routes_df["Sunshine"] = float("nan")
+# sampled_routes_df["Cloud_Cover"] = float("nan")
+
+# with st.spinner("Fetching weather data..."):
+#     progress = st.progress(0)
+#     status = st.empty()
+
+#     total = len(sampled_routes_df)
+
+#     for i, (idx, location) in enumerate(sampled_routes_df.iterrows()):
+#         lat = location.Latitude
+#         lon = location.Longitude
+#         POINT = ms.Point(lat, lon)
+
+#         START = date(2025, 7, 15)
+#         END = date(2025, 7, 15)
+
+#         stations = ms.stations.nearby(POINT, limit=4)
+#         ts = ms.daily(stations, START, END)
+#         df = ms.interpolate(ts, POINT).fetch()
+
+#         status.write(f"Getting weather data for {location.City} ({i+1}/{total})")
+
+#         # Helper function
+#         def get_value(df, col):
+#             if not df.empty and col in df.columns:
+#                 return df[col].iloc[0]
+#             return float("nan")
+
+#         # Extract variables
+#         temp_value = get_value(df, "temp")
+#         wspd_value = get_value(df, "wspd")
+#         rhum_value = get_value(df, "rhum")
+#         prcp_value = get_value(df, "prcp")
+#         tsun_value = get_value(df, "tsun")
+#         cldc_value = get_value(df, "cldc")
+
+#         # Assign to dataframe
+#         sampled_routes_df.at[idx, "Temperature"] = temp_value
+#         sampled_routes_df.at[idx, "Wind Speed"] = wspd_value
+#         sampled_routes_df.at[idx, "Humidity"] = rhum_value
+#         sampled_routes_df.at[idx, "Precipitation"] = prcp_value
+#         sampled_routes_df.at[idx, "Sunshine"] = tsun_value
+#         sampled_routes_df.at[idx, "Cloud Cover"] = cldc_value
+
+#         progress.progress((i + 1) / total)
+#         time.sleep(0.05)
+
+# status.success("Weather data loaded!")
+
+# WORKING CODE FROM ALEX FOR OPEN METEO
+# ***This is replaced by earlier code - check formating matches
+# Turn airports.dat in dataframe airports_df
+
+# **********************
+# INITIAL DATFRAME
+# **********************
+# airports_df = pd.read_csv("airports.dat", header=None, index_col=0)
+# airports_df.columns = ["Airport", "City", "Country", "IATA", "ICAO", "Latitude", "Longitude", "Altitude", "Timezone", "DST", "TZ", "Type", "Source"]
+# airports_df.index.name = 'AirportID'
+# **********************
+# INITIAL DATFRAME
+# **********************
+# >>> This can be replaced by earlier code - check formating matches - use ***sampled_routes_df***
+
+# **********************
+# KEY FUNCTION
+# **********************
+import requests
+import pandas as pd
 import time
+from datetime import date, timedelta
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from dateutil.relativedelta import relativedelta
 
-# Add all new columns
-sampled_routes_df["Temperature"] = float("nan")
-sampled_routes_df["Wind_Speed"] = float("nan")
-sampled_routes_df["Humidity"] = float("nan")
-sampled_routes_df["Precipitation"] = float("nan")
-sampled_routes_df["Sunshine"] = float("nan")
-sampled_routes_df["Cloud_Cover"] = float("nan")
+session = requests.Session()
 
-with st.spinner("Fetching weather data..."):
-    progress = st.progress(0)
-    status = st.empty()
+def get_weather_new(airport, lat, lon, start_date, end_date, max_retries=5):
+    url = "https://archive-api.open-meteo.com/v1/archive"
 
-    total = len(sampled_routes_df)
+    params = {
+        "latitude": lat,
+        "longitude": lon,
+        "start_date": start_date,
+        "end_date": end_date,
+        "daily": [
+            "temperature_2m_mean",
+            "cloud_cover_mean",
+            "relative_humidity_2m_mean",
+            "wind_speed_10m_mean",
+            "rain_sum"
+            # 'uv_index_max'
+        ],
+        "timezone": "auto",
+    }
 
-    for i, (idx, location) in enumerate(sampled_routes_df.iterrows()):
-        lat = location.Latitude
-        lon = location.Longitude
-        POINT = ms.Point(lat, lon)
+    response = None
 
-        START = date(2025, 7, 15)
-        END = date(2025, 7, 15)
+    for attempt in range(max_retries):
 
-        stations = ms.stations.nearby(POINT, limit=4)
-        ts = ms.daily(stations, START, END)
-        df = ms.interpolate(ts, POINT).fetch()
+        try:
+            response = session.get(url, params=params, timeout=30)
 
-        status.write(f"Getting weather data for {location.City} ({i+1}/{total})")
+            response.raise_for_status()
 
-        # Helper function
-        def get_value(df, col):
-            if not df.empty and col in df.columns:
-                return df[col].iloc[0]
-            return float("nan")
+            data = response.json()
 
-        # Extract variables
-        temp_value = get_value(df, "temp")
-        wspd_value = get_value(df, "wspd")
-        rhum_value = get_value(df, "rhum")
-        prcp_value = get_value(df, "prcp")
-        tsun_value = get_value(df, "tsun")
-        cldc_value = get_value(df, "cldc")
+            df = pd.DataFrame(data["daily"])
 
-        # Assign to dataframe
-        sampled_routes_df.at[idx, "Temperature"] = temp_value
-        sampled_routes_df.at[idx, "Wind Speed"] = wspd_value
-        sampled_routes_df.at[idx, "Humidity"] = rhum_value
-        sampled_routes_df.at[idx, "Precipitation"] = prcp_value
-        sampled_routes_df.at[idx, "Sunshine"] = tsun_value
-        sampled_routes_df.at[idx, "Cloud Cover"] = cldc_value
+            df["latitude"] = data["latitude"]
+            df["longitude"] = data["longitude"]
+            df["timezone"] = data["timezone"]
+            df["Airport"] = airport
 
-        progress.progress((i + 1) / total)
-        time.sleep(0.05)
+            return df
 
-status.success("Weather data loaded!")
+        except requests.exceptions.HTTPError as e:
+
+            if response.status_code < 500 and response.status_code != 429:
+                print(f"[CLIENT ERROR] {airport}: {response.status_code}")
+                print(response.text)
+                return None
+
+            # print(f"[{airport}] HTTP {response.status_code} retry {attempt+1}")
+
+        except requests.exceptions.RequestException as e:
+            print(f"[{airport}] Request failed: {e}")
+
+        wait = 2 ** (attempt + 3)
+        time.sleep(wait)
+
+    print(f"[FAILED] {airport}")
+
+    return None
+
+
+def get_airports_weather(sampled_routes_df):
+    MAX_WORKERS = 10
+    weather_dataframes = []
+    futures = []
+
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+
+        for row in sampled_routes_df.itertuples(index=False):
+                airport = row.Airport
+
+                # Define the date
+                year = row.Current_year - 1
+                month = int(row.Travel_Month)
+                day = 15
+                start_date = f"{year}-{month:02d}-{day:02d}"
+                end_date = start_date
+
+                futures.append(
+                    executor.submit(
+                        get_weather_new,
+                        airport,
+                        row.Latitude,
+                        row.Longitude,
+                        start_date,
+                        end_date
+                    )
+                )
+    
+        for future in as_completed(futures):
+            try:
+                df = future.result(timeout=5)
+                if df is not None:
+                    weather_dataframes.append(df)
+    
+            except Exception as e:
+                print(f"[ERROR] {e}")
+    
+    return weather_dataframes
+
+# **********************
+# KEY FUNCTION
+# **********************
+
+
+
+# **********************
+# FILES AND DATAFRAMES
+# **********************
+import os
+def dump_complete_to_a_files(df_list):
+    complete_airports = list(
+        {
+            airport
+            for df in df_list
+            for airport in df["Airport"]
+        }
+    )
+    
+    with open(f'complete_airports_sample.txt', "a", encoding="utf-8") as file:
+        for airport in complete_airports:
+            file.write(f"{airport}\n")
+
+    combined_df = pd.concat(df_list, axis=0, ignore_index=True)
+    file_exists = os.path.exists(f'airport_weather_combined_sample.csv')
+    combined_df.to_csv(f'airport_weather_combined_sample.csv', mode="a", index=False, header=not file_exists)
+
+# **********************
+# FILES AND DATAFRAMES
+# **********************
+
+# **********************
+# PICK 10 THEN RUN CALL WITH DATES
+# **********************
+# 5.5s for 1 year 10 airports
+# random_ten = airports_df.sample(n=10)
+random_ten_weather = get_airports_weather(sampled_routes_df)
+# **********************
+# PICK 10 THEN RUN CALL WITH DATES
+# **********************
 
 
 
 # HIDE TEMP RESULT TABLE
 st.dataframe(
-    sampled_routes_df[["City", "Country", "Temperature", "Humidity","Rain","Wind Speed","Cloud Cover"]]
+    random_ten_weather[["City", "Country", "Temperature", "Humidity","Rain","Wind Speed","Cloud Cover"]]
 )
 
-# UV data
-import requests
-import pandas as pd
+# ****************************************
+# UV data API when meteo stop working
+# ****************************************
+# import requests
+# import pandas as pd
 
-sampled_routes_df["UV"] = float("nan")
+# sampled_routes_df["UV"] = float("nan")
 
-def get_uv(lat, lon):
-    url = f"https://currentuvindex.com/api/v1/uvi?latitude={lat}&longitude={lon}"
+# def get_uv(lat, lon):
+#     url = f"https://currentuvindex.com/api/v1/uvi?latitude={lat}&longitude={lon}"
 
-    try:
-        r = requests.get(url, timeout=10)
-        data = r.json()
+#     try:
+#         r = requests.get(url, timeout=10)
+#         data = r.json()
 
-        uv_values = []
+#         uv_values = []
 
-        # 1. Add all UV values from the past 24 hours (history)
-        history = data.get("history", [])
-        df_h = pd.DataFrame(history)
+#         # 1. Add all UV values from the past 24 hours (history)
+#         history = data.get("history", [])
+#         df_h = pd.DataFrame(history)
 
-        if not df_h.empty:
-            uv_values.extend(df_h["uvi"].astype(float).tolist())
+#         if not df_h.empty:
+#             uv_values.extend(df_h["uvi"].astype(float).tolist())
 
-        # 2. Add all UV values from forecast (today + next 2 days)
-        forecast = data.get("forecast", [])
-        df_f = pd.DataFrame(forecast)
+#         # 2. Add all UV values from forecast (today + next 2 days)
+#         forecast = data.get("forecast", [])
+#         df_f = pd.DataFrame(forecast)
 
-        if not df_f.empty:
-            uv_values.extend(df_f["uvi"].astype(float).tolist())
+#         if not df_f.empty:
+#             uv_values.extend(df_f["uvi"].astype(float).tolist())
 
-        # 3. Add current UV as fallback
-        if "now" in data and "uvi" in data["now"]:
-            uv_values.append(float(data["now"]["uvi"]))
+#         # 3. Add current UV as fallback
+#         if "now" in data and "uvi" in data["now"]:
+#             uv_values.append(float(data["now"]["uvi"]))
 
-        # 4. Return the maximum UV value found
-        if uv_values:
-            return max(uv_values)
+#         # 4. Return the maximum UV value found
+#         if uv_values:
+#             return max(uv_values)
 
-        return float("nan")
+#         return float("nan")
 
-    except:
-        return float("nan")
+#     except:
+#         return float("nan")
 
 
 

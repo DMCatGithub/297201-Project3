@@ -276,7 +276,7 @@ sampled_routes_df["UV_lo"] = UV_lo
 sampled_routes_df["Travel Month"] = travel_month
 sampled_routes_df["Current year"] = current_year
 
-# Updte with API data
+# Update with API data
 # Test code for output with air polution
 # sampled_routes_df["Comfort Score"] = 57
 # sampled_routes_df["Air Pollution"] = "Good"
