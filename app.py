@@ -316,33 +316,36 @@ temp_value, temp_priority, temp_disabled = weather_block(
     priority_key="temp_priority"
 )
 
+uv_categories = [
+    "Low (1-2)",
+    "Moderate (3-5)",
+    "High (6-7)",
+    "Very High (8-10)",
+    "Extreme (11+)"
+]
 
 
 uv_value, uv_priority, uv_disabled = weather_block(
     "UV Index",
-    input_widget=lambda: st.slider(
-        "Select preferred maximum UV index (see UV index guide below):",
-        options=[
-            "Low (1-2)",
-            "Moderate (3-5)",
-            "High (6-7)",
-            "Very High (8-10)",
-            "Extreme (11+)"
-        ],
-        value="Moderate (3-5)",
+    input_widget=lambda: st.select_slider(
+        "Select preferred UV category range:",
+        options=uv_categories,
+        value=("Low (1-2)", "Moderate (3-5)"),
         key="uv_slider"
     ),
     priority_key="uv_priority"
 )
 
 
+
 uv_ranges = {
-    "Low (1-2)": (1, 3),
-    "Moderate (3-5)": (3, 6),
-    "High (6-7)": (6, 8),
-    "Very High (8-10)": (8, 11),
-    "Extreme (11+)": (11, 12)
+    "Low (1-2)": (1, 2),
+    "Moderate (3-5)": (3, 5),
+    "High (6-7)": (6, 7),
+    "Very High (8-10)": (8, 10),
+    "Extreme (11+)": (11, 11)
 }
+
 
 
 uv_overall_min, uv_overall_max = compute_overall_range(
