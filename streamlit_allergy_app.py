@@ -492,8 +492,8 @@ def temp_distance(temp):
         return 0
 
 def uv_distance(uv):
-    if uv > UV_max:
-        return uv - UV_max
+    if uv > UV_hi:
+        return uv - UV_hi
     else:
         return 0
 
