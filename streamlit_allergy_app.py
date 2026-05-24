@@ -513,33 +513,17 @@ def calculate_comfort_score(temp_distance, uv_distance):
         + coeff_UV_DistanceSqd * (uv_distance ** 2)
     )
 
+# Distance columns
 sampled_routes_df["Temp_Distance"] = sampled_routes_df["Temperature"].apply(temp_distance)
 sampled_routes_df["UV_Distance"] = sampled_routes_df["UV"].apply(uv_distance)
 
-sampled_routes_df["Comfort Score"] = sampled_routes_df.apply(
+# Comfort score (correct column name)
+sampled_routes_df["Comfort_Score"] = sampled_routes_df.apply(
     lambda row: calculate_comfort_score(row["Temp_Distance"], row["UV_Distance"]),
     axis=1
 )
 
-
-# sorted_df = sampled_routes_df.sort_values(
-#     by="Comfort Score",
-#     ascending=False
-# ).reset_index(drop=True)
-
-# st.dataframe(
-#     sorted_df[
-#         [
-#             "Comfort Score",
-#             "City",
-#             "Country",
-#             "Temperature",
-#             "UV"
-#         ]
-#     ]
-# )
-
-# Sort by Comfort Score
+# Sort
 sorted_df = sampled_routes_df.sort_values(
     by="Comfort_Score",
     ascending=False
@@ -563,7 +547,7 @@ display_df = sorted_df[
     ]
 ]
 
-# Centre all values
+# Centre table
 styled_df = (
     display_df.style
     .set_properties(**{"text-align": "center"})
@@ -572,3 +556,4 @@ styled_df = (
 
 # Display
 st.dataframe(styled_df)
+
