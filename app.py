@@ -5,6 +5,11 @@ import datetime
 import time
 from math import radians, sin, cos, sqrt, atan2
 
+[theme]
+baseRadius = "0.5rem"  # Sets the global border-radius for inputs, pills, and containers
+buttonRadius = "0.5rem" # Overrides for st.button and st.segmented_control
+
+
 
 # Example code from meteostat site - NOT USED - 
 # import streamlit as st
@@ -410,6 +415,15 @@ with st.expander("Show Humidity Guide"):
         ("Humid (60–75%)", "Sticky — warm", "#BBDEFB", "black"),             
         ("Very Humid (75–90%)", "Heavy — tropical", "#90CAF9", "black"),       
         ("Extremely Humid (90–100%)", "Oppressive — rainforest‑like", "#64B5F6", "black"), 
+    ]
+
+    humidity_levels = [
+        ("Very Dry (0–30%)", "Desert‑dry — uncomfortable", "#FFF9C4", "black"),   # pastel yellow
+        ("Dry (30–40%)", "Crisp — slightly dry", "#FFE082", "black"),            # soft amber
+        ("Comfortable (40–60%)", "Ideal comfort zone", "#E8F5E9", "black"),      # pastel mint green
+        ("Humid (60–75%)", "Sticky — warm", "#BBDEFB", "black"),                 # light pastel blue
+        ("Very Humid (75–90%)", "Heavy — tropical", "#90CAF9", "black"),         # medium pastel blue
+        ("Extremely Humid (90–100%)", "Oppressive — rainforest‑like", "#64B5F6", "black"), # deeper pastel blue
     ]
 
 
