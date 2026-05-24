@@ -246,57 +246,51 @@ if st.button("Test UV API"):
 
 def weather_block(
     title,
-    disable_key,
     input_widget,
     priority_key
 ):
     st.subheader(title)
 
-    # 1. Disable toggle
-    disabled = st.checkbox(f"Disable {title}", key=disable_key)
+    # Priority selector (now includes Disabled)
+    priority = st.selectbox(
+        f"{title} Priority",
+        ["Disabled", "Low Priority", "Medium Priority", "High Priority"],
+        key=priority_key
+    )
 
-    # 2. Input widget (only shown if not disabled)
-    if not disabled:
-        value = input_widget()
-    else:
-        value = None
+    # If disabled → hide the slider and return None
+    if priority == "Disabled":
+        return None, priority, True
 
-    # 3. Priority selector (only shown if not disabled)
-    if not disabled:
-        priority = st.selectbox(
-            f"{title} Priority",
-            ["Low Priority", "Medium Priority", "High Priority"],
-            key=priority_key
-        )
-    else:
-        priority = None
+    # Otherwise show the input widget
+    value = input_widget()
 
-    return value, priority, disabled
+    return value, priority, False
+
 
 temp_value, temp_priority, temp_disabled = weather_block(
-    "Temperaturezzz",
-    disable_key="disable_temp",
+    "Temperature",
     input_widget=lambda: st.slider(
         "Preferred Temperature (°C)",
         min_value=-10,
-        max_value=40,
-        value=(20, 25),     # low + high defaults
+        max_value=50,
+        value=(21, 25),
         key="temp_slider"
     ),
     priority_key="temp_priority"
 )
 
 
+
 wind_value, wind_priority, wind_disabled = weather_block(
     "Wind",
-    disable_key="disable_wind",
     input_widget=lambda: st.select_slider(
         "Wind Category Range",
         options=[
             "Calm", "Light Air", "Light Breeze", "Gentle Breeze",
             "Moderate Breeze", "Fresh Breeze", "Strong Breeze"
         ],
-        value=("Light Air", "Moderate Breeze"),   # low default, high default
+        value=("Light Air", "Moderate Breeze"),
         key="wind_slider"
     ),
     priority_key="wind_priority"
@@ -305,7 +299,6 @@ wind_value, wind_priority, wind_disabled = weather_block(
 
 rain_value, rain_priority, rain_disabled = weather_block(
     "Rain",
-    disable_key="disable_rain",
     input_widget=lambda: st.select_slider(
         "Rain Level",
         options=[
@@ -314,7 +307,7 @@ rain_value, rain_priority, rain_disabled = weather_block(
             "Moderate Rain",
             "Heavy Rain"
         ],
-        value=("No Rain", "Light Rain"),   # default
+        value=("No Rain", "Light Rain"),
         key="rain_slider"
     ),
     priority_key="rain_priority"
@@ -322,9 +315,9 @@ rain_value, rain_priority, rain_disabled = weather_block(
 
 
 
+
 humidity_value, humidity_priority, humidity_disabled = weather_block(
     "Humidity",
-    disable_key="disable_humidity",
     input_widget=lambda: st.select_slider(
         "Humidity Range",
         options=[
@@ -335,16 +328,16 @@ humidity_value, humidity_priority, humidity_disabled = weather_block(
             "Very Humid",
             "Extremely Humid"
         ],
-        value=("Dry", "Humid"),   # default low + high
+        value=("Dry", "Humid"),
         key="humidity_slider"
     ),
     priority_key="humidity_priority"
 )
 
 
+
 cloud_value, cloud_priority, cloud_disabled = weather_block(
     "Cloud Cover",
-    disable_key="disable_cloud",
     input_widget=lambda: st.select_slider(
         "Cloud Cover Range",
         options=[
@@ -354,9 +347,10 @@ cloud_value, cloud_priority, cloud_disabled = weather_block(
             "Broken Clouds",
             "Overcast"
         ],
-        value=("Few Clouds", "Broken Clouds"),   # default low + high
+        value=("Few Clouds", "Broken Clouds"),
         key="cloud_slider"
     ),
     priority_key="cloud_priority"
 )
+
 
