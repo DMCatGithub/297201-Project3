@@ -357,12 +357,33 @@ uv_overall_min, uv_overall_max = compute_overall_range(
 with st.expander("Show UV Index Guide"):
 
     uv_levels = [
-        ("Low (1-2)", "Burn ~60 min — Minimal protection", "#3CB371", "black"),
-        ("Moderate (3-5)", "Burn ~40 min — Protection recommended", "#FFD700", "black"),
-        ("High (6-7)", "Burn ~30 min — Protection essential", "#FF8C00", "black"),
-        ("Very High (8-10)", "Burn ~20 min — Extra protection needed", "#FF4500", "black"),
-        ("Extreme (11+)", "Burn <15 min — Avoid sun exposure", "#9400D3", "black"),
+        ("Low (1–2)", "Burn ~60 min — Minimal protection", "#E8F5E9", "black"),
+        ("Moderate (3–5)", "Burn ~40 min — Protection recommended", "#FFF9C4", "black"),
+        ("High (6–7)", "Burn ~30 min — Protection essential", "#FFE0B2", "black"),
+        ("Very High (8–10)", "Burn ~20 min — Extra protection needed", "#FFCCBC", "black"),
+        ("Extreme (11+)", "Burn <15 min — Avoid sun exposure", "#F8BBD0", "black"),
     ]
+
+
+
+    for title, desc, color, text_color in uv_levels:
+        st.markdown(
+            f"""
+            <div style="
+                background-color:{color};
+                padding:8px 12px;
+                border-radius:6px;
+                margin-bottom:6px;
+                color:{text_color};
+                font-weight:600;
+                font-size:14px;">
+                {title} — {desc}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+
 
     for title, desc, color, text_color in uv_levels:
         st.markdown(
@@ -417,13 +438,14 @@ humidity_overall_min, humidity_overall_max = compute_overall_range(
 with st.expander("Show Humidity Guide"):
 
     humidity_levels = [
-        ("Very Dry (0–30%)", "Desert‑dry — uncomfortable", "#F4A460", "black"),
-        ("Dry (30–40%)", "Crisp — slightly dry", "#DEB887", "black"),
-        ("Comfortable (40–60%)", "Ideal comfort zone", "#98FB98", "black"),
-        ("Humid (60–75%)", "Sticky — warm", "#87CEEB", "black"),
-        ("Very Humid (75–90%)", "Heavy — tropical", "#4682B4", "white"),
-        ("Extremely Humid (90–100%)", "Oppressive — rainforest‑like", "#2F4F4F", "white"),
+        ("Very Dry (0–30%)", "Desert‑dry — uncomfortable", "#FFF9C4", "black"),
+        ("Dry (30–40%)", "Crisp — slightly dry", "#FFE082", "black"),      
+        ("Comfortable (40–60%)", "Ideal comfort zone", "#E8F5E9", "black"), 
+        ("Humid (60–75%)", "Sticky — warm", "#BBDEFB", "black"),             
+        ("Very Humid (75–90%)", "Heavy — tropical", "#90CAF9", "black"),       
+        ("Extremely Humid (90–100%)", "Oppressive — rainforest‑like", "#64B5F6", "black"), 
     ]
+
 
     for title, desc, color, text_color in humidity_levels:
         st.markdown(
@@ -475,15 +497,14 @@ wind_overall_min, wind_overall_max = compute_overall_range(
 with st.expander("Show Wind Speed Guide"):
 
     wind_levels = [
-        ("Calm (0–2 km/h)", "Sea like a mirror — Smoke rises vertically", "#C8E6C9", "black"),
-        ("Light Air (2–5 km/h)", "Ripples with no foam crests — Smoke drifts", "#AED581", "black"),
-        ("Light Breeze (6–11 km/h)", "Small wavelets — Leaves rustle", "#FFEB3B", "black"),
-        ("Gentle Breeze (12–19 km/h)", "Large wavelets — Leaves and twigs in motion", "#FFC107", "black"),
-        ("Moderate Breeze (20–28 km/h)", "Small waves — Dust and loose paper blow", "#FF9800", "black"),
-        ("Fresh Breeze (29–38 km/h)", "Moderate waves — Small trees sway", "#F57C00", "white"),
-        ("Strong Breeze (39–50 km/h)", "Large waves — Large branches move", "#D32F2F", "white"),
+        ("Calm (0–2 km/h)", "Sea like a mirror — Smoke rises vertically", "#E8F5E9", "black"),
+        ("Light Air (2–5 km/h)", "Ripples with no foam crests — Smoke drifts", "#C5E1A5", "black"),
+        ("Light Breeze (6–11 km/h)", "Small wavelets — Leaves rustle", "#FFF59D", "black"),
+        ("Gentle Breeze (12–19 km/h)", "Large wavelets — Leaves and twigs in motion", "#FFE082", "black"),
+        ("Moderate Breeze (20–28 km/h)", "Small waves — Dust and loose paper blow", "#FFCC80", "black"),
+        ("Fresh Breeze (29–38 km/h)", "Moderate waves — Small trees sway", "#FFAB91", "black"),
+        ("Strong Breeze (39–50 km/h)", "Large waves — Large branches move", "#EF9A9A", "black"),
     ]
-
     for title, desc, color, text_color in wind_levels:
         st.markdown(
             f"""
@@ -500,6 +521,8 @@ with st.expander("Show Wind Speed Guide"):
             """,
             unsafe_allow_html=True
         )
+
+
 
 
 rain_value, rain_priority, rain_disabled = weather_block(
