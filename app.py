@@ -574,17 +574,16 @@ travel_time = st.number_input(
 # months = list(calendar.month_name)[1:]
 # selected_month = st.selectbox("What month do you plan to travel?", months)
 # *****************
-months_short = [calendar.month_abbr[i] for i in range(1, 13)]
+import calendar
+
+months_full = list(calendar.month_name)[1:]  # January → December
 
 selected_month = st.pills(
     "Travel Month",
-    options=months_short,
-    default="Jan",
-    key="travel_month"
+    options=months_full,
+    default="January",
+    key="travel_month_full"
 )
-
-travel_month = list(calendar.month_abbr).index(selected_month)
-
 
 
 
