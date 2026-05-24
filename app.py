@@ -296,7 +296,7 @@ st.markdown("""
 
     /* Segmented control buttons (the labels) */
     div[role="radiogroup"] > label {
-        border-radius: 0.5rem !important;   /* your buttonRadius */
+        border-radius: 2rem !important;   /* your buttonRadius */
         padding: 6px 12px !important;
         margin-right: 6px !important;
         border: 1px solid #ddd !important;
@@ -305,7 +305,7 @@ st.markdown("""
 
     /* Selected segmented control button */
     div[role="radiogroup"] > label[data-selected="true"] {
-        border-radius: 0.5rem !important;
+        border-radius: 2rem !important;
         background-color: #E0F2F1 !important;  /* pastel highlight */
         border-color: #80CBC4 !important;
         font-weight: 600 !important;
