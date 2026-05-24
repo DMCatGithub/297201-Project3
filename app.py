@@ -149,3 +149,94 @@ if st.button("Test UV API"):
     st.write(f"### Testing UV for {city}")
     uv = get_uv(lat, lon)
     st.metric("UV Index at 1 PM (or fallback)", uv)
+
+
+# SLiders and selectors
+priority_map = {
+    "Low Priority": 0.3,
+    "Medium Priority": 0.6,
+    "High Priority": 1.0
+}
+
+priority_choice = st.selectbox(
+    "Priority",
+    ["Low Priority", "Medium Priority", "High Priority"],
+    index=1
+)
+
+priority_weight = priority_map[priority_choice]
+
+
+# temp
+st.subheader("Temperature")
+temp_value = st.slider("Preferred Temperature (°C)", min_value=-10, max_value=40, value=20)
+temp_priority = st.selectbox("Temperature Priority", ["Low Priority", "Medium Priority", "High Priority"])
+temp_weight = priority_map[temp_priority]
+
+# Wind speed
+st.subheader("Temperature")
+temp_value = st.slider("Preferred Temperature (°C)", min_value=-10, max_value=40, value=20)
+temp_priority = st.selectbox("Temperature Priority", ["Low Priority", "Medium Priority", "High Priority"])
+temp_weight = priority_map[temp_priority]
+
+
+# Wind2
+st.subheader("Wind Speed")
+
+wind_categories = [
+    "Calm",
+    "Light Air",
+    "Light Breeze",
+    "Gentle Breeze",
+    "Moderate Breeze",
+    "Fresh Breeze",
+    "Strong Breeze"
+]
+
+wind_choice = st.radio("Preferred Wind Category", wind_categories)
+
+wind_priority = st.selectbox("Wind Priority", ["Low Priority", "Medium Priority", "High Priority"])
+wind_weight = priority_map[wind_priority]
+
+# Rain
+st.subheader("Rain Preference")
+
+rain_choice = st.radio(
+    "Rain Level",
+    ["No Rain", "Light Rain", "Moderate Rain", "Heavy Rain"]
+)
+
+rain_priority = st.selectbox("Rain Priority", ["Low Priority", "Medium Priority", "High Priority"])
+rain_weight = priority_map[rain_priority]
+
+# rain2
+rain_score_map = {
+    "No Rain": 100,
+    "Light Rain": 70,
+    "Moderate Rain": 40,
+    "Heavy Rain": 10
+}
+
+rain_score = rain_score_map[rain_choice]
+
+# humid
+st.subheader("Humidity")
+humidity_value = st.slider("Preferred Humidity (%)", 0, 100, 50)
+humidity_priority = st.selectbox("Humidity Priority", ["Low Priority", "Medium Priority", "High Priority"])
+humidity_weight = priority_map[humidity_priority]
+
+# humid2
+humidity_choice = st.radio(
+    "Humidity Level",
+    ["Very Dry", "Dry", "Comfortable", "Humid", "Very Humid"]
+)
+
+humidity_priority = st.selectbox("Humidity Priority", ["Low Priority", "Medium Priority", "High Priority"])
+humidity_weight = priority_map[humidity_priority]
+
+
+# cloud
+st.subheader("Cloud Cover")
+cloud_value = st.slider("Preferred Cloud Cover (oktas)", 0, 9, 3)
+cloud_priority = st.selectbox("Cloud Cover Priority", ["Low Priority", "Medium Priority", "High Priority"])
+cloud_weight = priority_map[cloud_priority]

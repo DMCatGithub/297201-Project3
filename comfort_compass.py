@@ -483,11 +483,11 @@ with st.spinner("Fetching weather data..."):
 
         # Assign to dataframe
         sampled_routes_df.at[idx, "Temperature"] = temp_value
-        sampled_routes_df.at[idx, "Wind_Speed"] = wspd_value
+        sampled_routes_df.at[idx, "Wind Speed"] = wspd_value
         sampled_routes_df.at[idx, "Humidity"] = rhum_value
         sampled_routes_df.at[idx, "Precipitation"] = prcp_value
         sampled_routes_df.at[idx, "Sunshine"] = tsun_value
-        sampled_routes_df.at[idx, "Cloud_Cover"] = cldc_value
+        sampled_routes_df.at[idx, "Cloud Cover"] = cldc_value
 
         progress.progress((i + 1) / total)
         time.sleep(0.05)
@@ -498,7 +498,7 @@ status.success("Weather data loaded!")
 
 # HIDE TEMP RESULT TABLE
 st.dataframe(
-    sampled_routes_df[["City", "Country", "Temperature", "Wind_Speed","Humidity","Precipitation","Sunshine","Cloud_Cover"]]
+    sampled_routes_df[["City", "Country", "Temperature", "Humidity","Rain","Wind Speed"","Cloud Cover"]]
 )
 
 # UV data
