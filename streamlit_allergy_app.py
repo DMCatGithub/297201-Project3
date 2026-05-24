@@ -516,26 +516,46 @@ def calculate_comfort_score(temp_distance, uv_distance):
 sampled_routes_df["Temp_Distance"] = sampled_routes_df["Temperature"].apply(temp_distance)
 sampled_routes_df["UV_Distance"] = sampled_routes_df["UV"].apply(uv_distance)
 
-sampled_routes_df["Comfort_Score"] = sampled_routes_df.apply(
+sampled_routes_df["Comfort Score"] = sampled_routes_df.apply(
     lambda row: calculate_comfort_score(row["Temp_Distance"], row["UV_Distance"]),
     axis=1
 )
 
 
+# sorted_df = sampled_routes_df.sort_values(
+#     by="Comfort Score",
+#     ascending=False
+# ).reset_index(drop=True)
+
+# st.dataframe(
+#     sorted_df[
+#         [
+#             "Comfort Score",
+#             "City",
+#             "Country",
+#             "Temperature",
+#             "UV"
+#         ]
+#     ]
+# )
+
+# Sort by Comfort Score (descending) and remove index
 sorted_df = sampled_routes_df.sort_values(
     by="Comfort_Score",
     ascending=False
 ).reset_index(drop=True)
 
-st.dataframe(
-    sorted_df[
-        [
-            "Comfort_Score",
-            "City",
-            "Country",
-            "Temperature",
-            "UV"
-        ]
-    ]
+# Format columns
+sorted_df["Comfort_Score"] = sorted_df["Comfort_Score"].round(1)
+sorted_df["Temperature"] = sorted_df["Temperature"].round(1)
+sorted_df["UV"] = sorted_df["UV"].round(1)
+
+# Centre all values using pandas Styler
+styled_df = (
+    sorted_df.style
+    .set_properties(**{"text-align": "center"})
+    .set_table_styles([dict(selector="th", props=[("text-align", "center")])])
 )
 
+# Display
+st.dataframe(styled_df)
