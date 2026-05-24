@@ -570,8 +570,21 @@ travel_time = st.number_input(
 
 # 4. Select travel month
 # Set travel related variables
-months = list(calendar.month_name)[1:]
-selected_month = st.selectbox("What month do you plan to travel?", months)
+# DROP DOWN MONTH 
+# months = list(calendar.month_name)[1:]
+# selected_month = st.selectbox("What month do you plan to travel?", months)
+# *****************
+months_short = [calendar.month_abbr[i] for i in range(1, 13)]
+
+selected_month = st.pills(
+    "Travel Month",
+    options=months_short,
+    default="Jan",
+    key="travel_month"
+)
+
+
+
 current_year = datetime.datetime.now().year
 
 travel_month = months.index(selected_month) + 1
