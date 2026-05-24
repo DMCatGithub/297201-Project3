@@ -567,13 +567,29 @@ travel_mode = st.pills(
 )
 
 
-travel_time = st.number_input(
-    "Maximum travel time (hours)",
-    min_value=1,
-    max_value=12,
-    value=5,
-    step=1
+# travel_time = st.number_input(
+#     "Maximum travel time (hours)",
+#     min_value=1,
+#     max_value=12,
+#     value=5,
+#     step=1
+# )
+
+travel_time_options = [f"{i}hr" for i in range(1, 13)]
+
+selected_travel_time = st.pills(
+    "Maximum travel time",
+    options=travel_time_options,
+    default="5h",
+    key="travel_time"
 )
+
+# Convert "5h" → 5
+travel_time = int(selected_travel_time.replace("hr", ""))
+
+
+
+
 
 # 4. Select travel month
 # Set travel related variables
