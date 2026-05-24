@@ -503,6 +503,14 @@ def uv_distance(uv):
 
 # Comfort score model
 def calculate_comfort_score(temp_distance, uv_distance):
+    # UV of 11 = 5
+    # intercept = 96.2684
+    # coeff_Temp_Distance = 0.7319
+    # coeff_Temp_DistanceSqd = -0.3554
+    # coeff_UV_Distance = -6.0585
+    # coeff_UV_DistanceSqd = -0.1929
+
+    # UV 11 = 50
     intercept = 96.2684
     coeff_Temp_Distance = 0.7319
     coeff_Temp_DistanceSqd = -0.3554
