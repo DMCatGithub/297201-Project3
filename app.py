@@ -290,47 +290,39 @@ def compute_overall_range(selected_tuple, range_map):
     return low_min, high_max
 
 # --- GLOBAL SLIDER STYLE OVERRIDE ---
-
 st.markdown("""
 <style>
 
-    /* Outer wrapper for each segmented button */
-    div[role="radiogroup"] > div {
-        display: inline-flex !important;
-        margin-right: 6px !important;
+    /* Entire segmented control container */
+    [data-testid="stSegmentedControl"] {
+        gap: 6px !important;
     }
 
-    /* The actual clickable button */
-    div[role="radiogroup"] > div > label {
-        border-radius: 2rem !important;
+    /* Each button inside the segmented control */
+    [data-testid="stSegmentedControl"] button {
+        border-radius: 2rem !important;   /* your buttonRadius */
         padding: 6px 14px !important;
         border: 1px solid #ddd !important;
         background-color: #fafafa !important;
-        cursor: pointer;
+        color: black !important;
         transition: all 0.15s ease-in-out;
     }
 
     /* Hover effect */
-    div[role="radiogroup"] > div > label:hover {
+    [data-testid="stSegmentedControl"] button:hover {
         background-color: #f0f0f0 !important;
     }
 
-    /* Selected segmented control button */
-    div[role="radiogroup"] > div > label[data-selected="true"] {
-        border-radius: 2rem !important;
-        background-color: #E0F2F1 !important;  /* pastel highlight */
+    /* Selected button */
+    [data-testid="stSegmentedControl"] button[aria-checked="true"] {
+        background-color: #E0F2F1 !important;   /* pastel highlight */
         border-color: #80CBC4 !important;
         font-weight: 600 !important;
-    }
-
-    /* Hide the default radio circle */
-    div[role="radiogroup"] input {
-        display: none !important;
+        color: black !important;
     }
 
 </style>
 """, unsafe_allow_html=True)
-
 
 
 
