@@ -284,6 +284,27 @@ def compute_overall_range(selected_tuple, range_map):
 
     return low_min, high_max
 
+# uv_value, uv_priority, uv_disabled = weather_block(
+#     "UV Index",
+#     input_widget=lambda: st.slider(
+#         "Select preferred maximum UV index (see UV index guide below):",
+#         min_value=1,
+#         max_value=11,
+#         value=3,
+#         key="uv_slider"
+#     ),
+#     priority_key="uv_priority"
+# )
+
+# uv_ranges = {
+#     "Low (1-2)": (1, 2),
+#     "Moderate (3-5)": (3, 5),
+#     "High (6-7)": (6, 7),
+#     "Very High (8-10)": (8, 10),
+#     "Extreme (11+)": (11, 11)
+# }
+
+
 uv_value, uv_priority, uv_disabled = weather_block(
     "UV Index",
     input_widget=lambda: st.slider(
@@ -295,6 +316,21 @@ uv_value, uv_priority, uv_disabled = weather_block(
     ),
     priority_key="uv_priority"
 )
+
+uv_ranges = {
+    "Low (1-2)": range(1, 3),
+    "Moderate (3-5)": range(3, 6),
+    "High (6-7)": range(6, 8),
+    "Very High (8-10)": range(8, 11),
+    "Extreme (11+)": range(11, 12)
+}
+
+uv_overall_min, uv_overall_max = compute_overall_range(
+    uv_value,
+    uv_ranges
+)
+
+
 
 with st.expander("Show UV Index Guide"):
 
@@ -365,6 +401,35 @@ wind_overall_min, wind_overall_max = compute_overall_range(
     wind_value,
     wind_ranges
 )
+
+with st.expander("Show Wind Speed Guide"):
+
+    wind_levels = [
+        ("Calm (0–1 mph)", "Sea like a mirror — Smoke rises vertically", "#E0FFFF", "black"),
+        ("Light Air (1–3 mph)", "Ripples with no foam crests — Smoke drifts", "#AFEEEE", "black"),
+        ("Light Breeze (4–7 mph)", "Small wavelets — Leaves rustle", "#87CEFA", "black"),
+        ("Gentle Breeze (8–12 mph)", "Large wavelets — Leaves and twigs in motion", "#00BFFF", "black"),
+        ("Moderate Breeze (13–18 mph)", "Small waves — Dust and loose paper blow", "#1E90FF", "white"),
+        ("Fresh Breeze (19–24 mph)", "Moderate waves — Small trees sway", "#4169E1", "white"),
+        ("Strong Breeze (25–31 mph)", "Large waves — Large branches move", "#00008B", "white"),
+    ]
+
+    for title, desc, color, text_color in wind_levels:
+        st.markdown(
+            f"""
+            <div style="
+                background-color:{color};
+                padding:8px 12px;
+                border-radius:6px;
+                margin-bottom:6px;
+                color:{text_color};
+                font-weight:600;
+                font-size:14px;">
+                {title} — {desc}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 
 
