@@ -302,7 +302,7 @@ html += "</table>"
 
 st.markdown(html, unsafe_allow_html=True)
 
-# Get temperature data
+# Get temperature data -OPEN METEO nolonger working
 # import time
 # import requests
 
@@ -358,7 +358,7 @@ st.markdown(html, unsafe_allow_html=True)
 #     sampled_routes_df[["City", "Country", "Temperature"]]
 # )
 
-# TEST CODE - new meteostat code
+# WORKING TEMP API CODE - new meteostat code
 import streamlit as st
 from datetime import date
 import meteostat as ms
@@ -407,27 +407,62 @@ status.success("Temperature data loaded!")
 st.dataframe(
     sampled_routes_df[["City", "Country", "Temperature"]]
 )
-# *************************************************************************
 
+# UV data
 import streamlit as st
-from datetime import date
-import meteostat as ms
+import requests
+import time
+import pandas as pd
 
-st.title("Old Meteostat API – Values Only")
+# Add UV column
+sampled_routes_df["UV"] = float("nan")
 
-# Your original code — unchanged
-POINT = ms.Point(50.1155, 8.6842, 113)
-START = date(2018, 1, 1)
-END = date(2018, 1, 15)
+def get_uv(lat, lon):
+    url = f"https://currentuvindex.com/api/v1/uvi?latitude={lat}&longitude={lon}"
 
-stations = ms.stations.nearby(POINT, limit=4)
-ts = ms.daily(stations, START, END)
-df = ms.interpolate(ts, POINT).fetch()
+    try:
+        r = requests.get(url, timeout=10)
+        data = r.json()
 
-# Output the values instead of plotting
-st.subheader("Daily Weather Values")
-st.dataframe(df)
+        # Prefer 1 PM UV if available
+        history = data.get("history", [])
+        df = pd.DataFrame(history)
 
-# Optional: show summary stats
-st.subheader("Summary Statistics")
-st.write(df.describe())
+        if not df.empty:
+            df["time"] = pd.to_datetime(df["time"])
+            uv_1pm = df[df["time"].dt.hour == 13]
+
+            if not uv_1pm.empty:
+                return float(uv_1pm["uv_index"].iloc[0])
+
+        # Fallback: current UV
+        return float(data.get("uv_index", float("nan")))
+
+    except:
+        return float("nan")
+
+
+with st.spinner("Fetching UV data..."):
+    progress = st.progress(0)
+    status = st.empty()
+
+    total = len(sampled_routes_df)
+
+    for i, (idx, location) in enumerate(sampled_routes_df.iterrows()):
+        lat = location.Latitude
+        lon = location.Longitude
+
+        status.write(f"Processing {location.City} ({i+1}/{total})")
+
+        uv_value = get_uv(lat, lon)
+
+        sampled_routes_df.at[idx, "UV"] = uv_value
+
+        progress.progress((i + 1) / total)
+        time.sleep(0.05)
+
+status.success("UV data loaded!")
+
+st.dataframe(
+    sampled_routes_df[["City", "Country", "Temperature", "UV"]]
+)
