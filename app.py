@@ -421,6 +421,19 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# temp_value, temp_priority, temp_disabled = weather_block(
+#     "Temperature",
+#     input_widget=lambda: st.slider(
+#         "Select preferred temperature range (°C):",
+#         min_value=-10,
+#         max_value=50,
+#         value=(20, 25),
+#         key="temp_slider"
+#     ),
+#     priority_key="temp_priority"
+# )
+
+st.markdown('<div id="temp_slider">', unsafe_allow_html=True)
 temp_value, temp_priority, temp_disabled = weather_block(
     "Temperature",
     input_widget=lambda: st.slider(
@@ -428,10 +441,12 @@ temp_value, temp_priority, temp_disabled = weather_block(
         min_value=-10,
         max_value=50,
         value=(20, 25),
-        key="temp_slider"
+        key="temp_slider_widget"
     ),
     priority_key="temp_priority"
 )
+st.markdown('</div>', unsafe_allow_html=True)
+
 
 uv_categories = [
     "Low (1-2)",
