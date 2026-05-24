@@ -414,6 +414,34 @@ humidity_overall_min, humidity_overall_max = compute_overall_range(
     humidity_ranges
 )
 
+with st.expander("Show Humidity Guide"):
+
+    humidity_levels = [
+        ("Very Dry (0–30%)", "Desert‑dry — uncomfortable", "#F4A460", "black"),
+        ("Dry (30–40%)", "Crisp — slightly dry", "#DEB887", "black"),
+        ("Comfortable (40–60%)", "Ideal comfort zone", "#98FB98", "black"),
+        ("Humid (60–75%)", "Sticky — warm", "#87CEEB", "black"),
+        ("Very Humid (75–90%)", "Heavy — tropical", "#4682B4", "white"),
+        ("Extremely Humid (90–100%)", "Oppressive — rainforest‑like", "#2F4F4F", "white"),
+    ]
+
+    for title, desc, color, text_color in humidity_levels:
+        st.markdown(
+            f"""
+            <div style="
+                background-color:{color};
+                padding:8px 12px;
+                border-radius:6px;
+                margin-bottom:6px;
+                color:{text_color};
+                font-weight:600;
+                font-size:14px;">
+                {title} — {desc}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
 
 wind_value, wind_priority, wind_disabled = weather_block(
     "Wind",
@@ -503,6 +531,33 @@ rain_overall_min, rain_overall_max = compute_overall_range(
     rain_ranges
 )
 
+with st.expander("Show Rainfall Guide"):
+
+    rain_levels = [
+        ("No Rain (0 mm/hr)", "Dry conditions — no precipitation", "#E0FFFF", "black"),
+        ("Light Rain (0.1–2 mm/hr)", "Drizzle — light jacket enough", "#ADD8E6", "black"),
+        ("Moderate Rain (2–7 mm/hr)", "Steady rain — umbrella recommended", "#87CEEB", "black"),
+        ("Heavy Rain (7–15 mm/hr)", "Soaking rain — reduced visibility", "#4682B4", "white"),
+        ("Very Heavy Rain (15–30 mm/hr)", "Intense rain — difficult travel", "#4169E1", "white"),
+        ("Extreme Rain (30+ mm/hr)", "Downpour — flooding possible", "#00008B", "white"),
+    ]
+
+    for title, desc, color, text_color in rain_levels:
+        st.markdown(
+            f"""
+            <div style="
+                background-color:{color};
+                padding:8px 12px;
+                border-radius:6px;
+                margin-bottom:6px;
+                color:{text_color};
+                font-weight:600;
+                font-size:14px;">
+                {title} — {desc}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 
 
@@ -537,6 +592,34 @@ cloud_overall_min, cloud_overall_max = compute_overall_range(
     cloud_value,
     cloud_ranges
 )
+
+with st.expander("Show Cloud Cover Guide"):
+
+    cloud_levels = [
+        ("Clear Sky (0–1 OKTA)", "Blue sky — no significant clouds", "#87CEEB", "black"),
+        ("Few Clouds (1–3 OKTA)", "Mostly sunny — small patches of cloud", "#ADD8E6", "black"),
+        ("Scattered Clouds (3–5 OKTA)", "Mix of sun and cloud", "#B0C4DE", "black"),
+        ("Broken Clouds (5–7 OKTA)", "Mostly cloudy — sun appears occasionally", "#778899", "white"),
+        ("Overcast (8 OKTA)", "Fully covered sky — no direct sunlight", "#708090", "white"),
+    ]
+
+    for title, desc, color, text_color in cloud_levels:
+        st.markdown(
+            f"""
+            <div style="
+                background-color:{color};
+                padding:8px 12px;
+                border-radius:6px;
+                margin-bottom:6px;
+                color:{text_color};
+                font-weight:600;
+                font-size:14px;">
+                {title} — {desc}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
 
 # CODE FROM ORIGINAL COMFORT COMPASS APP
 
