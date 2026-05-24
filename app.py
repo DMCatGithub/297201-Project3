@@ -252,11 +252,20 @@ def weather_block(
     st.subheader(title)
 
     # Priority selector (now includes Disabled)
-    priority = st.selectbox(
-        f"{title} Priority",
-        ["Disabled", "Low Priority", "Medium Priority", "High Priority"],
-        index=2,   # <-- Default to Medium Priority
-        key=priority_key
+    # priority = st.selectbox(
+    #     f"{title} Priority",
+    #     ["Disabled", "Low Priority", "Medium Priority", "High Priority"],
+    #     index=2,   # <-- Default to Medium Priority
+    #     key=priority_key
+
+
+    uv_priority = st.segmented_control(
+    "Priority",
+    options=["Disabled", "Low Priority", "Medium Priority", "High Priority"],
+    default="Medium",
+    key="uv_priority"
+)
+
     )
 
     # If disabled → hide the slider and return None
