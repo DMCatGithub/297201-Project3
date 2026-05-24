@@ -524,13 +524,47 @@ sampled_routes_df["Comfort_Score"] = sampled_routes_df.apply(
 )
 
 # Sort
-# Sort
+# sorted_df = sampled_routes_df.sort_values(
+#     by="Comfort_Score",
+#     ascending=False
+# ).reset_index(drop=True)
+
+# # Format numbers BEFORE styling
+# sorted_df["Comfort_Score"] = sorted_df["Comfort_Score"].round(0).astype(int)
+# sorted_df["Temperature"] = sorted_df["Temperature"].map(lambda x: f"{x:.1f}")
+# sorted_df["UV"] = sorted_df["UV"].map(lambda x: f"{x:.1f}")
+# sorted_df["Temp_Distance"] = sorted_df["Temp_Distance"].map(lambda x: f"{x:.1f}")
+# sorted_df["UV_Distance"] = sorted_df["UV_Distance"].map(lambda x: f"{x:.1f}")
+
+# # Select columns
+# display_df = sorted_df[
+#     [
+#         "Comfort_Score",
+#         "City",
+#         "Country",
+#         "Temperature",
+#         "UV"
+#     ]
+# ]
+
+# # Centre table
+# styled_df = (
+#     display_df.style
+#     .set_properties(**{"text-align": "center"})
+#     .set_table_styles([dict(selector="th", props=[("text-align", "center")])])
+# )
+
+# # Display with alignment working
+# st.write(styled_df)
+
+
+
+# Build formatted DataFrame first
 sorted_df = sampled_routes_df.sort_values(
     by="Comfort_Score",
     ascending=False
 ).reset_index(drop=True)
 
-# Format numbers BEFORE styling
 sorted_df["Comfort_Score"] = sorted_df["Comfort_Score"].round(0).astype(int)
 sorted_df["Temperature"] = sorted_df["Temperature"].map(lambda x: f"{x:.1f}")
 sorted_df["UV"] = sorted_df["UV"].map(lambda x: f"{x:.1f}")
@@ -550,15 +584,41 @@ display_df = sorted_df[
     ]
 ]
 
-# Centre table
-styled_df = (
-    display_df.style
-    .set_properties(**{"text-align": "center"})
-    .set_table_styles([dict(selector="th", props=[("text-align", "center")])])
-)
+# Build HTML table
+html = """
+<style>
+table {
+    margin-left: auto;
+    margin-right: auto;
+    border-collapse: collapse;
+    font-size: 15px;
+}
+th, td {
+    text-align: center;
+    padding: 6px 12px;
+    border-bottom: 1px solid #ddd;
+}
+th {
+    font-weight: bold;
+}
+</style>
+<table>
+<tr>
+"""
 
-# Display with alignment working
-st.write(styled_df)
+# Add headers
+for col in display_df.columns:
+    html += f"<th>{col}</th>"
+html += "</tr>"
 
+# Add rows
+for _, row in display_df.iterrows():
+    html += "<tr>"
+    for col in display_df.columns:
+        html += f"<td>{row[col]}</td>"
+    html += "</tr>"
 
+html += "</table>"
 
+# Render
+st.markdown(html, unsafe_allow_html=True)
