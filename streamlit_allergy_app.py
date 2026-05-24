@@ -524,17 +524,20 @@ sampled_routes_df["Comfort_Score"] = sampled_routes_df.apply(
 )
 
 # Sort
+# Sort
 sorted_df = sampled_routes_df.sort_values(
     by="Comfort_Score",
     ascending=False
 ).reset_index(drop=True)
 
-# Format
+# Format numbers BEFORE styling
 sorted_df["Comfort_Score"] = sorted_df["Comfort_Score"].round(0).astype(int)
-sorted_df["Temperature"] = sorted_df["Temperature"].round(1)
-sorted_df["UV"] = sorted_df["UV"].round(1)
+sorted_df["Temperature"] = sorted_df["Temperature"].map(lambda x: f"{x:.1f}")
+sorted_df["UV"] = sorted_df["UV"].map(lambda x: f"{x:.1f}")
+sorted_df["Temp_Distance"] = sorted_df["Temp_Distance"].map(lambda x: f"{x:.1f}")
+sorted_df["UV_Distance"] = sorted_df["UV_Distance"].map(lambda x: f"{x:.1f}")
 
-# Select columns BEFORE styling
+# Select columns
 display_df = sorted_df[
     [
         "Comfort_Score",
@@ -554,6 +557,8 @@ styled_df = (
     .set_table_styles([dict(selector="th", props=[("text-align", "center")])])
 )
 
-# Display
-st.dataframe(styled_df)
+# Display with alignment working
+st.write(styled_df)
+
+
 
