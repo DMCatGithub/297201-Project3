@@ -5,7 +5,7 @@ import datetime
 import time
 from math import radians, sin, cos, sqrt, atan2
 
-[theme]
+# [theme]
 baseRadius = "0.5rem"  # Sets the global border-radius for inputs, pills, and containers
 buttonRadius = "0.5rem" # Overrides for st.button and st.segmented_control
 
