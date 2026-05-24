@@ -5,9 +5,43 @@ import datetime
 import time
 from math import radians, sin, cos, sqrt, atan2
 
-# [theme]
-baseRadius = "2rem"  # Sets the global border-radius for inputs, pills, and containers
-buttonRadius = "2rem" # Overrides for st.button and st.segmented_control
+st.markdown("""
+<style>
+
+    /* Outer segmented control wrapper */
+    .stSegmentedControl {
+        border-radius: 9999px !important;
+        overflow: hidden !important;
+        padding: 2px !important;
+        background-color: #f0f0f0 !important;
+    }
+
+    /* Each segment button */
+    .stSegmentedControl > label {
+        border-radius: 9999px !important;
+        padding: 6px 16px !important;
+        margin: 0 2px !important;
+        background-color: #fafafa !important;
+        border: 1px solid #ddd !important;
+        cursor: pointer;
+        transition: all 0.15s ease-in-out;
+    }
+
+    /* Hover */
+    .stSegmentedControl > label:hover {
+        background-color: #eeeeee !important;
+    }
+
+    /* Selected segment */
+    .stSegmentedControl > label[data-selected="true"] {
+        background-color: #E0F2F1 !important;
+        border-color: #80CBC4 !important;
+        font-weight: 600 !important;
+    }
+
+</style>
+""", unsafe_allow_html=True)
+
 
 
 
@@ -290,39 +324,40 @@ def compute_overall_range(selected_tuple, range_map):
     return low_min, high_max
 
 # --- GLOBAL SLIDER STYLE OVERRIDE ---
-st.markdown("""
-<style>
+# st.markdown("""
+# <style>
 
-    /* Entire segmented control container */
-    [data-testid="stSegmentedControl"] {
-        gap: 6px !important;
-    }
+#     /* Target the segmented control container */
+#     div[data-testid="stSegmentedControl"] > div {
+#         border-radius: 9999px !important;  /* full pill */
+#         overflow: hidden !important;       /* force rounding */
+#     }
 
-    /* Each button inside the segmented control */
-    [data-testid="stSegmentedControl"] button {
-        border-radius: 2rem !important;   /* your buttonRadius */
-        padding: 6px 14px !important;
-        border: 1px solid #ddd !important;
-        background-color: #fafafa !important;
-        color: black !important;
-        transition: all 0.15s ease-in-out;
-    }
+#     /* Target each button */
+#     div[data-testid="stSegmentedControl"] button {
+#         border-radius: 9999px !important;  /* full pill */
+#         padding: 6px 16px !important;
+#         background-color: #f5f5f5 !important;
+#         border: 1px solid #ddd !important;
+#         color: black !important;
+#         transition: all 0.15s ease-in-out;
+#     }
 
-    /* Hover effect */
-    [data-testid="stSegmentedControl"] button:hover {
-        background-color: #f0f0f0 !important;
-    }
+#     /* Hover */
+#     div[data-testid="stSegmentedControl"] button:hover {
+#         background-color: #eeeeee !important;
+#     }
 
-    /* Selected button */
-    [data-testid="stSegmentedControl"] button[aria-checked="true"] {
-        background-color: #E0F2F1 !important;   /* pastel highlight */
-        border-color: #80CBC4 !important;
-        font-weight: 600 !important;
-        color: black !important;
-    }
+#     /* Selected */
+#     div[data-testid="stSegmentedControl"] button[aria-checked="true"] {
+#         background-color: #E0F2F1 !important;
+#         border-color: #80CBC4 !important;
+#         font-weight: 600 !important;
+#         color: black !important;
+#     }
 
-</style>
-""", unsafe_allow_html=True)
+# </style>
+# """, unsafe_allow_html=True)
 
 
 
