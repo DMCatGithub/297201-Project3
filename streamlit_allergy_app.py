@@ -81,9 +81,6 @@ with st.expander("Show UV Index Guide"):
             unsafe_allow_html=True
         )
 
-with st.expander("Show Comfort Score Table"):
-    st.markdown(html, unsafe_allow_html=True)
-
 # 1. Set UV Slider
 UV_lo = 1   # fixed
 UV_hi = st.slider(
