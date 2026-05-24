@@ -264,9 +264,8 @@ def weather_block(
     options=["Disabled", "Low Priority", "Medium Priority", "High Priority"],
     default="Medium",
     key="uv_priority"
-)
-
     )
+
 
     # If disabled → hide the slider and return None
     if priority == "Disabled":
