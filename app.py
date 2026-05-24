@@ -196,7 +196,7 @@ from datetime import date
 import meteostat as ms
 
 st.title("Comfort Compass")
-def weather_block(title, input_widget, priority_key):
+def weather_block(title, input_widget, priority_key, default_priority = "Skip This"):
     st.subheader(title)
 
     # Priority selector (horizontal segmented control)
@@ -204,7 +204,7 @@ def weather_block(title, input_widget, priority_key):
     priority = st.pills(
         f"{title} Priority",
         options=["Skip This", "Low Priority", "Medium Priority", "High Priority"],
-        default="Skip This",
+        default=default_priority,
         key=priority_key
     )
 
@@ -214,7 +214,6 @@ def weather_block(title, input_widget, priority_key):
 
     # Otherwise show the input widget
     value = input_widget()
-
     return value, priority, False
 
 
@@ -242,6 +241,7 @@ temp_value, temp_priority, temp_disabled = weather_block(
         key="temp_slider"
     ),
     priority_key="temp_priority"
+    default_priority="Medium Priority"
 )
 
 if not temp_disabled:
