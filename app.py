@@ -274,7 +274,7 @@ def weather_block(
     return value, priority, disabled
 
 temp_value, temp_priority, temp_disabled = weather_block(
-    "Temperature",
+    "Temperaturezzz",
     disable_key="disable_temp",
     input_widget=lambda: st.slider(
         "Preferred Temperature (°C)", -10, 40, 20, key="temp_slider"
