@@ -286,15 +286,17 @@ wind_value, wind_priority, wind_disabled = weather_block(
     "Wind",
     disable_key="disable_wind",
     input_widget=lambda: st.select_slider(
-        "Wind Category",
+        "Wind Category Range",
         options=[
             "Calm", "Light Air", "Light Breeze", "Gentle Breeze",
             "Moderate Breeze", "Fresh Breeze", "Strong Breeze"
         ],
+        value=("Light Air", "Moderate Breeze"),   # low default, high default
         key="wind_slider"
     ),
     priority_key="wind_priority"
 )
+
 
 rain_value, rain_priority, rain_disabled = weather_block(
     "Rain",
