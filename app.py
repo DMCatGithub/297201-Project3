@@ -455,26 +455,26 @@ cloud_overall_min, cloud_overall_max = compute_overall_range(
     cloud_ranges
 )
 
-from meteostat import Point, Daily
-from datetime import datetime
+# from meteostat import Point, Daily
+# from datetime import datetime
 
 
 
-def get_weather(lat, lon, start, end):
-    location = Point(lat, lon)
+# def get_weather(lat, lon, start, end):
+#     location = Point(lat, lon)
 
-    data = Daily(location, start, end)
-    df = data.fetch()
+#     data = Daily(location, start, end)
+#     df = data.fetch()
 
-    if df.empty:
-        return None
+#     if df.empty:
+#         return None
 
-    return {
-        "Rain": df["prcp"].mean(),       # precipitation (mm)
-        "Wind": df["wspd"].mean(),    # wind speed (km/h)
-        "Humidity": df["rhum"].mean(),      # relative humidity (%)
-        "Cloud Cover": df["coco"].mean()    # cloud cover code (0–9)
-    }
+#     return {
+#         "Rain": df["prcp"].mean(),       # precipitation (mm)
+#         "Wind": df["wspd"].mean(),    # wind speed (km/h)
+#         "Humidity": df["rhum"].mean(),      # relative humidity (%)
+#         "Cloud Cover": df["coco"].mean()    # cloud cover code (0–9)
+#     }
 
 # API  dropping values / not using
 # weather_results = []
@@ -503,3 +503,178 @@ def get_weather(lat, lon, start, end):
 # dataset_with_score_df = pd.concat([dataset_with_score_df, weather_df], axis=1)
 
 # dataset_with_score_df
+
+# 3. Select travel mode
+travel_mode = st.radio("How will you travel?",["Car", "Plane"])
+
+travel_time = st.number_input(
+    "Maximum travel time (hours)",
+    min_value=1,
+    max_value=12,
+    value=5,
+    step=1
+)
+
+# 4. Select travel month
+# Set travel related variables
+months = list(calendar.month_name)[1:]
+selected_month = st.selectbox("What month do you plan to travel?", months)
+current_year = datetime.datetime.now().year
+
+travel_month = months.index(selected_month) + 1
+
+AVG_CAR_SPEED = 80  # km/h
+AVG_PLANE_SPEED = 800  # km/h
+
+if travel_mode == "Car":
+    travel_distance = travel_time * AVG_CAR_SPEED
+else:
+    travel_distance = travel_time * AVG_PLANE_SPEED
+
+# 5. Select your country
+# Make a sorted list of all unique countries
+unique_countries = sorted(airports_unique_cities_df["Country"].dropna().unique())
+Departure_Country = st.selectbox("Select your country",options=unique_countries, index=None, placeholder="Type to search...")
+
+if not Departure_Country:
+    st.stop()
+
+# 6. Select from avaialble town/city in your country.
+# Make sorted list of all towns in all countries
+towns_in_selected_country = sorted(airports_unique_cities_df.loc[airports_unique_cities_df["Country"] == Departure_Country, "City"].dropna().unique())
+Departure_City = st.selectbox("Select nearest town or city",options=towns_in_selected_country, index=None, placeholder="Type to search...")
+
+if not Departure_City:
+    st.stop()
+
+
+# 7. Select preferred airport
+# Only relevant if (1) Plane mode and (2) Multiple airports available in town selected
+# Hide menu if car mode selected and automatically 
+
+
+if travel_mode == "Car":
+    # For car travel, automatically pick the first airport in the city
+    airports_in_town = airports_df[
+        (airports_df["Country"] == Departure_Country) &
+        (airports_df["City"] == Departure_City) &
+        (airports_df["IATA"].notna())
+    ]
+
+    if airports_in_town.empty:
+        st.error("No airports found for this city.")
+        st.stop()
+
+    selected_airport_row = airports_in_town.iloc[0]
+    # st.info(f"Car travel selected — automatically using nearest airport: {selected_airport_row['Airport']} ({selected_airport_row['IATA']})")
+
+else:
+    # PLANE MODE — show dropdown if multiple airports exist
+    airports_in_town = airports_df[
+        (airports_df["Country"] == Departure_Country) &
+        (airports_df["City"] == Departure_City) &
+        (airports_df["IATA"].notna())
+    ]
+
+    if len(airports_in_town) == 1:
+        selected_airport_row = airports_in_town.iloc[0]
+        # st.info(f"Only one airport available: {selected_airport_row['Airport']} ({selected_airport_row['IATA']})")
+    else:
+        airport_options = airports_in_town.apply(
+            lambda row: f"{row['Airport']} ({row['IATA']})",
+            axis=1
+        )
+        selected_option = st.selectbox("Select your preferred airport", options=airport_options)
+        selected_airport_row = airports_in_town.iloc[airport_options.tolist().index(selected_option)]
+
+Departure_Airport = selected_airport_row["IATA"]
+
+
+# --- STOP HERE UNTIL USER CLICKS BUTTON ---
+ready = st.button("Find destinations")
+
+if not ready:
+    st.stop()
+
+  
+
+
+# Function for working out distance to each location
+def haversine(lat1, lon1, lat2, lon2):
+    R = 6371.0 # Radius in km
+    
+    dlat = radians(lat2 - lat1)
+    dlon = radians(lon2 - lon1)
+    a = sin(dlat/2)**2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon/2)**2
+    c = 2 * atan2(sqrt(a), sqrt(1-a))
+    return R * c
+
+#
+
+def plane_destinations ():
+# Make dataframe of all routes_from_df[Departure_Airport]
+    routes_from_df = routes_df[routes_df["Departure_Airport"] == Departure_Airport][["Departure_Airport","Arrival_Airport"]].copy()
+
+    for idx, row in routes_from_df.iterrows():
+
+        Arrival_Airport = row["Arrival_Airport"]
+
+        lat1 = airports_df.loc[airports_df["IATA"] == Departure_Airport, "Latitude"].iloc[0]
+        lon1 = airports_df.loc[airports_df["IATA"] == Departure_Airport, "Longitude"].iloc[0]
+
+        lat2 = airports_df.loc[airports_df["IATA"] == Arrival_Airport, "Latitude"].iloc[0]
+        lon2 = airports_df.loc[airports_df["IATA"] == Arrival_Airport, "Longitude"].iloc[0]
+        
+        city = airports_df.loc[airports_df["IATA"] == Arrival_Airport, "City"].iloc[0]
+        country = airports_df.loc[airports_df["IATA"] == Arrival_Airport, "Country"].iloc[0]
+            
+        distance = haversine(lat1, lon1, lat2, lon2)
+
+        # Add new columns 
+        routes_from_df.at[idx,"Latitude"] = lat2
+        routes_from_df.at[idx,"Longitude"] = lon2
+        routes_from_df.at[idx,"Distance"] = distance
+
+        routes_from_df.at[idx,"City"] = city
+        routes_from_df.at[idx,"Country"] = country
+
+        routes_from_df.at[idx,"Travel_Month"] = travel_month
+        routes_from_df.at[idx,"Current_year"] = current_year
+
+        routes_from_df.at[idx,"Temp_hi"] = Temp_hi
+        routes_from_df.at[idx,"Temp_lo"] = Temp_lo
+
+        routes_from_df.at[idx,"UV_hi"] = UV_hi
+        routes_from_df.at[idx,"UV_lo"] = UV_lo
+
+    # routes_from_df
+
+    # # Only routes within user target
+    routes_for_user_df = routes_from_df.drop_duplicates(subset=["Arrival_Airport"])
+    routes_for_user_df = routes_for_user_df[routes_from_df["Distance"] < travel_distance].sort_values("Distance").reset_index(drop=True)
+  
+
+    # # Sample 10 destinations from the list
+    # sampled_routes_df = routes_for_user_df.sample(n=10, random_state=42)
+
+    if len(routes_for_user_df) <= 10:
+        sampled_routes_df = routes_for_user_df
+    else:   
+        sampled_routes_df = routes_for_user_df.sample(n=10)
+
+    return sampled_routes_df
+
+
+# Run function plane_destinations
+sampled_routes_df = plane_destinations();
+
+sampled_routes_df["Distance"] = sampled_routes_df["Distance"].round(0).astype(int).astype(str) + " km"
+
+sampled_routes_df["Temp_hi"] = Temp_hi
+sampled_routes_df["Temp_lo"] = Temp_lo
+
+sampled_routes_df["UV_hi"] = UV_hi
+sampled_routes_df["UV_lo"] = UV_lo
+
+sampled_routes_df["Travel Month"] = travel_month
+sampled_routes_df["Current year"] = current_year
