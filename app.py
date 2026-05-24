@@ -5,48 +5,6 @@ import datetime
 import time
 from math import radians, sin, cos, sqrt, atan2
 
-st.markdown("""
-<style>
-
-    /* Custom segmented control wrapper */
-    .segmented-wrapper {
-        display: inline-flex;
-        padding: 2px;
-        border-radius: 9999px;
-        background-color: #f0f0f0;
-    }
-
-    /* Hide default radio bullets */
-    .segmented-wrapper input[type="radio"] {
-        display: none;
-    }
-
-    /* Each option label */
-    .segmented-option {
-        border-radius: 9999px;
-        padding: 6px 14px;
-        margin: 0 2px;
-        background-color: #fafafa;
-        border: 1px solid #ddd;
-        cursor: pointer;
-        font-size: 0.9rem;
-        transition: all 0.15s ease-in-out;
-    }
-
-    .segmented-option:hover {
-        background-color: #eeeeee;
-    }
-
-    /* Selected state */
-    .segmented-option.selected {
-        background-color: #E0F2F1;
-        border-color: #80CBC4;
-        font-weight: 600;
-    }
-
-</style>
-""", unsafe_allow_html=True)
-
 
 
 
@@ -217,78 +175,7 @@ st.markdown("""
 
 
 
-# # temp
-# st.subheader("Temperature")
-# temp_value = st.slider("Preferred Temperature (°C)", min_value=-10, max_value=40, value=(21,25))
-# temp_priority = st.selectbox("Temperature Priority", ["Low Priority", "Medium Priority", "High Priority"])
-# temp_weight = priority_map[temp_priority]
 
-# # Wind speed
-# st.subheader("Wind Speed")
-# wind_speed = st.slider("Preferred Wind Speed (km/h)", min_value=0, max_value=50, value=(0,10))
-# wind_priority = st.selectbox("Wind Priority", ["Low Priority", "Medium Priority", "High Priority"])
-# wind_weight = priority_map[wind_priority]
-
-
-
-# # Rain
-# st.subheader("Rain Preference")
-
-# rain_choice = st.radio(
-#     "Prefered maximum amount of rain:",
-#     ["No Rain", "Light Rain", "Moderate Rain", "Heavy Rain"]
-# )
-
-# rain_priority = st.selectbox("Rain Priority", ["Low Priority", "Medium Priority", "High Priority"])
-# rain_weight = priority_map[rain_priority]
-
-# # rain_score_map = {
-# #     "No Rain": 100,
-# #     "Light Rain": 70,
-# #     "Moderate Rain": 40,
-# #     "Heavy Rain": 10
-# # }
-
-# rain = st.select_slider(
-#     "Rain Level",
-#     options=["No Rain", "Light Rain", "Moderate Rain", "Heavy Rain"]
-# )
-
-# rain_score = rain_score_map[rain_choice]
-
-# # humid
-# st.subheader("Humidity")
-# humidity_value = st.slider("Preferred Humidity (%)", min_value=0, max_value=100, value=(40,60))
-# humidity_priority = st.selectbox("Humidity Priority", ["Low Priority", "Medium Priority", "High Priority"])
-# humidity_weight = priority_map[humidity_priority]
-
-# # humid2
-# humidity_choice = st.radio(
-#     "Humidity Level",
-#     ["Very Dry", "Dry", "Comfortable", "Humid", "Very Humid"]
-# )
-
-# humidity_priority = st.selectbox("Humidity Priority2", ["Low Priority", "Medium Priority", "High Priority"])
-# humidity_weight = priority_map[humidity_priority]
-
-
-# # cloud
-# st.subheader("Cloud Cover")
-# cloud_value = st.radio(
-#     "Select prefered cloud cover:",
-#     ["Clear Sky", "Few Clouds", "Scattered Clouds", "Broken Clouds", "Overcast"]
-# )
-
-# cloud_priority = st.selectbox("Cloud Cover Priority", ["Low Priority", "Medium Priority", "High Priority"])
-# cloud_weight = priority_map[cloud_priority]
-
-# rain_score_map = {
-#     "  0% Clear Sky": 100,
-#     " 25% Few Clouds": 70,
-#     " 50% Scattered Clouds": 40,
-#     " 75% Broken Clouds": 10
-#     "100% Overcast": 10
-# }
 
 # NEW CODE
 import streamlit as st
@@ -300,7 +187,8 @@ def weather_block(title, input_widget, priority_key):
     st.subheader(title)
 
     # Priority selector (horizontal segmented control)
-    priority = st.segmented_control(
+    # priority = st.segmented_control(
+    priority = st.pills(
         f"{title} Priority",
         options=["Disabled", "Low Priority", "Medium Priority", "High Priority"],
         default="Medium Priority",
@@ -328,41 +216,6 @@ def compute_overall_range(selected_tuple, range_map):
 
     return low_min, high_max
 
-# --- GLOBAL SLIDER STYLE OVERRIDE ---
-# st.markdown("""
-# <style>
-
-#     /* Target the segmented control container */
-#     div[data-testid="stSegmentedControl"] > div {
-#         border-radius: 9999px !important;  /* full pill */
-#         overflow: hidden !important;       /* force rounding */
-#     }
-
-#     /* Target each button */
-#     div[data-testid="stSegmentedControl"] button {
-#         border-radius: 9999px !important;  /* full pill */
-#         padding: 6px 16px !important;
-#         background-color: #f5f5f5 !important;
-#         border: 1px solid #ddd !important;
-#         color: black !important;
-#         transition: all 0.15s ease-in-out;
-#     }
-
-#     /* Hover */
-#     div[data-testid="stSegmentedControl"] button:hover {
-#         background-color: #eeeeee !important;
-#     }
-
-#     /* Selected */
-#     div[data-testid="stSegmentedControl"] button[aria-checked="true"] {
-#         background-color: #E0F2F1 !important;
-#         border-color: #80CBC4 !important;
-#         font-weight: 600 !important;
-#         color: black !important;
-#     }
-
-# </style>
-# """, unsafe_allow_html=True)
 
 
 
