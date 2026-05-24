@@ -301,29 +301,57 @@ wind_value, wind_priority, wind_disabled = weather_block(
 rain_value, rain_priority, rain_disabled = weather_block(
     "Rain",
     disable_key="disable_rain",
-    input_widget=lambda: st.radio(
+    input_widget=lambda: st.select_slider(
         "Rain Level",
-        ["No Rain", "Light Rain", "Moderate Rain", "Heavy Rain"],
-        key="rain_radio"
+        options=[
+            "No Rain",
+            "Light Rain",
+            "Moderate Rain",
+            "Heavy Rain"
+        ],
+        value="Light Rain",   # default
+        key="rain_slider"
     ),
     priority_key="rain_priority"
 )
 
 
+
 humidity_value, humidity_priority, humidity_disabled = weather_block(
     "Humidity",
     disable_key="disable_humidity",
-    input_widget=lambda: st.slider(
-        "Preferred Humidity (%)", 0, 100, 50, key="humidity_slider"
+    input_widget=lambda: st.select_slider(
+        "Humidity Range",
+        options=[
+            "Very Dry",
+            "Dry",
+            "Comfortable",
+            "Humid",
+            "Very Humid",
+            "Extremely Humid"
+        ],
+        value=("Dry", "Humid"),   # default low + high
+        key="humidity_slider"
     ),
     priority_key="humidity_priority"
 )
 
+
 cloud_value, cloud_priority, cloud_disabled = weather_block(
     "Cloud Cover",
     disable_key="disable_cloud",
-    input_widget=lambda: st.slider(
-        "Preferred Cloud Cover (oktas)", 0, 9, 3, key="cloud_slider"
+    input_widget=lambda: st.select_slider(
+        "Cloud Cover Range",
+        options=[
+            "Clear Sky",
+            "Few Clouds",
+            "Scattered Clouds",
+            "Broken Clouds",
+            "Overcast"
+        ],
+        value=("Few Clouds", "Broken Clouds"),   # default low + high
+        key="cloud_slider"
     ),
     priority_key="cloud_priority"
 )
+
