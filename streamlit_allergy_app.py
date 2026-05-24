@@ -541,12 +541,12 @@ sampled_routes_df["Comfort Score"] = sampled_routes_df.apply(
 
 # Sort by Comfort Score (descending) and remove index
 sorted_df = sampled_routes_df.sort_values(
-    by="Comfort_Score",
+    by="Comfort Score",
     ascending=False
 ).reset_index(drop=True)
 
 # Format columns
-sorted_df["Comfort_Score"] = sorted_df["Comfort_Score"].round(1)
+sorted_df["Comfort Score"] = sorted_df["Comfort Score"].round(1)
 sorted_df["Temperature"] = sorted_df["Temperature"].round(1)
 sorted_df["UV"] = sorted_df["UV"].round(1)
 
