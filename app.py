@@ -1,3 +1,5 @@
+st.title("Comfort Compass")
+
 # import streamlit as st
 # import meteostat as ms
 # from ms import Point, Daily
@@ -84,7 +86,7 @@ import streamlit as st
 import requests
 import pandas as pd
 
-st.title("UV API Test – CurrentUVIndex.com")
+# st.title("UV API Test - CurrentUVIndex.com")
 
 def get_uv(lat, lon):
     url = f"https://currentuvindex.com/api/v1/uvi?latitude={lat}&longitude={lon}"
@@ -123,7 +125,7 @@ def get_uv(lat, lon):
         return float("nan")
 
     except Exception as e:
-        st.error(f"Error: {e}")
+        # st.error(f"Error: {e}")
         return float("nan")
 
 
@@ -131,10 +133,10 @@ def get_uv(lat, lon):
 # Streamlit UI
 # -------------------------
 
-city = st.selectbox(
-    "Choose a test location",
-    ["Auckland", "New York", "London", "Mumbai"]
-)
+# city = st.selectbox(
+#     "Choose a test location",
+#     ["Auckland", "New York", "London", "Mumbai"]
+# )
 
 coords = {
     "Auckland": (-36.8485, 174.7633),
@@ -145,10 +147,10 @@ coords = {
 
 lat, lon = coords[city]
 
-if st.button("Test UV API"):
-    st.write(f"### Testing UV for {city}")
-    uv = get_uv(lat, lon)
-    st.metric("UV Index at 1 PM (or fallback)", uv)
+# if st.button("Test UV API"):
+#     st.write(f"### Testing UV for {city}")
+#     uv = get_uv(lat, lon)
+#     st.metric("UV Index at 1 PM (or fallback)", uv)
 
 # ***************************************************
 # SLiders and selectors
@@ -268,15 +270,63 @@ def weather_block(
 
     return value, priority, False
 
+def compute_overall_range(selected_tuple, range_map):
+    if selected_tuple is None:
+        return None, None
 
+    low_cat, high_cat = selected_tuple
+
+    low_min, _ = range_map[low_cat]
+    _, high_max = range_map[high_cat]
+
+    return low_min, high_max
+
+uv_value, uv_priority, uv_disabled = weather_block(
+    "UV Index",
+    input_widget=lambda: st.slider(
+        "Select preferred maximum UV index (see UV index guide below):",
+        min_value=1,
+        max_value=11,
+        value=3,
+        key="uv_slider"
+    ),
+    priority_key="uv_priority"
+)
+
+with st.expander("Show UV Index Guide"):
+
+    uv_levels = [
+        ("Low (1-2)", "Burn ~60 min — Minimal protection", "#3CB371", "black"),
+        ("Moderate (3-5)", "Burn ~40 min — Protection recommended", "#FFD700", "black"),
+        ("High (6-7)", "Burn ~30 min — Protection essential", "#FF8C00", "black"),
+        ("Very High (8-10)", "Burn ~20 min — Extra protection needed", "#FF4500", "black"),
+        ("Extreme (11+)", "Burn <15 min — Avoid sun exposure", "#9400D3", "black"),
+    ]
+
+    for title, desc, color, text_color in uv_levels:
+        st.markdown(
+            f"""
+            <div style="
+                background-color:{color};
+                padding:8px 12px;
+                border-radius:6px;
+                margin-bottom:6px;
+                color:{text_color};
+                font-weight:600;
+                font-size:14px;">
+                {title} — {desc}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 temp_value, temp_priority, temp_disabled = weather_block(
     "Temperature",
     input_widget=lambda: st.slider(
-        "Preferred Temperature (°C)",
+        "Select preferred temperature range (°C):",
         min_value=-10,
         max_value=50,
-        value=(21, 25),
+        value=(20, 25),
         key="temp_slider"
     ),
     priority_key="temp_priority"
@@ -287,22 +337,38 @@ temp_value, temp_priority, temp_disabled = weather_block(
 wind_value, wind_priority, wind_disabled = weather_block(
     "Wind",
     input_widget=lambda: st.select_slider(
-        "Wind Category Range",
+        "Select preferred wind category range:",
         options=[
             "Calm", "Light Air", "Light Breeze", "Gentle Breeze",
             "Moderate Breeze", "Fresh Breeze", "Strong Breeze"
         ],
-        value=("Light Air", "Moderate Breeze"),
+        value=("Calm", "Light Breeze"),
         key="wind_slider"
     ),
     priority_key="wind_priority"
 )
 
+wind_ranges = {
+    "Calm": (0, 2),
+    "Light Air": (2, 5),
+    "Light Breeze": (6, 11),
+    "Gentle Breeze": (12, 19),
+    "Moderate Breeze": (20, 28),
+    "Fresh Breeze": (29, 38),
+    "Strong Breeze": (39, 50)
+}
+
+wind_overall_min, wind_overall_max = compute_overall_range(
+    wind_value,
+    wind_ranges
+)
+
+
 
 rain_value, rain_priority, rain_disabled = weather_block(
     "Rain",
     input_widget=lambda: st.select_slider(
-        "Rain Level",
+        "Select preferred rain level:",
         options=[
             "No Rain",
             "Light Rain",
@@ -315,13 +381,25 @@ rain_value, rain_priority, rain_disabled = weather_block(
     priority_key="rain_priority"
 )
 
+rain_ranges = {
+    "No Rain": (0, 0.2),
+    "Light Rain": (0.2, 2.5),
+    "Moderate Rain": (2.5, 7.6),
+    "Heavy Rain": (7.6, 50)
+}
+
+rain_overall_min, rain_overall_max = compute_overall_range(
+    rain_value,
+    rain_ranges
+)
+
 
 
 
 humidity_value, humidity_priority, humidity_disabled = weather_block(
     "Humidity",
     input_widget=lambda: st.select_slider(
-        "Humidity Range",
+        "Select preferred humidity range:",
         options=[
             "Very Dry",
             "Dry",
@@ -330,10 +408,24 @@ humidity_value, humidity_priority, humidity_disabled = weather_block(
             "Very Humid",
             "Extremely Humid"
         ],
-        value=("Dry", "Humid"),
+        value=("Comfortable", "Humid"),
         key="humidity_slider"
     ),
     priority_key="humidity_priority"
+)
+
+humidity_ranges = {
+    "Very Dry": (0, 30),
+    "Dry": (30, 40),
+    "Comfortable": (40, 60),
+    "Humid": (60, 75),
+    "Very Humid": (75, 90),
+    "Extremely Humid": (90, 100)
+}
+
+humidity_overall_min, humidity_overall_max = compute_overall_range(
+    humidity_value,
+    humidity_ranges
 )
 
 
@@ -341,7 +433,7 @@ humidity_value, humidity_priority, humidity_disabled = weather_block(
 cloud_value, cloud_priority, cloud_disabled = weather_block(
     "Cloud Cover",
     input_widget=lambda: st.select_slider(
-        "Cloud Cover Range",
+        "Select preferred cloud cover:",
         options=[
             "Clear Sky",
             "Few Clouds",
@@ -349,10 +441,70 @@ cloud_value, cloud_priority, cloud_disabled = weather_block(
             "Broken Clouds",
             "Overcast"
         ],
-        value=("Few Clouds", "Broken Clouds"),
+        value=("Clear Sky", "Few Clouds"),
         key="cloud_slider"
     ),
     priority_key="cloud_priority"
 )
 
+cloud_ranges = {
+    "Clear Sky": (0, 1),
+    "Few Clouds": (1, 3),
+    "Scattered Clouds": (3, 5),
+    "Broken Clouds": (5, 8),
+    "Overcast": (8, 9)
+}
 
+cloud_overall_min, cloud_overall_max = compute_overall_range(
+    cloud_value,
+    cloud_ranges
+)
+
+from meteostat import Point, Daily
+from datetime import datetime
+
+
+
+def get_weather(lat, lon, start, end):
+    location = Point(lat, lon)
+
+    data = Daily(location, start, end)
+    df = data.fetch()
+
+    if df.empty:
+        return None
+
+    return {
+        "Rain": df["prcp"].mean(),       # precipitation (mm)
+        "Wind": df["wspd"].mean(),    # wind speed (km/h)
+        "Humidity": df["rhum"].mean(),      # relative humidity (%)
+        "Cloud Cover": df["coco"].mean()    # cloud cover code (0–9)
+    }
+
+# API  dropping values / not using
+# weather_results = []
+
+# # Loop through dataset_with_score_df (NOT df)
+# for idx, row in dataset_with_score_df.iterrows():
+#     lat = row["Latitude"]
+#     lon = row["Longitude"]
+
+#     weather = get_weather(lat, lon, start, end)
+
+#     if weather is None:
+#         weather_results.append({
+#             "Rain": None,
+#             "Wind": None,
+#             "Humidity": None,
+#             "Cloud Cover": None
+#         })
+#     else:
+#         weather_results.append(weather)
+
+# # Convert results to DataFrame
+# weather_df = pd.DataFrame(weather_results)
+
+# # Merge back into dataset_with_score_df
+# dataset_with_score_df = pd.concat([dataset_with_score_df, weather_df], axis=1)
+
+# dataset_with_score_df
