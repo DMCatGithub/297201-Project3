@@ -518,7 +518,7 @@ sampled_routes_df["Temp_Distance"] = sampled_routes_df["Temperature"].apply(temp
 sampled_routes_df["UV_Distance"] = sampled_routes_df["UV"].apply(uv_distance)
 
 # Comfort score (correct column name)
-sampled_routes_df["Comfort_Score"] = sampled_routes_df.apply(
+sampled_routes_df["Comfort Score"] = sampled_routes_df.apply(
     lambda row: calculate_comfort_score(row["Temp_Distance"], row["UV_Distance"]),
     axis=1
 )
@@ -561,11 +561,11 @@ sampled_routes_df["Comfort_Score"] = sampled_routes_df.apply(
 
 # Build formatted DataFrame first
 sorted_df = sampled_routes_df.sort_values(
-    by="Comfort_Score",
+    by="Comfort Score",
     ascending=False
 ).reset_index(drop=True)
 
-sorted_df["Comfort_Score"] = sorted_df["Comfort_Score"].round(0).astype(int)
+sorted_df["Comfort Score"] = sorted_df["Comfort Score"].round(0).astype(int)
 sorted_df["Temperature"] = sorted_df["Temperature"].map(lambda x: f"{x:.1f}")
 sorted_df["UV"] = sorted_df["UV"].map(lambda x: f"{x:.1f}")
 sorted_df["Temp_Distance"] = sorted_df["Temp_Distance"].map(lambda x: f"{x:.1f}")
@@ -574,7 +574,7 @@ sorted_df["UV_Distance"] = sorted_df["UV_Distance"].map(lambda x: f"{x:.1f}")
 # Select columns
 display_df = sorted_df[
     [
-        "Comfort_Score",
+        "Comfort Score",
         "City",
         "Country",
         "Temperature",
