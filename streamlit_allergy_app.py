@@ -69,11 +69,11 @@ UV_hi = st.slider(
 with st.expander("Show UV Index Guide"):
 
     uv_levels = [
-        ("Low (1–2)", "Burn ~60 min — Minimal protection", "#3CB371", "white"),
+        ("Low (1–2)", "Burn ~60 min — Minimal protection", "#3CB371", "black"),
         ("Moderate (3–5)", "Burn ~40 min — Protection recommended", "#FFD700", "black"),
-        ("High (6–7)", "Burn ~30 min — Protection essential", "#FF8C00", "white"),
-        ("Very High (8–10)", "Burn ~20 min — Extra protection needed", "#FF4500", "white"),
-        ("Extreme (11+)", "Burn <15 min — Avoid sun exposure", "#9400D3", "white"),
+        ("High (6–7)", "Burn ~30 min — Protection essential", "#FF8C00", "black"),
+        ("Very High (8–10)", "Burn ~20 min — Extra protection needed", "#FF4500", "black"),
+        ("Extreme (11+)", "Burn <15 min — Avoid sun exposure", "#9400D3", "black"),
     ]
 
     for title, desc, color, text_color in uv_levels:
