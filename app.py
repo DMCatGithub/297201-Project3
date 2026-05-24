@@ -1060,7 +1060,7 @@ def get_airports_weather(sampled_routes_df):
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
 
         for row in sampled_routes_df.itertuples(index=False):
-                airport = row.Airport
+                airport = row.Arrival_Airport
 
                 # Define the date
                 year = row.Current_year - 1
