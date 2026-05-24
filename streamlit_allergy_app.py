@@ -54,6 +54,18 @@ routes_df.columns = ["Airline", "AirlineID", "Departure_Airport", "Departure_Air
 #         unsafe_allow_html=True
 #     )
 
+
+# 1. Set UV Slider
+UV_lo = 1   # fixed
+UV_hi = st.slider(
+    "Select preferred maximum UV index (see UV index guide below):",
+    min_value = 1,
+    max_value = 11,
+    value = 3, # default value
+    step = 1
+)
+
+
 with st.expander("Show UV Index Guide"):
 
     uv_levels = [
@@ -80,16 +92,6 @@ with st.expander("Show UV Index Guide"):
             """,
             unsafe_allow_html=True
         )
-
-# 1. Set UV Slider
-UV_lo = 1   # fixed
-UV_hi = st.slider(
-    "Select preferred maximum UV index (see UV index guide below):",
-    min_value = 1,
-    max_value = 11,
-    value = 3, # default value
-    step = 1
-)
 
 # 2. Set Temperature slider
 Temp_lo, Temp_hi = st.slider(
