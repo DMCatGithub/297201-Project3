@@ -463,54 +463,7 @@ cloud_overall_min, cloud_overall_max = compute_overall_range(
     cloud_ranges
 )
 
-# from meteostat import Point, Daily
-# from datetime import datetime
-
-
-
-# def get_weather(lat, lon, start, end):
-#     location = Point(lat, lon)
-
-#     data = Daily(location, start, end)
-#     df = data.fetch()
-
-#     if df.empty:
-#         return None
-
-#     return {
-#         "Rain": df["prcp"].mean(),       # precipitation (mm)
-#         "Wind": df["wspd"].mean(),    # wind speed (km/h)
-#         "Humidity": df["rhum"].mean(),      # relative humidity (%)
-#         "Cloud Cover": df["coco"].mean()    # cloud cover code (0–9)
-#     }
-
-# API  dropping values / not using
-# weather_results = []
-
-# # Loop through dataset_with_score_df (NOT df)
-# for idx, row in dataset_with_score_df.iterrows():
-#     lat = row["Latitude"]
-#     lon = row["Longitude"]
-
-#     weather = get_weather(lat, lon, start, end)
-
-#     if weather is None:
-#         weather_results.append({
-#             "Rain": None,
-#             "Wind": None,
-#             "Humidity": None,
-#             "Cloud Cover": None
-#         })
-#     else:
-#         weather_results.append(weather)
-
-# # Convert results to DataFrame
-# weather_df = pd.DataFrame(weather_results)
-
-# # Merge back into dataset_with_score_df
-# dataset_with_score_df = pd.concat([dataset_with_score_df, weather_df], axis=1)
-
-# dataset_with_score_df
+# CODE FROM ORIGINAL COMFORT COMPASS APP
 
 # 3. Select travel mode
 travel_mode = st.radio("How will you travel?",["Car", "Plane"])
@@ -686,3 +639,455 @@ sampled_routes_df["UV_lo"] = UV_lo
 
 sampled_routes_df["Travel Month"] = travel_month
 sampled_routes_df["Current year"] = current_year
+
+# Updte with API data
+# Test code for output with air polution
+# sampled_routes_df["Comfort Score"] = 57
+# sampled_routes_df["Air Pollution"] = "Good"
+
+# cols_to_show = ["Comfort Score", "City", "Country", "Distance", "Air Pollution"]
+# existing_cols = [c for c in cols_to_show if c in sampled_routes_df.columns]
+# df_show = sampled_routes_df[existing_cols].copy()
+
+# pollution_colors = {
+#     "Good": "#3CB371",
+#     "Moderate": "#FFD700",
+#     "Unhealthy for Sensitive Groups": "#FFA500",
+#     "Unhealthy": "#FF4500",
+#     "Hazardous": "#800080"
+# }
+
+# html = """
+# <style>
+# table {
+#     margin-left: auto;
+#     margin-right: auto;
+#     border-collapse: collapse;
+# }
+# th, td {
+#     text-align: center;
+#     padding: 6px 10px;
+#     border-bottom: 1px solid #ddd;
+# }
+# </style>
+# <table>
+# <tr>
+# """
+
+# # headers
+# for col in cols_to_show:
+#     html += f"<th>{col}</th>"
+# html += "</tr>"
+
+# # rows
+# for _, row in df_show.iterrows():
+#     html += "<tr>"
+#     for col in cols_to_show:
+#         if col == "Air_Pollution":
+#             color = pollution_colors.get(row[col], "white")
+#             html += f'<td style="background-color:{color}; font-weight:600;">{row[col]}</td>'
+#         else:
+#             html += f"<td>{row[col]}</td>"
+#     html += "</tr>"
+
+# html += "</table>"
+
+# st.markdown(html, unsafe_allow_html=True)
+# ABOVE >> Test table
+
+# Get temperature data -OPEN METEO nolonger working
+# import time
+# import requests
+
+# sampled_routes_df["Temperature"] = float("nan")
+
+# # temp_value = float("nan")
+# temp_value = 99
+
+# url = "https://climate-api.open-meteo.com/v1/climate"
+
+# with st.spinner("Fetching temperature data..."):
+#     progress = st.progress(0)
+#     status = st.empty()
+
+#     total = len(sampled_routes_df)
+
+#     for i, (idx, location) in enumerate(sampled_routes_df.iterrows()):
+#         latitude = location.Latitude
+#         longitude = location.Longitude
+
+#         status.write(f"Processing {location.City} ({i+1}/{total})")
+
+#         params = {
+#             "latitude": latitude,
+#             "longitude": longitude,
+#             "daily": ["temperature_2m_mean"],
+#             "start_date": "2025-07-15",
+#             "end_date": "2025-07-15",
+#             "timezone": "auto"
+#         }
+
+#         # Retry loop
+#         for attempt in range(3):
+#             try:
+#                 r = requests.get(url, params=params, timeout=10)
+#                 data = r.json()
+
+#                 temp_value = data["daily"]["temperature_2m_mean"][0]
+#                 break
+
+#             except Exception:
+#                 time.sleep(1)
+
+#         sampled_routes_df.at[idx, "Temperature"] = temp_value
+
+#         # Update progress bar
+#         progress.progress((i+1) / total)
+#         time.sleep(0.1)
+
+# status.success("Temperature data loaded!")
+
+# st.dataframe(
+#     sampled_routes_df[["City", "Country", "Temperature"]]
+# )
+
+# WORKING TEMP API CODE - new meteostat code
+# import streamlit as st
+# from datetime import date
+# import meteostat as ms
+
+# # Add Temperature column
+# sampled_routes_df["Temperature"] = float("nan")
+
+# with st.spinner("Fetching temperature data..."):
+#     progress = st.progress(0)
+#     status = st.empty()
+
+#     total = len(sampled_routes_df)
+
+#     # Fixed date for your sampling
+#     # start = datetime(2025, 7, 15)
+#     # end = datetime(2025, 7, 15)
+
+#     for i, (idx, location) in enumerate(sampled_routes_df.iterrows()):
+#         lat = location.Latitude
+#         lon = location.Longitude
+#         POINT = ms.Point(lat, lon)
+
+#         START = date(2025, 7, 15)
+#         END = date(2025, 7, 15)
+
+#         stations = ms.stations.nearby(POINT, limit=4)
+#         ts = ms.daily(stations, START, END)
+#         df = ms.interpolate(ts, POINT).fetch()
+
+
+#         status.write(f"Getting temperature data for {location.City} ({i+1}/{total})")
+
+#         # Extract tavg (mean temperature)
+#         if not df.empty and "temp" in df.columns:
+#             temp_value = df["temp"].iloc[0]
+#         else:
+#             temp_value = float("nan")
+
+#         sampled_routes_df.at[idx, "Temperature"] = temp_value
+
+#         progress.progress((i + 1) / total)
+#         time.sleep(0.05)
+
+# status.success("Temperature data loaded!")
+
+# Extra Variables
+import streamlit as st
+from datetime import date
+import meteostat as ms
+import time
+
+# Add all new columns
+sampled_routes_df["Temperature"] = float("nan")
+sampled_routes_df["Wind_Speed"] = float("nan")
+sampled_routes_df["Humidity"] = float("nan")
+sampled_routes_df["Precipitation"] = float("nan")
+sampled_routes_df["Sunshine"] = float("nan")
+sampled_routes_df["Cloud_Cover"] = float("nan")
+
+with st.spinner("Fetching weather data..."):
+    progress = st.progress(0)
+    status = st.empty()
+
+    total = len(sampled_routes_df)
+
+    for i, (idx, location) in enumerate(sampled_routes_df.iterrows()):
+        lat = location.Latitude
+        lon = location.Longitude
+        POINT = ms.Point(lat, lon)
+
+        START = date(2025, 7, 15)
+        END = date(2025, 7, 15)
+
+        stations = ms.stations.nearby(POINT, limit=4)
+        ts = ms.daily(stations, START, END)
+        df = ms.interpolate(ts, POINT).fetch()
+
+        status.write(f"Getting weather data for {location.City} ({i+1}/{total})")
+
+        # Helper function
+        def get_value(df, col):
+            if not df.empty and col in df.columns:
+                return df[col].iloc[0]
+            return float("nan")
+
+        # Extract variables
+        temp_value = get_value(df, "temp")
+        wspd_value = get_value(df, "wspd")
+        rhum_value = get_value(df, "rhum")
+        prcp_value = get_value(df, "prcp")
+        tsun_value = get_value(df, "tsun")
+        cldc_value = get_value(df, "cldc")
+
+        # Assign to dataframe
+        sampled_routes_df.at[idx, "Temperature"] = temp_value
+        sampled_routes_df.at[idx, "Wind Speed"] = wspd_value
+        sampled_routes_df.at[idx, "Humidity"] = rhum_value
+        sampled_routes_df.at[idx, "Precipitation"] = prcp_value
+        sampled_routes_df.at[idx, "Sunshine"] = tsun_value
+        sampled_routes_df.at[idx, "Cloud Cover"] = cldc_value
+
+        progress.progress((i + 1) / total)
+        time.sleep(0.05)
+
+status.success("Weather data loaded!")
+
+
+
+# HIDE TEMP RESULT TABLE
+st.dataframe(
+    sampled_routes_df[["City", "Country", "Temperature", "Humidity","Rain","Wind Speed"","Cloud Cover"]]
+)
+
+# UV data
+import requests
+import pandas as pd
+
+sampled_routes_df["UV"] = float("nan")
+
+def get_uv(lat, lon):
+    url = f"https://currentuvindex.com/api/v1/uvi?latitude={lat}&longitude={lon}"
+
+    try:
+        r = requests.get(url, timeout=10)
+        data = r.json()
+
+        uv_values = []
+
+        # 1. Add all UV values from the past 24 hours (history)
+        history = data.get("history", [])
+        df_h = pd.DataFrame(history)
+
+        if not df_h.empty:
+            uv_values.extend(df_h["uvi"].astype(float).tolist())
+
+        # 2. Add all UV values from forecast (today + next 2 days)
+        forecast = data.get("forecast", [])
+        df_f = pd.DataFrame(forecast)
+
+        if not df_f.empty:
+            uv_values.extend(df_f["uvi"].astype(float).tolist())
+
+        # 3. Add current UV as fallback
+        if "now" in data and "uvi" in data["now"]:
+            uv_values.append(float(data["now"]["uvi"]))
+
+        # 4. Return the maximum UV value found
+        if uv_values:
+            return max(uv_values)
+
+        return float("nan")
+
+    except:
+        return float("nan")
+
+
+
+with st.spinner("Fetching UV data..."):
+    progress = st.progress(0)
+    status = st.empty()
+
+    total = len(sampled_routes_df)
+
+    for i, (idx, location) in enumerate(sampled_routes_df.iterrows()):
+        lat = location.Latitude
+        lon = location.Longitude
+
+        status.write(f"Getting UV data for {location.City} ({i+1}/{total})")
+
+        uv_value = get_uv(lat, lon)
+
+        sampled_routes_df.at[idx, "UV"] = uv_value
+
+        progress.progress((i + 1) / total)
+        time.sleep(0.05)
+
+status.success("UV data loaded!")
+
+# HIDE UV RESULT TABLE
+# st.dataframe(
+#     sampled_routes_df[["City", "Country", "Temperature", "UV"]]
+# )
+
+
+
+
+
+# Calculate the Comfort Score
+
+def temp_distance(temp):
+    if temp < Temp_lo:
+        return Temp_lo - temp
+    elif temp > Temp_hi:
+        return temp - Temp_hi
+    else:
+        return 0
+
+def uv_distance(uv):
+    if uv > UV_hi:
+        return uv - UV_hi
+    else:
+        return 0
+
+# Comfort score model
+def calculate_comfort_score(temp_distance, uv_distance):
+    # UV of 11 = 5
+    # intercept = 96.2684
+    # coeff_Temp_Distance = 0.7319
+    # coeff_Temp_DistanceSqd = -0.3554
+    # coeff_UV_Distance = -6.0585
+    # coeff_UV_DistanceSqd = -0.1929
+
+    # UV 11 = 50
+    intercept = 96.2684
+    coeff_Temp_Distance = 0.7319
+    coeff_Temp_DistanceSqd = -0.3554
+    coeff_UV_Distance = -6.0585
+    coeff_UV_DistanceSqd = -0.1929
+
+    return (
+        intercept
+        + coeff_Temp_Distance * temp_distance
+        + coeff_Temp_DistanceSqd * (temp_distance ** 2)
+        + coeff_UV_Distance * uv_distance
+        + coeff_UV_DistanceSqd * (uv_distance ** 2)
+    )
+
+# Distance columns
+sampled_routes_df["Temp_Distance"] = sampled_routes_df["Temperature"].apply(temp_distance)
+sampled_routes_df["UV_Distance"] = sampled_routes_df["UV"].apply(uv_distance)
+
+# Comfort score (correct column name)
+sampled_routes_df["Comfort Score"] = sampled_routes_df.apply(
+    lambda row: calculate_comfort_score(row["Temp_Distance"], row["UV_Distance"]),
+    axis=1
+)
+
+# Sort
+# sorted_df = sampled_routes_df.sort_values(
+#     by="Comfort_Score",
+#     ascending=False
+# ).reset_index(drop=True)
+
+# # Format numbers BEFORE styling
+# sorted_df["Comfort_Score"] = sorted_df["Comfort_Score"].round(0).astype(int)
+# sorted_df["Temperature"] = sorted_df["Temperature"].map(lambda x: f"{x:.1f}")
+# sorted_df["UV"] = sorted_df["UV"].map(lambda x: f"{x:.1f}")
+# sorted_df["Temp_Distance"] = sorted_df["Temp_Distance"].map(lambda x: f"{x:.1f}")
+# sorted_df["UV_Distance"] = sorted_df["UV_Distance"].map(lambda x: f"{x:.1f}")
+
+# # Select columns
+# display_df = sorted_df[
+#     [
+#         "Comfort_Score",
+#         "City",
+#         "Country",
+#         "Temperature",
+#         "UV"
+#     ]
+# ]
+
+# # Centre table
+# styled_df = (
+#     display_df.style
+#     .set_properties(**{"text-align": "center"})
+#     .set_table_styles([dict(selector="th", props=[("text-align", "center")])])
+# )
+
+# # Display with alignment working
+# st.write(styled_df)
+
+
+
+# Build formatted DataFrame first
+sorted_df = sampled_routes_df.sort_values(
+    by="Comfort Score",
+    ascending=False
+).reset_index(drop=True)
+
+sorted_df["Comfort Score"] = sorted_df["Comfort Score"].round(0).astype(int)
+sorted_df["Temperature"] = sorted_df["Temperature"].map(lambda x: f"{x:.1f}")
+sorted_df["UV"] = sorted_df["UV"].map(lambda x: f"{x:.1f}")
+
+# Select columns
+display_df = sorted_df[
+    [
+        "Comfort Score",
+        "City",
+        "Country",
+        "Temperature",
+        "UV"
+    ]
+]
+
+# Build HTML table
+html = """
+<style>
+table {
+    margin-left: auto;
+    margin-right: auto;
+    border-collapse: collapse;
+    font-size: 15px;
+}
+th, td {
+    text-align: center;
+    padding: 6px 12px;
+    border-bottom: 1px solid #ddd;
+}
+td.left {
+    text-align: left;
+}
+th {
+    font-weight: bold;
+}
+</style>
+<table>
+<tr>
+"""
+
+# Add headers
+for col in display_df.columns:
+    html += f"<th>{col}</th>"
+html += "</tr>"
+
+# Add rows
+for _, row in display_df.iterrows():
+    html += "<tr>"
+    for col in display_df.columns:
+        # Left-align City and Country
+        if col in ["City", "Country"]:
+            html += f"<td class='left'>{row[col]}</td>"
+        else:
+            html += f"<td>{row[col]}</td>"
+    html += "</tr>"
+
+html += "</table>"
+
+st.markdown(html, unsafe_allow_html=True)
+
