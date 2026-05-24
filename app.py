@@ -196,7 +196,7 @@ wind_categories = [
 
 wind_choice = st.radio("Preferred Wind Category", wind_categories)
 
-wind_priority = st.selectbox("Wind Priority", ["Low Priority", "Medium Priority", "High Priority"])
+wind_priority = st.selectbox("Wind Priority2", ["Low Priority", "Medium Priority", "High Priority"])
 wind_weight = priority_map[wind_priority]
 
 # Rain
