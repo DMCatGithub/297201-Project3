@@ -203,13 +203,13 @@ def weather_block(title, input_widget, priority_key):
     # priority = st.segmented_control(
     priority = st.pills(
         f"{title} Priority",
-        options=["Disabled", "Low Priority", "Medium Priority", "High Priority"],
-        default="Medium Priority",
+        options=["Skip This", "Low Priority", "Medium Priority", "High Priority"],
+        default="Skip This",
         key=priority_key
     )
 
-    # If disabled → hide the slider and return None
-    if priority == "Disabled":
+    # If Skip This → hide the slider and return None
+    if priority == "Skip This":
         return None, priority, True
 
     # Otherwise show the input widget
