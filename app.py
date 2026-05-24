@@ -1,6 +1,6 @@
 import streamlit as st
 import meteostat as ms
-from ms import Point, Daily
+# from ms import Point, Daily
 
 import pandas as pd
 from datetime import datetime
