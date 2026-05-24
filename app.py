@@ -240,32 +240,20 @@
 
 # NEW CODE
 import streamlit as st
-# from datetime import date
-# import meteostat as ms
+from datetime import date
+import meteostat as ms
 
 st.title("Comfort Compass")
-def weather_block(
-    title,
-    input_widget,
-    priority_key
-):
+def weather_block(title, input_widget, priority_key):
     st.subheader(title)
 
-    # Priority selector (now includes Disabled)
-    # priority = st.selectbox(
-    #     f"{title} Priority",
-    #     ["Disabled", "Low Priority", "Medium Priority", "High Priority"],
-    #     index=2,   # <-- Default to Medium Priority
-    #     key=priority_key
-
-
-    uv_priority = st.segmented_control(
-    "Priority",
-    options=["Disabled", "Low Priority", "Medium Priority", "High Priority"],
-    default="Medium",
-    key="uv_priority"
+    # Priority selector (horizontal segmented control)
+    priority = st.segmented_control(
+        f"{title} Priority",
+        options=["Disabled", "Low Priority", "Medium Priority", "High Priority"],
+        default="Medium Priority",
+        key=priority_key
     )
-
 
     # If disabled → hide the slider and return None
     if priority == "Disabled":
@@ -275,6 +263,7 @@ def weather_block(
     value = input_widget()
 
     return value, priority, False
+
 
 def compute_overall_range(selected_tuple, range_map):
     if selected_tuple is None:
