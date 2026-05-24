@@ -1026,7 +1026,7 @@ def get_weather_new(airport, lat, lon, start_date, end_date, max_retries=5):
             df["latitude"] = data["latitude"]
             df["longitude"] = data["longitude"]
             df["timezone"] = data["timezone"]
-            df["Airport"] = airport
+            df["Arrival_Airport"] = airport
 
             return df
 
@@ -1037,7 +1037,6 @@ def get_weather_new(airport, lat, lon, start_date, end_date, max_retries=5):
                 print(response.text)
                 return None
 
-            # print(f"[{airport}] HTTP {response.status_code} retry {attempt+1}")
 
         except requests.exceptions.RequestException as e:
             print(f"[{airport}] Request failed: {e}")
