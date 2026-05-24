@@ -580,7 +580,7 @@ travel_time_options = [f"{i}hr" for i in range(1, 13)]
 selected_travel_time = st.pills(
     "Maximum travel time",
     options=travel_time_options,
-    default="5h",
+    default="5hr",
     key="travel_time"
 )
 
