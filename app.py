@@ -214,7 +214,7 @@ humidity_choice = st.radio(
     ["Very Dry", "Dry", "Comfortable", "Humid", "Very Humid"]
 )
 
-humidity_priority = st.selectbox("Humidity Priority", ["Low Priority", "Medium Priority", "High Priority"])
+humidity_priority = st.selectbox("Humidity Priority2", ["Low Priority", "Medium Priority", "High Priority"])
 humidity_weight = priority_map[humidity_priority]
 
 
