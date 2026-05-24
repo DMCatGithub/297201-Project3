@@ -496,7 +496,7 @@ status.success("Weather data loaded!")
 
 
 
-HIDE TEMP RESULT TABLE
+# HIDE TEMP RESULT TABLE
 st.dataframe(
     sampled_routes_df[["City", "Country", "Temperature", "Wind_Speed","Humidity","Precipitation","Sunshine","Cloud_Cover"]]
 )
