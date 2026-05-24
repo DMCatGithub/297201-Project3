@@ -477,3 +477,59 @@ st.dataframe(
     sampled_routes_df[["City", "Country", "Temperature", "UV"]]
 )
 
+
+
+
+
+# Calculate the Comfort Score
+
+def calculate_comfort_score(temp_distance, uv_distance):
+    intercept = 96.2684
+    coeff_Temp_Distance = 0.7319
+    coeff_Temp_DistanceSqd = -0.3554
+    coeff_UV_Distance = -6.0585
+    coeff_UV_DistanceSqd = -0.1929
+
+    comfort_score = (
+        intercept
+        + coeff_Temp_Distance * temp_distance
+        + coeff_Temp_DistanceSqd * (temp_distance ** 2)
+        + coeff_UV_Distance * uv_distance
+        + coeff_UV_DistanceSqd * (uv_distance ** 2)
+    )
+
+    return comfort_score
+
+def temp_distance(temp):
+    if temp < Temp_lo:
+        return Temp_lo - temp   # distance below range
+    elif temp > Temp_hi:
+        return temp - Temp_hi   # distance above range
+    else:
+        return 0
+
+sampled_routes_df["Temp_Distance"] = sampled_routes_df["Temperature"].apply(temp_distance)
+sampled_routes_df["UV_Distance"] = sampled_routes_df["UV"].apply(uv_distance)
+
+sampled_routes_df["Comfort_Score"] = sampled_routes_df.apply(
+    lambda row: calculate_comfort_score(row["Temp_Distance"], row["UV_Distance"]),
+    axis=1
+)
+
+sorted_df = sampled_routes_df.sort_values(
+    by="Comfort_Score",
+    ascending=False
+).reset_index(drop=True)
+
+st.dataframe(
+    sorted_df[
+        [
+            "Comfort_Score",
+            "City",
+            "Country",
+            "Temperature",
+            "UV"
+        ]
+    ]
+)
+
