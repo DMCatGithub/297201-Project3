@@ -737,8 +737,8 @@ sampled_routes_df["rain_overall_max"] = rain_overall_max
 sampled_routes_df["cloud_overall_min"] = cloud_overall_min
 sampled_routes_df["cloud_overall_max"] = cloud_overall_max
 
-sampled_routes_df["Travel Month"] = travel_month
-sampled_routes_df["Current year"] = current_year
+sampled_routes_df["travel_month"] = travel_month
+sampled_routes_df["current_year"] = current_year
 
 st.dataframe(sampled_routes_df)
 
@@ -1063,8 +1063,8 @@ def get_airports_weather(sampled_routes_df):
                 airport = row.Arrival_Airport
 
                 # Define the date
-                year = row.Current_year - 1
-                month = int(row.Travel_Month)
+                year = row.current_year - 1
+                month = int(row.travel_month)
                 day = 15
                 start_date = f"{year}-{month:02d}-{day:02d}"
                 end_date = start_date
