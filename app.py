@@ -1,13 +1,15 @@
+import streamlit as st
+import meteostat as ms
+from ms import Point, Daily
+
+import pandas as pd
+from datetime import datetime
+
 st.title("Comfort Compass")
 
-# import streamlit as st
-# import meteostat as ms
-# from ms import Point, Daily
+# NOT USED - Example code from meteostat site
 
-# import pandas as pd
-# from datetime import datetime
-
-# st.title("🌦️ Historical Weather Dashboard")
+# st.title("Historical Weather Dashboard")
 
 # # 1. User inputs for location and date range
 # st.sidebar.header("Location & Date Settings")
@@ -57,7 +59,7 @@ st.title("Comfort Compass")
 
 
 
-# Meteo Stat test code
+# Meteo Stat code
 import streamlit as st
 from datetime import date
 import meteostat as ms
