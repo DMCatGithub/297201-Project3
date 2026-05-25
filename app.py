@@ -1223,7 +1223,7 @@ st.dataframe(
 # import requests
 # import pandas as pd
 
-sampled_routes_df["UV"] = float("nan")
+weather_results_df["UV"] = float("nan")
 
 def get_uv(lat, lon):
     url = f"https://currentuvindex.com/api/v1/uvi?latitude={lat}&longitude={lon}"
@@ -1267,9 +1267,9 @@ with st.spinner("Fetching UV data..."):
     progress = st.progress(0)
     status = st.empty()
 
-    total = len(sampled_routes_df)
+    total = len(weather_results_df)
 
-    for i, (idx, location) in enumerate(sampled_routes_df.iterrows()):
+    for i, (idx, location) in enumerate(weather_results_df.iterrows()):
         lat = location.Latitude
         lon = location.Longitude
 
@@ -1277,7 +1277,7 @@ with st.spinner("Fetching UV data..."):
 
         uv_value = get_uv(lat, lon)
 
-        sampled_routes_df.at[idx, "UV"] = uv_value
+        weather_results_df.at[idx, "UV"] = uv_value
 
         progress.progress((i + 1) / total)
         time.sleep(0.05)
