@@ -1269,113 +1269,117 @@ status.success("UV data loaded!")
 # )
 
 
-
-
-
-# Calculate the Comfort Score
-
-def temp_distance(temp):
-    if temp < Temp_lo:
-        return Temp_lo - temp
-    elif temp > Temp_hi:
-        return temp - Temp_hi
+# Work out the distance values / how far from users preference
+def temp_distance(temp, lo, hi):
+    if temp < lo:
+        return lo - temp
+    elif temp > hi:
+        return temp - hi
     else:
         return 0
 
-def uv_distance(uv):
-    if uv > UV_hi:
-        return uv - UV_hi
+def uv_distance(uv, hi):
+    if uv > hi:
+        return uv - hi
     else:
         return 0
 
-# Comfort score model
-def calculate_comfort_score(temp_distance, uv_distance):
-    # UV of 11 = 5
-    # intercept = 96.2684
-    # coeff_Temp_Distance = 0.7319
-    # coeff_Temp_DistanceSqd = -0.3554
-    # coeff_UV_Distance = -6.0585
-    # coeff_UV_DistanceSqd = -0.1929
+def cloud_distance(cloud, lo, hi):
+    if cloud < lo:
+        return lo - cloud
+    elif cloud > hi:
+        return cloud - hi
+    else:
+        return 0
 
-    # UV 11 = 50
-    intercept = 96.2684
-    coeff_Temp_Distance = 0.7319
-    coeff_Temp_DistanceSqd = -0.3554
-    coeff_UV_Distance = -6.0585
-    coeff_UV_DistanceSqd = -0.1929
+def humidity_distance(h, lo, hi):
+    if h < lo:
+        return lo - h
+    elif h > hi:
+        return h - hi
+    else:
+        return 0
 
-    return (
-        intercept
-        + coeff_Temp_Distance * temp_distance
-        + coeff_Temp_DistanceSqd * (temp_distance ** 2)
-        + coeff_UV_Distance * uv_distance
-        + coeff_UV_DistanceSqd * (uv_distance ** 2)
-    )
+def wind_distance(w, lo, hi):
+    if w < lo:
+        return lo - w
+    elif w > hi:
+        return w - hi
+    else:
+        return 0
 
-# Distance columns
-sampled_routes_df["Temp_Distance"] = sampled_routes_df["Temperature"].apply(temp_distance)
-sampled_routes_df["UV_Distance"] = sampled_routes_df["UV"].apply(uv_distance)
 
-# Comfort score (correct column name)
-sampled_routes_df["Comfort Score"] = sampled_routes_df.apply(
-    lambda row: calculate_comfort_score(row["Temp_Distance"], row["UV_Distance"]),
-    axis=1
-)
+# Calculaute the individual comfort score using coeffcients from theh linear regression models
+def temp_score(dist):
+    return (88.3143+ 0.2735 * dist+ (-0.3214) * (dist ** 2))
 
-# Sort
-# sorted_df = sampled_routes_df.sort_values(
-#     by="Comfort_Score",
-#     ascending=False
-# ).reset_index(drop=True)
+def cloud_score(dist):
+    return (97.5893+ (-1.5378) * dist+ 0.0005 * (dist ** 2))
 
-# # Format numbers BEFORE styling
-# sorted_df["Comfort_Score"] = sorted_df["Comfort_Score"].round(0).astype(int)
-# sorted_df["Temperature"] = sorted_df["Temperature"].map(lambda x: f"{x:.1f}")
-# sorted_df["UV"] = sorted_df["UV"].map(lambda x: f"{x:.1f}")
-# sorted_df["Temp_Distance"] = sorted_df["Temp_Distance"].map(lambda x: f"{x:.1f}")
-# sorted_df["UV_Distance"] = sorted_df["UV_Distance"].map(lambda x: f"{x:.1f}")
+def humidity_score(dist):
+    return (85.6686+ (-0.0564) * dist+ (-0.0318) * (dist ** 2))
 
-# # Select columns
-# display_df = sorted_df[
-#     [
-#         "Comfort_Score",
-#         "City",
-#         "Country",
-#         "Temperature",
-#         "UV"
-#     ]
-# ]
+def uv_score(dist):
+    return (96.2684+ (-6.0585) * dist+ (-0.1929) * (dist ** 2))
 
-# # Centre table
-# styled_df = (
-#     display_df.style
-#     .set_properties(**{"text-align": "center"})
-#     .set_table_styles([dict(selector="th", props=[("text-align", "center")])])
-# )
+#TODO update to include weightings
 
-# # Display with alignment working
-# st.write(styled_df)
+
+def overall_comfort_score(t, c, h, w, u):
+    return (t + c + h + w + u) / 5
+
+# Work out the comfort score for each row from the samples
+for idx, row in sampled_routes_df.iterrows():
+
+    # Example: these values come from your weather API
+    temp = row["Temperature"]
+    uv = row["UV"]
+    humidity = row["Humidity"]
+    wind = row["Wind_Speed"]
+    cloud = row["Cloud_Cover"]
+
+    # Distances using row-specific lo/hi
+    t_dist = temp_distance(temp, row.temp_overall_min, row.temp_overall_max)
+    u_dist = uv_distance(uv, row.uv_overall_max)
+    h_dist = humidity_distance(humidity, row.humidity_overall_min, row.humidity_overall_max)
+    w_dist = wind_distance(wind, row.wind_overall_min, row.wind_overall_max)
+    c_dist = cloud_distance(cloud, row.cloud_overall_min, row.cloud_overall_max)
+
+    # Individual scores
+    t_score = temp_score(t_dist)
+    u_score = uv_score(u_dist)
+    h_score = humidity_score(h_dist)
+    w_score = wind_score(w_dist)
+    c_score = cloud_score(c_dist)
+
+    # Final combined score
+    final_score = overall_comfort_score(t_score, c_score, h_score, w_score, u_score)
+
+    sampled_routes_df.at[idx, "Comfort Score"] = final_score
 
 
 
 # Build formatted DataFrame first
-sorted_df = sampled_routes_df.sort_values(
-    by="Comfort Score",
-    ascending=False
-).reset_index(drop=True)
+sorted_df = sampled_routes_df.sort_values(by="Comfort Score",ascending=False).reset_index(drop=True)
 
 sorted_df["Comfort Score"] = sorted_df["Comfort Score"].round(0).astype(int)
-sorted_df["Temperature"] = sorted_df["Temperature"].map(lambda x: f"{x:.1f}")
-sorted_df["UV"] = sorted_df["UV"].map(lambda x: f"{x:.1f}")
 
-# Select columns
+for col in ["Temperature", "UV", "Humidity", "Wind_Speed", "Cloud_Cover", "Rain"]:
+    if col in sorted_df.columns:
+        sorted_df[col] = sorted_df[col].map(lambda x: f"{x:.1f}" if pd.notna(x) else "")
+
+
 display_df = sorted_df[
     [
         "Comfort Score",
         "City",
         "Country",
         "Temperature",
-        "UV"
+        "UV",
+        "Humidity",
+        "Wind_Speed",
+        "Cloud_Cover",
+        "Rain"
     ]
 ]
 
@@ -1413,7 +1417,6 @@ html += "</tr>"
 for _, row in display_df.iterrows():
     html += "<tr>"
     for col in display_df.columns:
-        # Left-align City and Country
         if col in ["City", "Country"]:
             html += f"<td class='left'>{row[col]}</td>"
         else:
