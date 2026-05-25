@@ -1404,7 +1404,6 @@ def overall_comfort_score(
     wind_weight, uv_weight, rain_weight
 ):
 
-    # Weighted sum of all variables
     weighted_sum = (
         temp_score * temp_weight +
         cloud_score * cloud_weight +
@@ -1414,7 +1413,6 @@ def overall_comfort_score(
         rain_score * rain_weight
     )
 
-    # Total weight
     total_weight = (
         temp_weight +
         cloud_weight +
@@ -1424,11 +1422,11 @@ def overall_comfort_score(
         rain_weight
     )
 
-    # Avoid division by zero if user skipped everything
     if total_weight == 0:
         return 0
 
     return weighted_sum / total_weight
+
 
 
 
