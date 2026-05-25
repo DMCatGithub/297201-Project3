@@ -1309,6 +1309,14 @@ def wind_distance(w, lo, hi):
         return 0
 
 
+def rain_distance(w, lo, hi):
+    if w < lo:
+        return lo - w
+    elif w > hi:
+        return w - hi
+    else:
+        return 0
+
 # Calculaute the individual comfort score using coeffcients from theh linear regression models
 def temp_score(dist):
     return (88.3143+ 0.2735 * dist+ (-0.3214) * (dist ** 2))
@@ -1322,7 +1330,22 @@ def humidity_score(dist):
 def uv_score(dist):
     return (96.2684+ (-6.0585) * dist+ (-0.1929) * (dist ** 2))
 
+def wind_score(dist):
+    return 88.7994 + 0.3778 * dist + (-0.2317) * (dist ** 2)
+
+
+def rain_score(dist):
+    return (89.2428+ 0.2101 * dist+ (-0.0567) * (dist ** 2))
+
+
+
+
 #TODO update to include weightings
+
+# Ensure required weather columns exist before scoring
+for col in ["Temperature", "UV", "Humidity", "Wind_Speed", "Cloud_Cover", "Rain"]:
+    if col not in sampled_routes_df.columns:
+        sampled_routes_df[col] = float("nan")
 
 
 def overall_comfort_score(t, c, h, w, u):
