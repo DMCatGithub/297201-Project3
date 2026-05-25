@@ -196,11 +196,9 @@ from datetime import date
 import meteostat as ms
 
 st.title("Comfort Compass")
-def weather_block(title, input_widget, priority_key, default_priority = "Skip This"):
+def weather_block(title, input_widget, priority_key, default_priority="Skip This"):
     st.subheader(title)
 
-    # Priority selector (horizontal segmented control)
-    # priority = st.segmented_control(
     priority = st.pills(
         f"{title} Priority",
         options=["Skip This", "Low Priority", "Medium Priority", "High Priority"],
@@ -208,14 +206,16 @@ def weather_block(title, input_widget, priority_key, default_priority = "Skip Th
         key=priority_key
     )
 
-    # If Skip This → hide the slider and return None
+    # Skip This → no slider, weight = 0
     if priority == "Skip This":
-        return None, priority, True
+        return None, priority, True, 0
 
-    # Otherwise show the input widget
+    # Otherwise show widget
     value = input_widget()
     weight = priority_weight_map[priority]
-    return value, priority, False
+
+    return value, priority, False, weight
+
 
 priority_weight_map = {
     "Skip This": 0,
