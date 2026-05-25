@@ -1389,24 +1389,15 @@ for idx, row in sampled_routes_df.iterrows():
 # Build formatted DataFrame first
 sorted_df = sampled_routes_df.sort_values(by="Comfort Score",ascending=False).reset_index(drop=True)
 
+# Round comfort score
 sorted_df["Comfort Score"] = sorted_df["Comfort Score"].round(0).astype(int)
 
-for col in ["Temperature", "UV", "Humidity", "Wind_Speed", "Cloud_Cover", "Rain"]:
-    if col in sorted_df.columns:
-        sorted_df[col] = sorted_df[col].map(lambda x: f"{x:.1f}" if pd.notna(x) else "")
-
-
+# Select only the three columns you want
 display_df = sorted_df[
     [
         "Comfort Score",
         "City",
-        "Country",
-        "Temperature",
-        "UV",
-        "Humidity",
-        "Wind_Speed",
-        "Cloud_Cover",
-        "Rain"
+        "Country"
     ]
 ]
 
@@ -1453,4 +1444,5 @@ for _, row in display_df.iterrows():
 html += "</table>"
 
 st.markdown(html, unsafe_allow_html=True)
+
 
