@@ -1354,12 +1354,13 @@ def overall_comfort_score(t, c, h, w, u):
 # Work out the comfort score for each row from the samples
 for idx, row in sampled_routes_df.iterrows():
 
-    # Example: these values come from your weather API
+    # Weather values from your API
     temp = row["Temperature"]
     uv = row["UV"]
     humidity = row["Humidity"]
     wind = row["Wind_Speed"]
     cloud = row["Cloud_Cover"]
+    rain = row["Rain"]
 
     # Distances using row-specific lo/hi
     t_dist = temp_distance(temp, row.temp_overall_min, row.temp_overall_max)
@@ -1367,6 +1368,7 @@ for idx, row in sampled_routes_df.iterrows():
     h_dist = humidity_distance(humidity, row.humidity_overall_min, row.humidity_overall_max)
     w_dist = wind_distance(wind, row.wind_overall_min, row.wind_overall_max)
     c_dist = cloud_distance(cloud, row.cloud_overall_min, row.cloud_overall_max)
+    r_dist = rain_distance(rain, row.rain_overall_min, row.rain_overall_max)
 
     # Individual scores
     t_score = temp_score(t_dist)
@@ -1374,11 +1376,13 @@ for idx, row in sampled_routes_df.iterrows():
     h_score = humidity_score(h_dist)
     w_score = wind_score(w_dist)
     c_score = cloud_score(c_dist)
+    r_score = rain_score(r_dist)
 
-    # Final combined score
-    final_score = overall_comfort_score(t_score, c_score, h_score, w_score, u_score)
+    # Final combined score (now includes rain)
+    final_score = (t_score + c_score + h_score + w_score + u_score + r_score) / 6
 
     sampled_routes_df.at[idx, "Comfort Score"] = final_score
+
 
 
 
