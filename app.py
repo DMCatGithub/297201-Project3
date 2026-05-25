@@ -249,11 +249,11 @@ temp_overall_min = temp_value[0]
 temp_overall_max = temp_value[1]
 
 uv_ranges = {
-    "Low" : (1,2),
-    "Moderate" : (3,5),
-    "High" : (6,7),
-    "Very High":(8,10),
-    "Extreme" : (10,11)
+    "Low (1-2)": (1, 2),
+    "Moderate (3-5)": (3, 5),
+    "High (6-7)": (6, 7),
+    "Very High (8-10)": (8, 10),
+    "Extreme (11+)": (11, 15)
 }
 
 
