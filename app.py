@@ -1397,8 +1397,39 @@ for col in ["Temperature", "UV", "Humidity", "Wind_Speed", "Cloud_Cover", "Rain"
         weather_results_df[col] = float("nan")
 
 
-def overall_comfort_score(t, c, h, w, u, r):
-    return (t + c + h + w + u + r) / 6
+def overall_comfort_score(
+    temp_score, cloud_score, humidity_score,
+    wind_score, uv_score, rain_score,
+    temp_weight, cloud_weight, humidity_weight,
+    wind_weight, uv_weight, rain_weight
+):
+
+    # Weighted sum of all variables
+    weighted_sum = (
+        temp_score * temp_weight +
+        cloud_score * cloud_weight +
+        humidity_score * humidity_weight +
+        wind_score * wind_weight +
+        uv_score * uv_weight +
+        rain_score * rain_weight
+    )
+
+    # Total weight
+    total_weight = (
+        temp_weight +
+        cloud_weight +
+        humidity_weight +
+        wind_weight +
+        uv_weight +
+        rain_weight
+    )
+
+    # Avoid division by zero if user skipped everything
+    if total_weight == 0:
+        return 0
+
+    return weighted_sum / total_weight
+
 
 
 # Work out the comfort score for each row from the samples
