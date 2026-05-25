@@ -280,6 +280,10 @@ uv_overall_min, uv_overall_max = compute_overall_range(
 )
 uv_overall_min = 1
 
+if uv_disabled:
+    uv_overall_min = 1
+    uv_overall_max = 0
+
 with st.expander("Show UV Index Guide"):
 
     uv_levels = [
