@@ -268,21 +268,23 @@ uv_value_raw, uv_priority, uv_disabled = weather_block(
     priority_key="uv_priority"
 )
 
-# Convert single category → tuple(category, category)
-uv_value = (uv_value_raw, uv_value_raw)
-
-
-
-
-uv_overall_min, uv_overall_max = compute_overall_range(
-    uv_value,
-    uv_ranges
-)
-uv_overall_min = 1
-
 if uv_disabled:
+    # Skip This → allow full UV range
     uv_overall_min = 1
-    uv_overall_max = 0
+    uv_overall_max = 15
+
+else:
+    # Convert category → tuple(category, category)
+    uv_value = (uv_value_raw, uv_value_raw)
+
+    # Only compute the max
+    _, uv_overall_max = compute_overall_range(
+        uv_value,
+        uv_ranges
+    )
+
+    uv_overall_min = 1
+
 
 with st.expander("Show UV Index Guide"):
 
