@@ -1204,6 +1204,17 @@ weather_results_df.rename(columns={
     "rain_sum": "Rain"
 }, inplace=True)
 
+st.dataframe(
+    weather_results_df[[
+        "City", 
+        "Country", 
+        "Temperature",
+        "Cloud_Cover",
+        "Humidity",
+        "Wind_Speed",
+        "Rain"
+        ]]
+
 
 # ****************************************
 # UV data API when meteo stop working
