@@ -214,8 +214,15 @@ def weather_block(title, input_widget, priority_key, default_priority = "Skip Th
 
     # Otherwise show the input widget
     value = input_widget()
+    weight = priority_weight_map[priority]
     return value, priority, False
 
+priority_weight_map = {
+    "Skip This": 0,
+    "Low Priority": 1,
+    "Medium Priority": 2,
+    "High Priority": 3
+}
 
 def compute_overall_range(selected_tuple, range_map):
     if selected_tuple is None:
@@ -231,7 +238,7 @@ def compute_overall_range(selected_tuple, range_map):
 
 
 
-temp_value, temp_priority, temp_disabled = weather_block(
+temp_value, temp_priority, temp_disabled, temp_weight  = weather_block(
     "Temperature",
     input_widget=lambda: st.slider(
         "Select preferred temperature range (°C):",
@@ -244,9 +251,12 @@ temp_value, temp_priority, temp_disabled = weather_block(
     default_priority="Medium Priority"
 )
 
-# if not temp_disabled:
-temp_overall_min = temp_value[0]
-temp_overall_max = temp_value[1]
+if temp_disabled:
+    temp_overall_min = 20
+    temp_overall_max = 25
+else:
+    temp_overall_min = temp_value[0]
+    temp_overall_max = temp_value[1]
 
 uv_ranges = {
     "Low (1-2)": (1, 2),
@@ -257,7 +267,7 @@ uv_ranges = {
 }
 
 
-uv_value_raw, uv_priority, uv_disabled = weather_block(
+uv_value_raw, uv_priority, uv_disabled, uv_weight  = weather_block(
     "UV Index",
     input_widget=lambda: st.select_slider(
         "Select maximum UV category:",
@@ -269,20 +279,11 @@ uv_value_raw, uv_priority, uv_disabled = weather_block(
 )
 
 if uv_disabled:
-    # Skip This → allow full UV range
     uv_overall_min = 1
     uv_overall_max = 15
-
 else:
-    # Convert category → tuple(category, category)
     uv_value = (uv_value_raw, uv_value_raw)
-
-    # Only compute the max
-    _, uv_overall_max = compute_overall_range(
-        uv_value,
-        uv_ranges
-    )
-
+    _, uv_overall_max = compute_overall_range(uv_value, uv_ranges)
     uv_overall_min = 1
 
 
@@ -317,7 +318,7 @@ with st.expander("Show UV Index Guide"):
 
 
 
-humidity_value, humidity_priority, humidity_disabled = weather_block(
+humidity_value, humidity_priority, humidity_disabled, humidity_weight  = weather_block(
     "Humidity",
     input_widget=lambda: st.select_slider(
         "Select preferred humidity range:",
@@ -344,14 +345,14 @@ humidity_ranges = {
     "Extremely Humid": (90, 100)
 }
 
-humidity_overall_min, humidity_overall_max = compute_overall_range(
-    humidity_value,
-    humidity_ranges
-)
-
 if humidity_disabled:
     humidity_overall_min = 0
-    humidity_overall_max = 0
+    humidity_overall_max = 100
+else:
+    humidity_overall_min, humidity_overall_max = compute_overall_range(
+        humidity_value,
+        humidity_ranges
+    )
 
 with st.expander("Show Humidity Guide"):
 
@@ -392,7 +393,7 @@ with st.expander("Show Humidity Guide"):
         )
 
 
-wind_value, wind_priority, wind_disabled = weather_block(
+wind_value, wind_priority, wind_disabled, wind_weight  = weather_block(
     "Wind",
     input_widget=lambda: st.select_slider(
         "Select preferred wind category range:",
@@ -416,14 +417,14 @@ wind_ranges = {
     "Strong Breeze": (39, 50)
 }
 
-wind_overall_min, wind_overall_max = compute_overall_range(
-    wind_value,
-    wind_ranges
-)
-
 if wind_disabled:
     wind_overall_min = 0
-    wind_overall_max = 0
+    wind_overall_max = 50
+else:
+    wind_overall_min, wind_overall_max = compute_overall_range(
+        wind_value,
+        wind_ranges
+    )
 
 with st.expander("Show Wind Speed Guide"):
 
@@ -456,7 +457,7 @@ with st.expander("Show Wind Speed Guide"):
 
 
 
-rain_value, rain_priority, rain_disabled = weather_block(
+rain_value, rain_priority, rain_disabled, rain_weight  = weather_block(
     "Rain",
     input_widget=lambda: st.select_slider(
         "Select preferred rain level:",
@@ -479,15 +480,14 @@ rain_ranges = {
     "Heavy Rain": (7.6, 50)
 }
 
-rain_overall_min, rain_overall_max = compute_overall_range(
-    rain_value,
-    rain_ranges
-)
-
-
 if rain_disabled:
     rain_overall_min = 0
-    rain_overall_max = 0
+    rain_overall_max = 50
+else:
+    rain_overall_min, rain_overall_max = compute_overall_range(
+        rain_value,
+        rain_ranges
+    )
 
 with st.expander("Show Rainfall Guide"):
 
@@ -522,7 +522,7 @@ with st.expander("Show Rainfall Guide"):
 
 
 
-cloud_value, cloud_priority, cloud_disabled = weather_block(
+cloud_value, cloud_priority, cloud_disabled, cloud_weight  = weather_block(
     "Cloud Cover",
     input_widget=lambda: st.select_slider(
         "Select preferred cloud cover:",
@@ -547,14 +547,14 @@ cloud_ranges = {
     "Overcast": (8, 9)
 }
 
-cloud_overall_min, cloud_overall_max = compute_overall_range(
-    cloud_value,
-    cloud_ranges
-)
-
 if cloud_disabled:
     cloud_overall_min = 0
-    cloud_overall_max = 0
+    cloud_overall_max = 9
+else:
+    cloud_overall_min, cloud_overall_max = compute_overall_range(
+        cloud_value,
+        cloud_ranges
+    )
 
 with st.expander("Show Cloud Cover Guide"):
 
