@@ -343,6 +343,10 @@ humidity_overall_min, humidity_overall_max = compute_overall_range(
     humidity_ranges
 )
 
+if humidity_disabled:
+    humidity_overall_min = 0
+    humidity_overall_max = 0
+
 with st.expander("Show Humidity Guide"):
 
     humidity_levels = [
@@ -411,6 +415,10 @@ wind_overall_min, wind_overall_max = compute_overall_range(
     wind_ranges
 )
 
+if wind_disabled:
+    wind_overall_min = 0
+    wind_overall_max = 0
+
 with st.expander("Show Wind Speed Guide"):
 
     wind_levels = [
@@ -469,6 +477,11 @@ rain_overall_min, rain_overall_max = compute_overall_range(
     rain_value,
     rain_ranges
 )
+
+
+if rain_disabled:
+    rain_overall_min = 0
+    rain_overall_max = 0
 
 with st.expander("Show Rainfall Guide"):
 
@@ -532,6 +545,10 @@ cloud_overall_min, cloud_overall_max = compute_overall_range(
     cloud_value,
     cloud_ranges
 )
+
+if cloud_disabled:
+    cloud_overall_min = 0
+    cloud_overall_max = 0
 
 with st.expander("Show Cloud Cover Guide"):
 
