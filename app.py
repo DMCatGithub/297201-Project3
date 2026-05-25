@@ -1196,7 +1196,7 @@ st.dataframe(
         ]]
 )
 
-sampled_routes_df.rename(columns={
+weather_results_df.rename(columns={
     "temperature_2m_mean": "Temperature",
     "cloud_cover_mean": "Cloud_Cover",
     "relative_humidity_2m_mean": "Humidity",
