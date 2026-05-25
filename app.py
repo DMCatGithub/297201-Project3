@@ -1263,6 +1263,15 @@ with st.spinner("Fetching UV data..."):
 
 status.success("UV data loaded!")
 
+sampled_routes_df.rename(columns={
+    "temperature_2m_mean": "Temperature",
+    "cloud_cover_mean": "Cloud_Cover",
+    "relative_humidity_2m_mean": "Humidity",
+    "wind_speed_10m_mean": "Wind_Speed",
+    "rain_sum": "Rain"
+}, inplace=True)
+
+
 # HIDE UV RESULT TABLE
 # st.dataframe(
 #     sampled_routes_df[["City", "Country", "Temperature", "UV"]]
@@ -1348,8 +1357,9 @@ for col in ["Temperature", "UV", "Humidity", "Wind_Speed", "Cloud_Cover", "Rain"
         sampled_routes_df[col] = float("nan")
 
 
-def overall_comfort_score(t, c, h, w, u):
-    return (t + c + h + w + u) / 5
+def overall_comfort_score(t, c, h, w, u, r):
+    return (t + c + h + w + u + r) / 6
+
 
 # Work out the comfort score for each row from the samples
 for idx, row in sampled_routes_df.iterrows():
@@ -1379,7 +1389,7 @@ for idx, row in sampled_routes_df.iterrows():
     r_score = rain_score(r_dist)
 
     # Final combined score (now includes rain)
-    final_score = (t_score + c_score + h_score + w_score + u_score + r_score) / 6
+    final_score = overall_comfort_score(t_score, c_score, h_score, w_score, u_score, r_score)
 
     sampled_routes_df.at[idx, "Comfort Score"] = final_score
 
