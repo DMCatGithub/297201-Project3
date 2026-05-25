@@ -1397,7 +1397,13 @@ display_df = sorted_df[
     [
         "Comfort Score",
         "City",
-        "Country"
+        "Country",
+        "Temperature",
+        "UV",
+        "Humidity",
+        "Wind_Speed",
+        "Cloud_Cover",
+        "Rain"
     ]
 ]
 
@@ -1444,5 +1450,3 @@ for _, row in display_df.iterrows():
 html += "</table>"
 
 st.markdown(html, unsafe_allow_html=True)
-
-
