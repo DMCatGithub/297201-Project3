@@ -1263,13 +1263,7 @@ with st.spinner("Fetching UV data..."):
 
 status.success("UV data loaded!")
 
-sampled_routes_df.rename(columns={
-    "temperature_2m_mean": "Temperature",
-    "cloud_cover_mean": "Cloud_Cover",
-    "relative_humidity_2m_mean": "Humidity",
-    "wind_speed_10m_mean": "Wind_Speed",
-    "rain_sum": "Rain"
-}, inplace=True)
+
 
 
 # HIDE UV RESULT TABLE
@@ -1350,6 +1344,14 @@ def rain_score(dist):
 
 
 #TODO update to include weightings
+
+sampled_routes_df.rename(columns={
+    "temperature_2m_mean": "Temperature",
+    "cloud_cover_mean": "Cloud_Cover",
+    "relative_humidity_2m_mean": "Humidity",
+    "wind_speed_10m_mean": "Wind_Speed",
+    "rain_sum": "Rain"
+}, inplace=True)
 
 # Ensure required weather columns exist before scoring
 for col in ["Temperature", "UV", "Humidity", "Wind_Speed", "Cloud_Cover", "Rain"]:
