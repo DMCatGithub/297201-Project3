@@ -257,18 +257,19 @@ uv_ranges = {
 }
 
 
-uv_value, uv_priority, uv_disabled = weather_block(
+uv_value_raw, uv_priority, uv_disabled = weather_block(
     "UV Index",
     input_widget=lambda: st.select_slider(
         "Select maximum UV category:",
-        options=uv_ranges,
+        options=list(uv_ranges.keys()),
         value="Moderate (3-5)",
         key="uv_slider"
     ),
     priority_key="uv_priority"
 )
 
-# if not uv_disabled:
+# Convert single category → tuple(category, category)
+uv_value = (uv_value_raw, uv_value_raw)
 
 
 
@@ -413,13 +414,13 @@ wind_overall_min, wind_overall_max = compute_overall_range(
 with st.expander("Show Wind Speed Guide"):
 
     wind_levels = [
-        ("Calm (0–2 km/h)", "Sea like a mirror — Smoke rises vertically", "#E8F5E9", "black"),
-        ("Light Air (2–5 km/h)", "Ripples with no foam crests — Smoke drifts", "#C5E1A5", "black"),
-        ("Light Breeze (6–11 km/h)", "Small wavelets — Leaves rustle", "#FFF59D", "black"),
-        ("Gentle Breeze (12–19 km/h)", "Large wavelets — Leaves and twigs in motion", "#FFE082", "black"),
-        ("Moderate Breeze (20–28 km/h)", "Small waves — Dust and loose paper blow", "#FFCC80", "black"),
-        ("Fresh Breeze (29–38 km/h)", "Moderate waves — Small trees sway", "#FFAB91", "black"),
-        ("Strong Breeze (39–50 km/h)", "Large waves — Large branches move", "#EF9A9A", "black"),
+        ("Calm (0-2 km/h)", "Sea like a mirror — Smoke rises vertically", "#E8F5E9", "black"),
+        ("Light Air (2-5 km/h)", "Ripples with no foam crests — Smoke drifts", "#C5E1A5", "black"),
+        ("Light Breeze (6-11 km/h)", "Small wavelets — Leaves rustle", "#FFF59D", "black"),
+        ("Gentle Breeze (12-19 km/h)", "Large wavelets — Leaves and twigs in motion", "#FFE082", "black"),
+        ("Moderate Breeze (20-28 km/h)", "Small waves — Dust and loose paper blow", "#FFCC80", "black"),
+        ("Fresh Breeze (29-38 km/h)", "Moderate waves — Small trees sway", "#FFAB91", "black"),
+        ("Strong Breeze (39-50 km/h)", "Large waves — Large branches move", "#EF9A9A", "black"),
     ]
     for title, desc, color, text_color in wind_levels:
         st.markdown(
