@@ -1364,13 +1364,14 @@ def rain_score(dist):
 
 
 
+
 #TODO update to include weightings
 
 
 # Ensure required weather columns exist before scoring
 for col in ["Temperature", "UV", "Humidity", "Wind_Speed", "Cloud_Cover", "Rain"]:
-    if col not in sampled_routes_df.columns:
-        sampled_routes_df[col] = float("nan")
+    if col not in weather_results_df.columns:
+        weather_results_df[col] = float("nan")
 
 
 def overall_comfort_score(t, c, h, w, u, r):
@@ -1378,7 +1379,7 @@ def overall_comfort_score(t, c, h, w, u, r):
 
 
 # Work out the comfort score for each row from the samples
-for idx, row in sampled_routes_df.iterrows():
+for idx, row in weather_results_df.iterrows():
 
     # Weather values from your API
     temp = row["Temperature"]
@@ -1407,13 +1408,13 @@ for idx, row in sampled_routes_df.iterrows():
     # Final combined score (now includes rain)
     final_score = overall_comfort_score(t_score, c_score, h_score, w_score, u_score, r_score)
 
-    sampled_routes_df.at[idx, "Comfort Score"] = final_score
+    weather_results_df.at[idx, "Comfort Score"] = final_score
 
 
 
 
 # Build formatted DataFrame first
-sorted_df = sampled_routes_df.sort_values(by="Comfort Score",ascending=False).reset_index(drop=True)
+sorted_df = weather_results_df.sort_values(by="Comfort Score",ascending=False).reset_index(drop=True)
 
 # Round comfort score
 sorted_df["Comfort Score"] = sorted_df["Comfort Score"].round(0).astype(int)
