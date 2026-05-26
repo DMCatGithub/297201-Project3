@@ -254,11 +254,12 @@ temp_value, temp_priority, temp_disabled, temp_weight  = weather_block(
 )
 
 if temp_disabled:
-    temp_overall_min = 20
-    temp_overall_max = 25
+    temp_overall_min = -50
+    temp_overall_max = 60
 else:
     temp_overall_min = temp_value[0]
     temp_overall_max = temp_value[1]
+
 
 uv_ranges = {
     "Low (1-2)": (1, 2),
@@ -1432,6 +1433,7 @@ def overall_comfort_score(
 
 
 
+
 # Work out the comfort score for each row from the samples
 for idx, row in weather_results_df.iterrows():
 
@@ -1460,7 +1462,12 @@ for idx, row in weather_results_df.iterrows():
     r_score = rain_score(r_dist)
 
     # Final combined score (now includes rain)
-    final_score = overall_comfort_score(t_score, c_score, h_score, w_score, u_score, r_score)
+    final_score = overall_comfort_score(
+        t_score, c_score, h_score, w_score, u_score, r_score,
+        temp_weight, cloud_weight, humidity_weight,
+        wind_weight, uv_weight, rain_weight
+    )
+
 
     weather_results_df.at[idx, "Comfort Score"] = final_score
 
