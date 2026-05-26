@@ -217,12 +217,14 @@ def weather_block(title, input_widget, priority_key, default_priority="Skip This
     return value, priority, False, weight
 
 
+
 priority_weight_map = {
     "Skip This": 0,
     "Low Priority": 1,
     "Medium Priority": 2,
     "High Priority": 3
 }
+
 
 def compute_overall_range(selected_tuple, range_map):
     if selected_tuple is None:
