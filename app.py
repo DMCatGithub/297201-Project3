@@ -1066,62 +1066,117 @@ from dateutil.relativedelta import relativedelta
 
 session = requests.Session()
 
-def get_weather_new(airport, lat, lon, start_date, end_date, max_retries=5):
-    url = "https://archive-api.open-meteo.com/v1/archive"
+# def get_weather_new(airport, lat, lon, start_date, end_date, max_retries=5):
+#     url = "https://archive-api.open-meteo.com/v1/archive"
 
-    params = {
-        "latitude": lat,
-        "longitude": lon,
-        "start_date": start_date,
-        "end_date": end_date,
-        "daily": [
-            "temperature_2m_mean",
-            "cloud_cover_mean",
-            "relative_humidity_2m_mean",
-            "wind_speed_10m_mean",
-            "rain_sum"
-            # 'uv_index_max'
-        ],
-        "timezone": "auto",
-    }
+#     params = {
+#         "latitude": lat,
+#         "longitude": lon,
+#         "start_date": start_date,
+#         "end_date": end_date,
+#         "daily": [
+#             "temperature_2m_mean",
+#             "cloud_cover_mean",
+#             "relative_humidity_2m_mean",
+#             "wind_speed_10m_mean",
+#             "rain_sum"
+#             # 'uv_index_max'
+#         ],
+#         "timezone": "auto",
+#     }
 
-    response = None
+#     response = None
 
-    for attempt in range(max_retries):
+#     for attempt in range(max_retries):
 
-        try:
-            response = session.get(url, params=params, timeout=30)
+#         try:
+#             response = session.get(url, params=params, timeout=30)
 
-            response.raise_for_status()
+#             response.raise_for_status()
 
-            data = response.json()
+#             data = response.json()
 
-            df = pd.DataFrame(data["daily"])
+#             df = pd.DataFrame(data["daily"])
 
-            df["latitude"] = data["latitude"]
-            df["longitude"] = data["longitude"]
-            df["timezone"] = data["timezone"]
-            df["Arrival_Airport"] = airport
+#             df["latitude"] = data["latitude"]
+#             df["longitude"] = data["longitude"]
+#             df["timezone"] = data["timezone"]
+#             df["Arrival_Airport"] = airport
 
-            return df
+#             return df
 
-        except requests.exceptions.HTTPError as e:
+#         except requests.exceptions.HTTPError as e:
 
-            if response.status_code < 500 and response.status_code != 429:
-                print(f"[CLIENT ERROR] {airport}: {response.status_code}")
-                print(response.text)
-                return None
+#             if response.status_code < 500 and response.status_code != 429:
+#                 print(f"[CLIENT ERROR] {airport}: {response.status_code}")
+#                 print(response.text)
+#                 return None
 
 
-        except requests.exceptions.RequestException as e:
-            print(f"[{airport}] Request failed: {e}")
+#         except requests.exceptions.RequestException as e:
+#             print(f"[{airport}] Request failed: {e}")
 
-        wait = 2 ** (attempt + 3)
-        time.sleep(wait)
+#         wait = 2 ** (attempt + 3)
+#         time.sleep(wait)
 
-    print(f"[FAILED] {airport}")
+#     print(f"[FAILED] {airport}")
 
-    return None
+#     return None
+
+def get_airports_weather(sampled_routes_df):
+    MAX_WORKERS = 10
+    weather_dataframes = []
+    futures = []
+
+    total = len(sampled_routes_df)
+
+    # Streamlit UI elements
+    progress = st.progress(0)
+    status = st.empty()
+
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+
+        # Submit all jobs
+        for row in sampled_routes_df.itertuples(index=False):
+            airport = row.Arrival_Airport
+
+            year = row.current_year - 1
+            month = int(row.travel_month)
+            day = 15
+            start_date = f"{year}-{month:02d}-{day:02d}"
+            end_date = start_date
+
+            futures.append(
+                executor.submit(
+                    get_weather_new,
+                    airport,
+                    row.Latitude,
+                    row.Longitude,
+                    start_date,
+                    end_date
+                )
+            )
+
+        # Process results as they complete
+        completed = 0
+        for future in as_completed(futures):
+
+            completed += 1
+            progress.progress(completed / total)
+
+            try:
+                df = future.result(timeout=5)
+                if df is not None:
+                    weather_dataframes.append(df)
+                    status.write(f"Fetched weather for {df['Arrival_Airport'].iloc[0]}")
+                else:
+                    status.write("One airport returned no data")
+
+            except Exception as e:
+                status.write(f"[ERROR] {e}")
+
+    status.success("Weather data loaded!")
+    return weather_dataframes
 
 
 def get_airports_weather(sampled_routes_df):
@@ -1199,7 +1254,10 @@ def dump_complete_to_a_files(df_list):
 # **********************
 
 sampled_routes_df = sampled_routes_df.reset_index(drop=True)
-random_ten_weather = get_airports_weather(sampled_routes_df)
+# random_ten_weather = get_airports_weather(sampled_routes_df)
+with st.spinner("Fetching weather data..."):
+    random_ten_weather = get_airports_weather(sampled_routes_df)
+
 random_ten_weather = pd.concat(random_ten_weather, ignore_index=True)
 
 weather_results_df = sampled_routes_df.merge(
@@ -1210,17 +1268,17 @@ weather_results_df = sampled_routes_df.merge(
 
 
 # TEMP RESULTS FOR DEBUGING
-st.dataframe(
-    weather_results_df[[
-        "City", 
-        "Country", 
-        "temperature_2m_mean",
-        "cloud_cover_mean",
-        "relative_humidity_2m_mean",
-        "wind_speed_10m_mean",
-        "rain_sum"
-        ]]
-)
+# st.dataframe(
+#     weather_results_df[[
+#         "City", 
+#         "Country", 
+#         "temperature_2m_mean",
+#         "cloud_cover_mean",
+#         "relative_humidity_2m_mean",
+#         "wind_speed_10m_mean",
+#         "rain_sum"
+#         ]]
+# )
 
 weather_results_df.rename(columns={
     "temperature_2m_mean": "Temperature",
@@ -1230,17 +1288,17 @@ weather_results_df.rename(columns={
     "rain_sum": "Rain"
 }, inplace=True)
 
-st.dataframe(
-    weather_results_df[[
-        "City", 
-        "Country", 
-        "Temperature",
-        "Cloud_Cover",
-        "Humidity",
-        "Wind_Speed",
-        "Rain"
-        ]]
-)
+# st.dataframe(
+#     weather_results_df[[
+#         "City", 
+#         "Country", 
+#         "Temperature",
+#         "Cloud_Cover",
+#         "Humidity",
+#         "Wind_Speed",
+#         "Rain"
+#         ]]
+# )
 
 
 # ****************************************
