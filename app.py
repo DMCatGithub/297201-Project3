@@ -812,7 +812,7 @@ sampled_routes_df["cloud_overall_max"] = cloud_overall_max
 sampled_routes_df["travel_month"] = travel_month
 sampled_routes_df["current_year"] = current_year
 
-st.dataframe(sampled_routes_df)
+# st.dataframe(sampled_routes_df)
 
 
 #*****************************
