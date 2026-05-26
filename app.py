@@ -1066,62 +1066,62 @@ from dateutil.relativedelta import relativedelta
 
 session = requests.Session()
 
-# def get_weather_new(airport, lat, lon, start_date, end_date, max_retries=5):
-#     url = "https://archive-api.open-meteo.com/v1/archive"
+def get_weather_new(airport, lat, lon, start_date, end_date, max_retries=5):
+    url = "https://archive-api.open-meteo.com/v1/archive"
 
-#     params = {
-#         "latitude": lat,
-#         "longitude": lon,
-#         "start_date": start_date,
-#         "end_date": end_date,
-#         "daily": [
-#             "temperature_2m_mean",
-#             "cloud_cover_mean",
-#             "relative_humidity_2m_mean",
-#             "wind_speed_10m_mean",
-#             "rain_sum"
-#             # 'uv_index_max'
-#         ],
-#         "timezone": "auto",
-#     }
+    params = {
+        "latitude": lat,
+        "longitude": lon,
+        "start_date": start_date,
+        "end_date": end_date,
+        "daily": [
+            "temperature_2m_mean",
+            "cloud_cover_mean",
+            "relative_humidity_2m_mean",
+            "wind_speed_10m_mean",
+            "rain_sum"
+            # 'uv_index_max'
+        ],
+        "timezone": "auto",
+    }
 
-#     response = None
+    response = None
 
-#     for attempt in range(max_retries):
+    for attempt in range(max_retries):
 
-#         try:
-#             response = session.get(url, params=params, timeout=30)
+        try:
+            response = session.get(url, params=params, timeout=30)
 
-#             response.raise_for_status()
+            response.raise_for_status()
 
-#             data = response.json()
+            data = response.json()
 
-#             df = pd.DataFrame(data["daily"])
+            df = pd.DataFrame(data["daily"])
 
-#             df["latitude"] = data["latitude"]
-#             df["longitude"] = data["longitude"]
-#             df["timezone"] = data["timezone"]
-#             df["Arrival_Airport"] = airport
+            df["latitude"] = data["latitude"]
+            df["longitude"] = data["longitude"]
+            df["timezone"] = data["timezone"]
+            df["Arrival_Airport"] = airport
 
-#             return df
+            return df
 
-#         except requests.exceptions.HTTPError as e:
+        except requests.exceptions.HTTPError as e:
 
-#             if response.status_code < 500 and response.status_code != 429:
-#                 print(f"[CLIENT ERROR] {airport}: {response.status_code}")
-#                 print(response.text)
-#                 return None
+            if response.status_code < 500 and response.status_code != 429:
+                print(f"[CLIENT ERROR] {airport}: {response.status_code}")
+                print(response.text)
+                return None
 
 
-#         except requests.exceptions.RequestException as e:
-#             print(f"[{airport}] Request failed: {e}")
+        except requests.exceptions.RequestException as e:
+            print(f"[{airport}] Request failed: {e}")
 
-#         wait = 2 ** (attempt + 3)
-#         time.sleep(wait)
+        wait = 2 ** (attempt + 3)
+        time.sleep(wait)
 
-#     print(f"[FAILED] {airport}")
+    print(f"[FAILED] {airport}")
 
-#     return None
+    return None
 
 def get_airports_weather(sampled_routes_df):
     MAX_WORKERS = 10
@@ -1179,44 +1179,44 @@ def get_airports_weather(sampled_routes_df):
     return weather_dataframes
 
 
-def get_airports_weather(sampled_routes_df):
-    MAX_WORKERS = 10
-    weather_dataframes = []
-    futures = []
+# def get_airports_weather(sampled_routes_df):
+#     MAX_WORKERS = 10
+#     weather_dataframes = []
+#     futures = []
 
-    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+#     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
 
-        for row in sampled_routes_df.itertuples(index=False):
-                airport = row.Arrival_Airport
+#         for row in sampled_routes_df.itertuples(index=False):
+#                 airport = row.Arrival_Airport
 
-                # Define the date
-                year = row.current_year - 1
-                month = int(row.travel_month)
-                day = 15
-                start_date = f"{year}-{month:02d}-{day:02d}"
-                end_date = start_date
+#                 # Define the date
+#                 year = row.current_year - 1
+#                 month = int(row.travel_month)
+#                 day = 15
+#                 start_date = f"{year}-{month:02d}-{day:02d}"
+#                 end_date = start_date
 
-                futures.append(
-                    executor.submit(
-                        get_weather_new,
-                        airport,
-                        row.Latitude,
-                        row.Longitude,
-                        start_date,
-                        end_date
-                    )
-                )
+#                 futures.append(
+#                     executor.submit(
+#                         get_weather_new,
+#                         airport,
+#                         row.Latitude,
+#                         row.Longitude,
+#                         start_date,
+#                         end_date
+#                     )
+#                 )
     
-        for future in as_completed(futures):
-            try:
-                df = future.result(timeout=5)
-                if df is not None:
-                    weather_dataframes.append(df)
+#         for future in as_completed(futures):
+#             try:
+#                 df = future.result(timeout=5)
+#                 if df is not None:
+#                     weather_dataframes.append(df)
     
-            except Exception as e:
-                print(f"[ERROR] {e}")
+#             except Exception as e:
+#                 print(f"[ERROR] {e}")
     
-    return weather_dataframes
+#     return weather_dataframes
 
 # **********************
 # KEY FUNCTION
